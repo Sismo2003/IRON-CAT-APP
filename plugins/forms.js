@@ -32,7 +32,7 @@ module.exports = plugin(function ({ addComponents, theme }) {
         //range input element
         'input[type="range"]': {
             '&::-webkit-slider-thumb': {
-                '@apply bg-custom-500 size-4 rounded-full cursor-pointer appearance-none': {},
+                '@apply bg-custom-500 h-4 w-4 rounded-full cursor-pointer appearance-none': {},
             },
             '&:focus::-webkit-slider-thumb': {
                 boxShadow: `0 0 3px ${theme("colors.custom.700")}`

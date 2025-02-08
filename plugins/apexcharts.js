@@ -60,7 +60,7 @@ module.exports = plugin(function ({ addComponents, theme }) {
             '@apply shadow-lg': {},
 
             '&.apexcharts-theme-light': {
-                '@apply !border-slate-200 !bg-white dark:!bg-zink-600 dark:!border-zink-500': {},
+                '@apply border-slate-200 bg-white dark:bg-zink-600 dark:border-zink-500': {},
 
                 '.apexcharts-tooltip-title': {
                     '@apply !border-b-slate-200 !bg-white !font-public dark:!border-b-zink-500 dark:!bg-zink-600': {},
@@ -70,6 +70,12 @@ module.exports = plugin(function ({ addComponents, theme }) {
 
         '.apexcharts-tooltip-title': {
             '@apply !font-public': {},
+        },
+
+        '.apexcharts-heatmap-series, .apexcharts-treemap-series': {
+            'rect': {
+                '@apply stroke-white': {}
+            }
         },
 
         '.apexcharts-pie-series, .apexcharts-bar-series': {
@@ -183,6 +189,6 @@ module.exports = plugin(function ({ addComponents, theme }) {
             '.apexcharts-legend-series': {
                 '@apply px-2 py-1 border rounded-sm border-slate-200 dark:border-zink-500': {},
             }
-        },
+        }
     })
 })

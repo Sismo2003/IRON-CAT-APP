@@ -4,7 +4,7 @@ module.exports = plugin(function ({ addComponents, theme }) {
     addComponents({
         '.swiper-pagination-bullets': {
             '.swiper-pagination-bullet': {
-                '@apply bg-custom-500 size-4 border-4 dark:border-zinc-900 outline outline-1 outline-custom-500': {},
+                '@apply bg-custom-500 h-4 w-4 border-4 dark:border-zinc-900 outline outline-1 outline-custom-500': {},
             }
         },
     })
