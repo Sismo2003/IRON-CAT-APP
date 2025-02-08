@@ -1,5 +1,5 @@
 {
-  "name": "tailwick-react",
+  "name": "CRM-MEDICOS",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -104,5 +104,9 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/cleave.js": "^1.4.12"
+  },
+  "author": {
+    "name": "sismo",
+    "github": "sismo2003"
   }
 }
