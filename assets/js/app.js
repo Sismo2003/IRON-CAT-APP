@@ -865,18 +865,20 @@ applyScrollbarLogic();
 // For example, to run every 5 seconds, you can use setInterval
 
 function init() {
-    setDefaultAttribute();
-    layoutSetting();
     windowLoadContent();
     resetLayout();
-    updateHorizontalMenus();
     lightDarkMode();
-    // initLanguage();
+    updateHorizontalMenus();
     initFilters();
     initMenuItemScroll()
+
+    // no sirven
+    // setDefaultAttribute();
+    // layoutSetting();
+    // initLanguage();
 };
 
-init();
+
 
 //  Window scroll sticky class add
 function windowScroll() {

@@ -7,100 +7,102 @@
                 <div class="items-center justify-center hidden px-5 text-center h-header group-data-[layout=horizontal]:md:flex group-data-[layout=horizontal]:ltr::pl-0 group-data-[layout=horizontal]:rtl:pr-0">
                     <a href="index.php">
                         <span class="hidden">
-                            <img src="assets/images/logo-sm.png" alt="" class="h-6 mx-auto">
+                            <img src="../assets/images/logo-sm.png" alt="" class="h-6 mx-auto">
                         </span>
                         <span class="group-data-[topbar=dark]:hidden group-data-[topbar=brand]:hidden">
-                            <img src="assets/images/logo-dark.png" alt="" class="h-6 mx-auto">
+                            <img src="../assets/images/logo-dark.png" alt="" class="h-6 mx-auto">
                         </span>
                     </a>
                     <a href="index.php" class="hidden group-data-[topbar=dark]:block group-data-[topbar=brand]:block">
                         <span class="group-data-[topbar=dark]:hidden group-data-[topbar=brand]:hidden">
-                            <img src="assets/images/logo-sm.png" alt="" class="h-6 mx-auto">
+                            <img src="../assets/images/logo-sm.png" alt="" class="h-6 mx-auto">
                         </span>
                         <span class="group-data-[topbar=dark]:block group-data-[topbar=brand]:block">
-                            <img src="assets/images/logo-light.png" alt="" class="h-6 mx-auto">
+                            <img src="../assets/images/logo-light.png" alt="" class="h-6 mx-auto">
                         </span>
                     </a>
                 </div>
 
-                <button type="button" class="inline-flex relative justify-center items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-75 ease-linear bg-topbar rounded-md btn hover:bg-slate-100 group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:border-topbar-dark group-data-[topbar=dark]:text-topbar-item-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:border-topbar-brand group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:text-zink-200 group-data-[topbar=dark]:dark:border-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[layout=horizontal]:flex group-data-[layout=horizontal]:md:hidden hamburger-icon" id="topnav-hamburger-icon">
+                <button type="button" class="inline-flex relative justify-center items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-75 ease-linear bg-topbar rounded-md btn hover:bg-slate-100 group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:border-topbar-dark group-data-[topbar=dark]:text-topbar-item-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:border-topbar-brand group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:text-zink-200 group-data-[topbar=dark]:dark:border-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[layout=horizontal]:flex group-data-[layout=horizontal]:md:hidden hamburger-icon"
+                        id="topnav-hamburger-icon">
                     <i data-lucide="chevrons-left" class="w-5 h-5 group-data-[sidebar-size=sm]:hidden"></i>
                     <i data-lucide="chevrons-right" class="hidden w-5 h-5 group-data-[sidebar-size=sm]:block"></i>
                 </button>
 
                 <div class="relative hidden ltr:ml-3 rtl:mr-3 lg:block group-data-[layout=horizontal]:hidden group-data-[layout=horizontal]:lg:block">
-                    <input type="text" class="py-2 pr-4 text-sm text-topbar-item bg-topbar border border-topbar-border rounded pl-8 placeholder:text-slate-400 form-control focus-visible:outline-0 min-w-[300px] focus:border-blue-400 group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:border-topbar-border-dark group-data-[topbar=dark]:placeholder:text-slate-500 group-data-[topbar=dark]:text-topbar-item-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:border-topbar-border-brand group-data-[topbar=brand]:placeholder:text-blue-300 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:border-zink-500 group-data-[topbar=dark]:dark:text-zink-100" placeholder="Search for ..." autocomplete="off">
+                    <input type="text" class="py-2 pr-4 text-sm text-topbar-item bg-topbar border border-topbar-border rounded pl-8 placeholder:text-slate-400 form-control focus-visible:outline-0 min-w-[300px] focus:border-blue-400 group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:border-topbar-border-dark group-data-[topbar=dark]:placeholder:text-slate-500 group-data-[topbar=dark]:text-topbar-item-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:border-topbar-border-brand group-data-[topbar=brand]:placeholder:text-blue-300 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:border-zink-500 group-data-[topbar=dark]:dark:text-zink-100"
+                           placeholder="Buscar ..." autocomplete="off">
                     <i data-lucide="search" class="inline-block size-4 absolute left-2.5 top-2.5 text-topbar-item fill-slate-100 group-data-[topbar=dark]:fill-topbar-item-bg-hover-dark group-data-[topbar=dark]:text-topbar-item-dark group-data-[topbar=brand]:fill-topbar-item-bg-hover-brand group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:text-zink-200 group-data-[topbar=dark]:dark:fill-zink-600"></i>
                 </div>
 
                 <div class="flex gap-3 ms-auto">
                     <div class="relative flex items-center dropdown h-header">
                         <button type="button" class="inline-flex justify-center items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-200 ease-linear bg-topbar rounded-md dropdown-toggle btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=dark]:dark:text-zink-500 group-data-[topbar=dark]:dark:hover:text-zink-50" id="flagsDropdown" data-bs-toggle="dropdown">
-                        <?php
+                            <?php
                             if (!empty($_SESSION['lang'])) {
                                 $language = $_SESSION['lang'];
                                 if ($language == "en") {
-                                    $imgPath = 'assets/images/flags/20/us.svg';
+                                    $imgPath = '../assets/images/flags/20/us.svg';
                                 } elseif ($language == "sp") {
-                                    $imgPath = 'assets/images/flags/20/es.svg';
+                                    $imgPath = '../assets/images/flags/20/es.svg';
                                 } elseif ($language == "gr") {
-                                    $imgPath = 'assets/images/flags/20/de.svg';
+                                    $imgPath = '../assets/images/flags/20/de.svg';
                                 } elseif ($language == "it") {
-                                    $imgPath = 'assets/images/flags/20/it.svg';
+                                    $imgPath = '../assets/images/flags/20/it.svg';
                                 } elseif ($language == "ru") {
-                                    $imgPath = 'assets/images/flags/20/ru.svg';
+                                    $imgPath = '../assets/images/flags/20/ru.svg';
                                 } elseif ($language == "ch") {
-                                    $imgPath = 'assets/images/flags/20/china.svg';
+                                    $imgPath = '../assets/images/flags/20/china.svg';
                                 } elseif ($language == "jp") {
-                                    $imgPath = 'assets/images/flags/20/jp.svg';
+                                    $imgPath = '../assets/images/flags/20/jp.svg';
                                 } elseif ($language == "fr") {
-                                    $imgPath = 'assets/images/flags/20/fr.svg';
+                                    $imgPath = '../assets/images/flags/20/fr.svg';
                                 } elseif ($language == "ar") {
-                                    $imgPath = 'assets/images/flags/20/ae.svg';
+                                    $imgPath = '../assets/images/flags/20/ae.svg';
                                 }else {
-                                    $imgPath = 'assets/images/flags/20/us.svg';
+                                    $imgPath = '../assets/images/flags/20/us.svg';
                                 }
                             } else {
-                                $imgPath = 'assets/images/flags/20/us.svg';
+                                $imgPath = '../assets/images/flags/20/us.svg';
                             }
-                        ?>
+                            ?>
                             <img src="<?php echo $imgPath; ?>" alt="" id="header-lang-img" class="h-5 rounded-sm">
                         </button>
                         <div class="absolute z-50 hidden p-4 ltr:text-left rtl:text-right bg-white rounded-md shadow-md !top-4 dropdown-menu min-w-[10rem] flex flex-col gap-4 dark:bg-zink-600" aria-labelledby="flagsDropdown">
                             <a href="?lang=en" class="flex items-center gap-3 group/items language" data-lang="en" title="English">
-                                <img src="assets/images/flags/20/us.svg" alt="" class="object-cover h-4 rounded-full">
+                                <img src="../assets/images/flags/20/us.svg" alt="" class="object-cover h-4 rounded-full">
                                 <h6 class="transition-all duration-200 ease-linear font-15medium text- text-slate-600 dark:text-zink-200 group-hover/items:text-custom-500">English</h6>
                             </a>
                             <a href="?lang=sp" class="flex items-center gap-3 group/items language" data-lang="sp" title="Spanish">
-                                <img src="assets/images/flags/20/es.svg" alt="" class="object-cover h-4 rounded-full">
+                                <img src="../assets/images/flags/20/es.svg" alt="" class="object-cover h-4 rounded-full">
                                 <h6 class="transition-all duration-200 ease-linear font-15medium text- text-slate-600 dark:text-zink-200 group-hover/items:text-custom-500">Spanish</h6>
                             </a>
                             <a href="?lang=gr" class="flex items-center gap-3 group/items language" data-lang="gr" title="German">
-                                <img src="assets/images/flags/20/de.svg" alt="" class="object-cover h-4 rounded-full">
+                                <img src="../assets/images/flags/20/de.svg" alt="" class="object-cover h-4 rounded-full">
                                 <h6 class="transition-all duration-200 ease-linear font-15medium text- text-slate-600 dark:text-zink-200 group-hover/items:text-custom-500">German</h6>
                             </a>
                             <a href="?lang=fr" class="flex items-center gap-3 group/items language" data-lang="fr" title="French">
-                                <img src="assets/images/flags/20/fr.svg" alt="" class="object-cover h-4 rounded-full">
+                                <img src="../assets/images/flags/20/fr.svg" alt="" class="object-cover h-4 rounded-full">
                                 <h6 class="transition-all duration-200 ease-linear font-15medium text- text-slate-600 dark:text-zink-200 group-hover/items:text-custom-500">French</h6>
                             </a>
                             <a href="?lang=jp" class="flex items-center gap-3 group/items language" data-lang="jp" title="Japanese">
-                                <img src="assets/images/flags/20/jp.svg" alt="" class="object-cover h-4 rounded-full">
+                                <img src="../assets/images/flags/20/jp.svg" alt="" class="object-cover h-4 rounded-full">
                                 <h6 class="transition-all duration-200 ease-linear font-15medium text- text-slate-600 dark:text-zink-200 group-hover/items:text-custom-500">Japanese</h6>
                             </a>
                             <a href="?lang=ch" class="flex items-center gap-3 group/items language" data-lang="ch" title="Chinese">
-                                <img src="assets/images/flags/20/china.svg" alt="" class="object-cover h-4 rounded-full">
+                                <img src="../assets/images/flags/20/china.svg" alt="" class="object-cover h-4 rounded-full">
                                 <h6 class="transition-all duration-200 ease-linear font-15medium text- text-slate-600 dark:text-zink-200 group-hover/items:text-custom-500">Chinese</h6>
                             </a>
                             <a href="?lang=it" class="flex items-center gap-3 group/items language" data-lang="it" title="Italian">
-                                <img src="assets/images/flags/20/it.svg" alt="" class="object-cover h-4 rounded-full">
+                                <img src="../assets/images/flags/20/it.svg" alt="" class="object-cover h-4 rounded-full">
                                 <h6 class="transition-all duration-200 ease-linear font-15medium text- text-slate-600 dark:text-zink-200 group-hover/items:text-custom-500">Italian</h6>
                             </a>
                             <a href="?lang=ru" class="flex items-center gap-3 group/items language" data-lang="ru" title="Russian">
-                                <img src="assets/images/flags/20/ru.svg" alt="" class="object-cover h-4 rounded-full">
+                                <img src="../assets/images/flags/20/ru.svg" alt="" class="object-cover h-4 rounded-full">
                                 <h6 class="transition-all duration-200 ease-linear font-15medium text- text-slate-600 dark:text-zink-200 group-hover/items:text-custom-500">Russian</h6>
                             </a>
                             <a href="?lang=ar" class="flex items-center gap-3 group/items language" data-lang="ar" title="Arabic">
-                                <img src="assets/images/flags/20/ae.svg" alt="" class="object-cover h-4 rounded-full">
+                                <img src="../assets/images/flags/20/ae.svg" alt="" class="object-cover h-4 rounded-full">
                                 <h6 class="transition-all duration-200 ease-linear font-15medium text- text-slate-600 dark:text-zink-200 group-hover/items:text-custom-500">Arabic</h6>
                             </a>
                         </div>
@@ -141,7 +143,7 @@
                                         <a href="javascript:void(0);" data-filter="follower" class="inline-block nav-link px-1.5 w-full py-1 text-xs transition-all duration-300 ease-linear rounded-md text-slate-500 border border-transparent [&.active]:bg-white [&.active]:text-custom-500 hover:text-custom-500 active:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:[&.active]:bg-zink-600 -mb-[1px]">Followers</a>
                                     </li>
                                     <li class=grow ">
-                                        <a href="javascript:void(0);" data-filter="invite" class="inline-block nav-link px-1.5 w-full py-1 text-xs transition-all duration-300 ease-linear rounded-md text-slate-500 border border-transparent [&.active]:bg-white [&.active]:text-custom-500 hover:text-custom-500 active:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:[&.active]:bg-zink-600 -mb-[1px]">Invites</a>
+                                    <a href="javascript:void(0);" data-filter="invite" class="inline-block nav-link px-1.5 w-full py-1 text-xs transition-all duration-300 ease-linear rounded-md text-slate-500 border border-transparent [&.active]:bg-white [&.active]:text-custom-500 hover:text-custom-500 active:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:[&.active]:bg-zink-600 -mb-[1px]">Invites</a>
                                     </li>
                                 </ul>
 
@@ -150,7 +152,7 @@
                                 <div class="flex flex-col gap-1" id="notification-list">
                                     <a href="#!" class="flex gap-3 p-4 product-item hover:bg-slate-50 dark:hover:bg-zink-500 follower">
                                         <div class="w-10 h-10 rounded-md shrink-0 bg-slate-100">
-                                            <img src="assets/images/users/avatar-3.png" alt="" class="rounded-md">
+                                            <img src="../assets/images/users/avatar-3.png" alt="" class="rounded-md">
                                         </div>
                                         <div class="grow">
                                             <h6 class="mb-1 font-medium"><b>@willie_passem</b> followed you</h6>
@@ -162,7 +164,7 @@
                                     </a>
                                     <a href="#!" class="flex gap-3 p-4 product-item hover:bg-slate-50 dark:hover:bg-zink-500 mention">
                                         <div class="w-10 h-10 bg-yellow-100 rounded-md shrink-0">
-                                            <img src="assets/images/users/avatar-5.png" alt="" class="rounded-md">
+                                            <img src="../assets/images/users/avatar-5.png" alt="" class="rounded-md">
                                         </div>
                                         <div class="grow">
                                             <h6 class="mb-1 font-medium"><b>@caroline_jessica</b> commented on your post</h6>
@@ -188,7 +190,7 @@
                                     <a href="#!" class="flex gap-3 p-4 product-item hover:bg-slate-50 dark:hover:bg-zink-500 mention">
                                         <div class="relative shrink-0">
                                             <div class="w-10 h-10 bg-pink-100 rounded-md">
-                                                <img src="assets/images/users/avatar-7.png" alt="" class="rounded-md">
+                                                <img src="../assets/images/users/avatar-7.png" alt="" class="rounded-md">
                                             </div>
                                             <div class="absolute text-orange-500 -bottom-0.5 -right-0.5 text-16">
                                                 <i class="ri-heart-fill"></i>
@@ -224,7 +226,7 @@
                     <div class="relative flex items-center dropdown h-header">
                         <button type="button" class="inline-block p-0 transition-all duration-200 ease-linear bg-topbar rounded-full text-topbar-item dropdown-toggle btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover group-data-[topbar=dark]:text-topbar-item-dark group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200" id="dropdownMenuButton" data-bs-toggle="dropdown">
                             <div class="bg-pink-100 rounded-full">
-                                <img src="assets/images/users/user-profile.png" alt="" class="w-[37.5px] h-[37.5px] rounded-full">
+                                <img src="../assets/images/users/user-profile.png" alt="" class="w-[37.5px] h-[37.5px] rounded-full">
                             </div>
                         </button>
                         <div class="absolute z-50 hidden p-4 ltr:text-left rtl:text-right bg-white rounded-md shadow-md !top-4 dropdown-menu min-w-[14rem] dark:bg-zink-600" aria-labelledby="dropdownMenuButton">
@@ -232,7 +234,7 @@
                             <a href="#!" class="flex gap-3 mb-3">
                                 <div class="relative inline-block shrink-0">
                                     <div class="rounded bg-slate-100 dark:bg-zink-500">
-                                        <img src="assets/images/users/user-profile.png" alt="" class="w-12 h-12 rounded">
+                                        <img src="../assets/images/users/user-profile.png" alt="" class="w-12 h-12 rounded">
                                     </div>
                                     <span class="-top-1 ltr:-right-1 rtl:-left-1 absolute w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full dark:border-zink-600"></span>
                                 </div>
@@ -284,7 +286,7 @@
             <div class="flex flex-col gap-4">
                 <div class="flex gap-2 product">
                     <div class="flex items-center justify-center w-12 h-12 rounded-md bg-slate-100 shrink-0 dark:bg-zink-500">
-                        <img src="assets/images/product/img-01.png" alt="" class="h-8">
+                        <img src="../assets/images/product/img-01.png" alt="" class="h-8">
                     </div>
                     <div class="overflow-hidden grow">
                         <div class="ltr:float-right rtl:float-left">
@@ -309,7 +311,7 @@
                 </div>
                 <div class="flex gap-2 product">
                     <div class="flex items-center justify-center w-12 h-12 rounded-md bg-slate-100 shrink-0 dark:bg-zink-500">
-                        <img src="assets/images/product/img-03.png" alt="" class="h-8">
+                        <img src="../assets/images/product/img-03.png" alt="" class="h-8">
                     </div>
                     <div class="overflow-hidden grow">
                         <div class="ltr:float-right rtl:float-left">
@@ -334,7 +336,7 @@
                 </div>
                 <div class="flex gap-2 product">
                     <div class="flex items-center justify-center w-12 h-12 rounded-md bg-slate-100 shrink-0 dark:bg-zink-500">
-                        <img src="assets/images/product/img-09.png" alt="" class="h-8">
+                        <img src="../assets/images/product/img-09.png" alt="" class="h-8">
                     </div>
                     <div class="overflow-hidden grow">
                         <div class="ltr:float-right rtl:float-left">
