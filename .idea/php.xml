@@ -10,6 +10,48 @@
     <option name="highlightLevel" value="WARNING" />
     <option name="transferred" value="true" />
   </component>
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/scssphp/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/exporter" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/resource-operations" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/phar-io/version" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/squizlabs/php_codesniffer" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/phpunit/php-timer" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/thoughtbot/bourbon" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/phpunit/php-invoker" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/diff" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/recursion-context" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sass/sass-spec" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/lines-of-code" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/twbs/bootstrap" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/type" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/twbs/bootstrap4" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/version" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/zurb/foundation" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/cli-parser" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/nikic/php-parser" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/code-unit" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/bamarni/composer-bin-plugin" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/environment" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/symfony/phpunit-bridge" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/theseer/tokenizer" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/comparator" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/global-state" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/object-enumerator" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/object-reflector" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/complexity" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/sebastian/code-unit-reverse-lookup" />
+      <path value="$PROJECT_DIR$/scssphp/vendor/composer" />
+    </include_path>
+  </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0">
     <option name="suggestChangeDefaultLanguageLevel" value="false" />
   </component>
