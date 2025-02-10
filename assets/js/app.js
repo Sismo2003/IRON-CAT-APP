@@ -873,9 +873,9 @@ function init() {
     initMenuItemScroll()
 
     // no sirven
-    // setDefaultAttribute();
-    // layoutSetting();
-    // initLanguage();
+    setDefaultAttribute();
+    layoutSetting();
+    initLanguage();
 };
 
 

@@ -134,3 +134,8 @@ dist
 .DS_Store
 package-lock.json
 .DS_Store
+
+scssphp/vendor/
+scssphp/composer.lock
+vendor/phpmailer/composer.lock
+vendor/phpmailer/vendor/
