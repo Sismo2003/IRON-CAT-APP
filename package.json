@@ -1,8 +1,0 @@
-{
-  "devDependencies": {
-    "tailwindcss": "^3.4.17"
-  },
-  "dependencies": {
-    "simplebar": "^6.3.0"
-  }
-}

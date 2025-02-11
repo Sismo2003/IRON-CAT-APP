@@ -143,15 +143,7 @@
                                         </ul>
                                     </div>
                                     <div class="flex items-center gap-2 shrink-0">
-                                        <button onclick="window.print()" type="button" class="text-white btn bg-custom-500 border-custom-500
-                                        hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600
-                                        focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600
-                                        active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">
-
-                                            <i data-lucide="save" class="inline-block size-4 ltr:mr-1 rtl:ml-1"></i>
-                                            <span class="align-middle">Save & Print</span>
-
-                                        </button>
+                                        <button onclick="window.print()" type="button" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"><i data-lucide="save" class="inline-block size-4 ltr:mr-1 rtl:ml-1"></i> <span class="align-middle">Save & Print</span></button>
                                         <div class="relative dropdown">
                                             <button class="flex items-center justify-center w-[38.39px] h-[38.39px] dropdown-toggle p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20" id="categoryNotes1" data-bs-toggle="dropdown"><i data-lucide="more-horizontal" class="size-4"></i></button>
                                             <ul class="absolute z-50 hidden py-2 mt-1 ltr:text-left rtl:text-right list-none bg-white rounded-md shadow-md dropdown-menu min-w-[10rem] dark:bg-zink-600" aria-labelledby="categoryNotes1">
@@ -319,7 +311,6 @@
                                         <p class="mb-1 text-slate-500 dark:text-zink-200">Card Number: xxxx xxxx xxxx 1402</p>
                                         <p class="mb-0 text-slate-500 dark:text-zink-200">Total Amount: $755.96</p>
                                     </div>
-
 
                                     <div class="px-4 py-3 text-sm border rounded-md border-sky-200 text-sky-500 bg-sky-50 dark:bg-sky-400/20 dark:border-sky-500/50">
                                         <span class="font-bold">NOTES:</span> All accounts are to be paid within 7 days from receipt of invoice. To be paid by cheque or credit card or direct payment online. If account is not paid within 7 days the credits details supplied as confirmation of work undertaken will be charged the agreed quoted fee noted above.

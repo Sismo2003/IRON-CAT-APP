@@ -1,8 +1,15 @@
+<?php include 'partials/session.php'; ?>
+<?php include 'partials/main.php'; ?>
 
+<head>
 
-<!--    --><?php //includeFileWithVariables('partials/title-meta.php', array('title' => 'Analytics')); ?>
+    <?php includeFileWithVariables('partials/title-meta.php', array('title' => 'Analytics')); ?>
 
+    <?php include 'partials/head-css.php'; ?>
 
+</head>
+
+<?php include 'partials/body.php'; ?>
 
 <div class="group-data-[sidebar-size=sm]:min-h-sm group-data-[sidebar-size=sm]:relative">
 
