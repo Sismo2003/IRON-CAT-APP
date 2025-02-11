@@ -3,7 +3,7 @@ const plugin = require('tailwindcss/plugin')
 module.exports = plugin(function ({ addComponents, theme }) {
     addComponents({
         '.flatpickr-calendar': {
-            '@apply text-sm bg-white dark:bg-zink-600 rounded-md dark:shadow-md dark:shadow-zink-500': {},
+            '@apply text-sm !bg-white dark:!bg-zink-600 rounded-md dark:!shadow-md dark:!shadow-zink-500': {},
             width: '307.875px',
 
             '&.open': {
@@ -12,27 +12,27 @@ module.exports = plugin(function ({ addComponents, theme }) {
 
             '.flatpickr-rContainer': {
                 '.flatpickr-days': {
-                    '@apply border-t border-slate-200 dark:border-zink-500': {},
+                    '@apply border-t !border-slate-200 dark:!border-zink-500': {},
                 },
             },
             '.flatpickr-time': {
-                '@apply border border-slate-200 dark:border-zink-500 rounded-md': {},
+                '@apply border !border-slate-200 dark:!border-zink-500 rounded-md': {},
                 
                 'input': {
-                    '@apply text-slate-700 dark:text-zink-50': {},
+                    '@apply !text-slate-700 dark:!text-zink-50': {},
                 }
             },
 
             '&.hasTime .flatpickr-time': {
-                '@apply border-t border-slate-200 dark:border-zink-500': {},
+                '@apply border-t !border-slate-200 dark:!border-zink-500': {},
             },
 
             '&.arrowTop::before,  &.arrowTop::after': {
-                '@apply border-b border-b-slate-200 dark:border-b-zink-500': {},
+                '@apply border-b !border-b-slate-200 dark:!border-b-zink-500': {},
             },
 
             '&.arrowBottom::before,  &.arrowBottom::after': {
-                '@apply border-t border-slate-200 dark:border-zink-500': {},
+                '@apply border-t !border-slate-200 dark:!border-zink-500': {},
             },
         },
         '.flatpickr-months': {
@@ -53,7 +53,7 @@ module.exports = plugin(function ({ addComponents, theme }) {
             },
 
             '.flatpickr-prev-month, .flatpickr-next-month': {
-                '@apply text-slate-500 fill-slate-500 h-8 w-8 flex items-center hover:text-slate-600 dark:hover:text-zink-100 top-2 border border-slate-200 dark:border-zink-500 dark:text-zink-200 rounded-md': {},
+                '@apply text-slate-500 fill-slate-500 size-8 flex items-center hover:text-slate-600 dark:hover:text-zink-100 top-2 border !border-slate-200 dark:!border-zink-500 dark:text-zink-200 rounded-md': {},
 
                 '&.flatpickr-prev-month': {
                     '@apply left-2': {},
@@ -64,7 +64,7 @@ module.exports = plugin(function ({ addComponents, theme }) {
                 },
 
                 'svg': {
-                    '@apply h-10 w-10': {},
+                    '@apply size-10': {},
                 },
 
                 '&:hover': {
@@ -98,18 +98,18 @@ module.exports = plugin(function ({ addComponents, theme }) {
                 '@apply text-slate-500 bg-slate-100 dark:text-zink-200 dark:bg-zink-500': {},
             },
             '&.inRange, &.prevMonthDay.inRange, &.nextMonthDay.inRange, &.today.inRange, &.prevMonthDay.today.inRange, &.nextMonthDay.today.inRange, &:hover, &.prevMonthDay:hover, &.nextMonthDay:hover, &:focus, &.prevMonthDay:focus, &.nextMonthDay:focus': {
-                '@apply text-slate-500 bg-slate-100 border-slate-200 dark:text-zink-200 dark:border-zink-500 dark:bg-zink-500': {},
+                '@apply text-slate-500 bg-slate-100 !border-slate-200 dark:text-zink-200 dark:!border-zink-500 dark:bg-zink-500': {},
             },
 
             '&.today': {
-                '@apply text-custom-50 bg-custom-500 border-custom-500': {},
+                '@apply text-custom-50 bg-custom-500 !border-custom-500': {},
                 '&:hover, &:focus': {
-                    '@apply text-custom-50 bg-custom-600 border-custom-600': {},
+                    '@apply text-custom-50 bg-custom-600 !border-custom-600': {},
                 },
             },
 
             '&.selected, &.startRange, &.endRange, &.selected.inRange, &.startRange.inRange, &.endRange.inRange, &.selected:focus, &.startRange:focus, &.endRange:focus, &.selected:hover, &.startRange:hover, &.endRange:hover, &.selected.prevMonthDay, &.startRange.prevMonthDay, &.endRange.prevMonthDay, &.selected.nextMonthDay, &.startRange.nextMonthDay, &.endRange.nextMonthDay': {
-                '@apply text-custom-50 bg-custom-500 border-custom-500': {},
+                '@apply text-custom-50 bg-custom-500 !border-custom-500': {},
             },
 
             '&.inRange, &.week.selected': {

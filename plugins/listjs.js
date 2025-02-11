@@ -7,7 +7,7 @@ module.exports = plugin(function ({ addComponents, theme }) {
 
             'li': {
                 '.page': {
-                    '@apply flex items-center justify-center h-8 w-8 border border-slate-200 dark:border-zink-500 rounded-md': {},
+                    '@apply flex items-center justify-center size-8 border border-slate-200 dark:border-zink-500 rounded-md': {},
                 },
 
                 '&.active': {
