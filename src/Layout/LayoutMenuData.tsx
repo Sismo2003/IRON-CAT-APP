@@ -43,26 +43,26 @@ const menuData: any = [
             },
         ]
     },
-    {
-        id: "landing",
-        label: 'Landing Page',
-        link: "/#",
-        icon: <PictureInPicture2 />,
-        subItems: [
-            {
-                id: 'onepage',
-                label: 'One Page',
-                link: '/onepage-landing',
-                parentId: "landing"
-            },
-            {
-                id: 'productlanding',
-                label: 'Product',
-                link: '/product-landing',
-                parentId: "landing"
-            }
-        ]
-    },
+    // {
+    //     id: "landing",
+    //     label: 'Landing Page',
+    //     link: "/#",
+    //     icon: <PictureInPicture2 />,
+    //     subItems: [
+    //         {
+    //             id: 'onepage',
+    //             label: 'One Page',
+    //             link: '/onepage-landing',
+    //             parentId: "landing"
+    //         },
+    //         {
+    //             id: 'productlanding',
+    //             label: 'Product',
+    //             link: '/product-landing',
+    //             parentId: "landing"
+    //         }
+    //     ]
+    // },
     {
         label: 'Apps',
         isTitle: true,
@@ -124,18 +124,18 @@ const menuData: any = [
                         link: '/apps-ecommerce-product-list',
                         parentId: 'product'
                     },
-                    {
-                        id: 'gridview',
-                        label: 'Grid View',
-                        link: '/apps-ecommerce-product-grid',
-                        parentId: 'product'
-                    },
-                    {
-                        id: 'overview',
-                        label: 'Overview',
-                        link: '/apps-ecommerce-product-overview',
-                        parentId: 'product'
-                    },
+                    // {
+                    //     id: 'gridview',
+                    //     label: 'Grid View',
+                    //     link: '/apps-ecommerce-product-grid',
+                    //     parentId: 'product'
+                    // },
+                    // {
+                    //     id: 'overview',
+                    //     label: 'Overview',
+                    //     link: '/apps-ecommerce-product-overview',
+                    //     parentId: 'product'
+                    // },
                     {
                         id: 'addnew',
                         label: 'Add New',
@@ -150,30 +150,30 @@ const menuData: any = [
                 link: '/apps-ecommerce-cart',
                 parentId: 'ecommerce'
             },
-            {
-                id: 'checkout',
-                label: 'Checkout',
-                link: '/apps-ecommerce-checkout',
-                parentId: 'ecommerce'
-            },
-            {
-                id: 'order',
-                label: 'Orders',
-                link: '/apps-ecommerce-orders',
-                parentId: 'ecommerce'
-            },
-            {
-                id: 'orderoverview',
-                label: 'Order Overview',
-                link: '/apps-ecommerce-order-overview',
-                parentId: 'ecommerce'
-            },
-            {
-                id: 'sellers',
-                label: 'Sellers',
-                link: '/apps-ecommerce-sellers',
-                parentId: 'ecommerce'
-            },
+            // {
+            //     id: 'checkout',
+            //     label: 'Checkout',
+            //     link: '/apps-ecommerce-checkout',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'order',
+            //     label: 'Orders',
+            //     link: '/apps-ecommerce-orders',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'orderoverview',
+            //     label: 'Order Overview',
+            //     link: '/apps-ecommerce-order-overview',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'sellers',
+            //     label: 'Sellers',
+            //     link: '/apps-ecommerce-sellers',
+            //     parentId: 'ecommerce'
+            // },
         ]
     },
     {
@@ -188,119 +188,134 @@ const menuData: any = [
                 label: 'Employee List',
                 link: '/apps-hr-employee',
                 parentId: 'hrmanagement'
-            },
+            }
+            // {
+            //     id: 'holiday',
+            //     label: 'Holidays',
+            //     link: '/apps-hr-holidays',
+            //     parentId: 'hrmanagement'
+            // },
+            // {
+            //     id: 'leavesmanage',
+            //     label: 'Leaves Manage',
+            //     parentId: 'hrmanagement',
+            //     subItems: [
+            //         {
+            //             id: 'byemployee',
+            //             label: 'By Employee',
+            //             link: '/apps-hr-leave-employee',
+            //             parentId: 'leavesmanage'
+            //         },
+            //         {
+            //             id: 'addleaveemployee',
+            //             label: 'Add Leave (Employee)',
+            //             link: '/apps-hr-create-leave-employee',
+            //             parentId: 'leavesmanage'
+            //         },
+            //         {
+            //             id: 'byhr',
+            //             label: 'By HR',
+            //             link: '/apps-hr-leave',
+            //             parentId: 'leavesmanage'
+            //         },
+            //         {
+            //             id: 'addleavehr',
+            //             label: 'Add Leave (HR)',
+            //             link: '/apps-hr-create-leave',
+            //             parentId: 'leavesmanage'
+            //         },
+            //     ]
+            // },
+            // {
+            //     id: 'attendance',
+            //     label: 'Attendance',
+            //     parentId: 'hrmanagement',
+            //     subItems: [
+            //         {
+            //             id: 'attendancehr',
+            //             label: 'Attendance (HR)',
+            //             link: '/apps-hr-attendance',
+            //             parentId: 'attendance'
+            //         },
+            //         {
+            //             id: 'mainattendance',
+            //             label: 'Main Attendance',
+            //             link: '/apps-hr-attendance-main',
+            //             parentId: 'attendance'
+            //         },
+            //     ]
+            // },
+            // {
+            //     id: 'department',
+            //     label: 'Department',
+            //     link: '/apps-hr-department',
+            //     parentId: 'hrmanagement'
+            // },
+            // {
+            //     id: 'sale',
+            //     label: 'Sales',
+            //     parentId: 'hrmanagement',
+            //     subItems: [
+            //         {
+            //             id: 'estimates',
+            //             label: 'Estimates',
+            //             link: '/apps-hr-sales-estimates',
+            //             parentId: 'sale'
+            //         },
+            //         {
+            //             id: 'payments',
+            //             label: 'Payments',
+            //             link: '/apps-hr-sales-payments',
+            //             parentId: 'sale'
+            //         },
+            //         {
+            //             id: 'expenses',
+            //             label: 'Expenses',
+            //             link: '/apps-hr-sales-expenses',
+            //             parentId: 'sale'
+            //         },
+            //     ]
+            // },
+            // {
+            //     id: 'payroll',
+            //     label: 'Payroll',
+            //     parentId: 'hrmanagement',
+            //     subItems: [
+            //         {
+            //             id: 'employeesalary',
+            //             label: 'Employee Salary',
+            //             link: '/apps-hr-payroll-employee-salary',
+            //             parentId: 'payroll'
+            //         },
+            //         {
+            //             id: 'payslip',
+            //             label: 'Payslip',
+            //             link: '/apps-hr-payroll-payslip',
+            //             parentId: 'payroll'
+            //         },
+            //         {
+            //             id: 'createpayslip',
+            //             label: 'Create Payslip',
+            //             link: '/apps-hr-payroll-create-payslip',
+            //             parentId: 'payroll'
+            //         },
+            //     ]
+            // },
+        ],
+    },
+    {
+        id: "ticket-management",
+        label: 'Ticket Management',
+        icon: <CircuitBoard />,
+        parentId: "tkmanagement",
+        link: "/#",
+        subItems: [
             {
-                id: 'holiday',
-                label: 'Holidays',
-                link: '/apps-hr-holidays',
-                parentId: 'hrmanagement'
-            },
-            {
-                id: 'leavesmanage',
-                label: 'Leaves Manage',
-                parentId: 'hrmanagement',
-                subItems: [
-                    {
-                        id: 'byemployee',
-                        label: 'By Employee',
-                        link: '/apps-hr-leave-employee',
-                        parentId: 'leavesmanage'
-                    },
-                    {
-                        id: 'addleaveemployee',
-                        label: 'Add Leave (Employee)',
-                        link: '/apps-hr-create-leave-employee',
-                        parentId: 'leavesmanage'
-                    },
-                    {
-                        id: 'byhr',
-                        label: 'By HR',
-                        link: '/apps-hr-leave',
-                        parentId: 'leavesmanage'
-                    },
-                    {
-                        id: 'addleavehr',
-                        label: 'Add Leave (HR)',
-                        link: '/apps-hr-create-leave',
-                        parentId: 'leavesmanage'
-                    },
-                ]
-            },
-            {
-                id: 'attendance',
-                label: 'Attendance',
-                parentId: 'hrmanagement',
-                subItems: [
-                    {
-                        id: 'attendancehr',
-                        label: 'Attendance (HR)',
-                        link: '/apps-hr-attendance',
-                        parentId: 'attendance'
-                    },
-                    {
-                        id: 'mainattendance',
-                        label: 'Main Attendance',
-                        link: '/apps-hr-attendance-main',
-                        parentId: 'attendance'
-                    },
-                ]
-            },
-            {
-                id: 'department',
-                label: 'Department',
-                link: '/apps-hr-department',
-                parentId: 'hrmanagement'
-            },
-            {
-                id: 'sale',
-                label: 'Sales',
-                parentId: 'hrmanagement',
-                subItems: [
-                    {
-                        id: 'estimates',
-                        label: 'Estimates',
-                        link: '/apps-hr-sales-estimates',
-                        parentId: 'sale'
-                    },
-                    {
-                        id: 'payments',
-                        label: 'Payments',
-                        link: '/apps-hr-sales-payments',
-                        parentId: 'sale'
-                    },
-                    {
-                        id: 'expenses',
-                        label: 'Expenses',
-                        link: '/apps-hr-sales-expenses',
-                        parentId: 'sale'
-                    },
-                ]
-            },
-            {
-                id: 'payroll',
-                label: 'Payroll',
-                parentId: 'hrmanagement',
-                subItems: [
-                    {
-                        id: 'employeesalary',
-                        label: 'Employee Salary',
-                        link: '/apps-hr-payroll-employee-salary',
-                        parentId: 'payroll'
-                    },
-                    {
-                        id: 'payslip',
-                        label: 'Payslip',
-                        link: '/apps-hr-payroll-payslip',
-                        parentId: 'payroll'
-                    },
-                    {
-                        id: 'createpayslip',
-                        label: 'Create Payslip',
-                        link: '/apps-hr-payroll-create-payslip',
-                        parentId: 'payroll'
-                    },
-                ]
-            },
+                id: 'employeelist',
+                label: 'Ticket List',
+                link: '/apps-hr-employee',
+                parentId: 'tkmanagement'
+            }
         ],
     },
     {
@@ -310,83 +325,83 @@ const menuData: any = [
         link: '/apps-notes',
         parentId: 2
     },
-    {
-        id: 'social',
-        label: 'Social',
-        icon: <RadioTower />,
-        subItems: [
-            {
-                id: 'friends',
-                label: 'Friends',
-                link: '/apps-social-friends',
-                parentId: 'social'
-            },
-            {
-                id: 'event',
-                label: 'Event',
-                link: '/apps-social-event',
-                parentId: 'social'
-            },
-            {
-                id: 'watchvideo',
-                label: 'Watch Video',
-                link: '/apps-social-video',
-                parentId: 'social'
-            },
-            {
-                id: 'marketplace',
-                label: 'Marketplace',
-                link: '/apps-social-marketplace',
-                parentId: 'social'
-            }
-        ]
-    },
-    {
-        id: 'invoice',
-        label: 'Invoices',
-        icon: <FileText />,
-        parentId: 2,
-        subItems: [
-            {
-                id: 'invoicelistview',
-                label: 'Listview',
-                link: '/apps-invoice-list',
-                parentId: 'invoice'
-            },
-            {
-                id: 'invoiceaddnew',
-                label: 'Add New',
-                link: '/apps-invoice-add-new',
-                parentId: 'invoice'
-            },
-            {
-                id: 'invoiceoverview',
-                label: 'Overview',
-                link: '/apps-invoice-overview',
-                parentId: 'invoice'
-            }
-        ]
-    },
-    {
-        id: 'users',
-        label: 'Users',
-        icon: <UserRound />,
-        parentId: 2,
-        subItems: [
-            {
-                id: 'userlistview',
-                label: 'List view',
-                link: '/apps-users-list',
-                parentId: 'users'
-            },
-            {
-                id: 'usergridview',
-                label: 'Grid View',
-                link: '/apps-users-grid',
-                parentId: 'users'
-            }
-        ]
-    },
+    // {
+    //     id: 'social',
+    //     label: 'Social',
+    //     icon: <RadioTower />,
+    //     subItems: [
+    //         {
+    //             id: 'friends',
+    //             label: 'Friends',
+    //             link: '/apps-social-friends',
+    //             parentId: 'social'
+    //         },
+    //         {
+    //             id: 'event',
+    //             label: 'Event',
+    //             link: '/apps-social-event',
+    //             parentId: 'social'
+    //         },
+    //         {
+    //             id: 'watchvideo',
+    //             label: 'Watch Video',
+    //             link: '/apps-social-video',
+    //             parentId: 'social'
+    //         },
+    //         {
+    //             id: 'marketplace',
+    //             label: 'Marketplace',
+    //             link: '/apps-social-marketplace',
+    //             parentId: 'social'
+    //         }
+    //     ]
+    // },
+    // {
+    //     id: 'invoice',
+    //     label: 'Invoices',
+    //     icon: <FileText />,
+    //     parentId: 2,
+    //     subItems: [
+    //         {
+    //             id: 'invoicelistview',
+    //             label: 'Listview',
+    //             link: '/apps-invoice-list',
+    //             parentId: 'invoice'
+    //         },
+    //         {
+    //             id: 'invoiceaddnew',
+    //             label: 'Add New',
+    //             link: '/apps-invoice-add-new',
+    //             parentId: 'invoice'
+    //         },
+    //         {
+    //             id: 'invoiceoverview',
+    //             label: 'Overview',
+    //             link: '/apps-invoice-overview',
+    //             parentId: 'invoice'
+    //         }
+    //     ]
+    // },
+    // {
+    //     id: 'users',
+    //     label: 'Users',
+    //     icon: <UserRound />,
+    //     parentId: 2,
+    //     subItems: [
+    //         {
+    //             id: 'userlistview',
+    //             label: 'List view',
+    //             link: '/apps-users-list',
+    //             parentId: 'users'
+    //         },
+    //         {
+    //             id: 'usergridview',
+    //             label: 'Grid View',
+    //             link: '/apps-users-grid',
+    //             parentId: 'users'
+    //         }
+    //     ]
+    // },
     {
         label: 'Pages',
         isTitle: true,
