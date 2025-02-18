@@ -124,8 +124,8 @@ export const deleteReview = (data: any) => api.delete(url.DELETE_REVIEW, { heade
 // Employee List
 export const getEmployee = () => api.get(url.GET_EMPLOYEE, null);
 export const addEmployee = (data: any) => api.create(url.ADD_EMPLOYEE, data);
-export const updateEmployee = (data: any) => api.update(url.UPDATE_EMPLOYEE, data);
-export const deleteEmployee = (data: any) => api.delete(url.DELETE_EMPLOYEE, { headers: { data } });
+export const updateEmployee = (data: any) => api.update(url.UPDATE_EMPLOYEE + '/' + data.id, data);
+export const deleteEmployee = (data: any) => api.delete(url.DELETE_EMPLOYEE + '/' + data, { headers: { data } });
 
 // Holidays
 export const getHolidays = () => api.get(url.GET_HOLIDAYS, null);

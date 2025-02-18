@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import BreadCrumb from 'Common/BreadCrumb';
 import Flatpickr from "react-flatpickr";
 import moment from "moment";
+import { v4 as uuidv4 } from "uuid";
 
 // Icons
 import { Search, Plus, Trash2, Eye, Pencil, ImagePlus } from 'lucide-react';
@@ -124,7 +125,7 @@ const EmployeeList = () => {
             email: Yup.string().required("Please Enter Email"),
             phone: Yup.string().required("Please Enter Phone"),
             location: Yup.string().required("Please Enter Location"),
-            experience: Yup.string().required("Please Enter Experience"),
+            experience: Yup.number().required("Please Enter Experience"),
             joinDate: Yup.string().required("Please Enter Date")
         }),
 
@@ -140,8 +141,8 @@ const EmployeeList = () => {
                 const newData = {
                     ...values,
                     id: (Math.floor(Math.random() * (30 - 20)) + 20).toString(),
-                    employeeId: "#TWE1001" + (Math.floor(Math.random() * (30 - 20)) + 20).toString(),
-                    experience: values.experience + " year"
+                    employeeId: "#TWE" + uuidv4().split("-")[0],
+                    experience: values.experience
                 };
                 // save new user
                 dispatch(onAddEmployee(newData));
@@ -168,7 +169,7 @@ const EmployeeList = () => {
     // columns
     const columns = useMemo(() => [
         {
-            header: "Employee ID",
+            header: "Empleado ID",
             accessorKey: "employeeId",
             enableColumnFilter: false,
             cell: (cell: any) => (
@@ -176,7 +177,7 @@ const EmployeeList = () => {
             ),
         },
         {
-            header: "Name",
+            header: "Nombre",
             accessorKey: "name",
             enableColumnFilter: false,
             cell: (cell: any) => (
@@ -189,37 +190,37 @@ const EmployeeList = () => {
             ),
         },
         {
-            header: "Designation",
+            header: "Cargo",
             accessorKey: "designation",
             enableColumnFilter: false
         },
         {
-            header: "Email Id",
+            header: "Correo Electrónico",
             accessorKey: "email",
             enableColumnFilter: false,
         },
         {
-            header: "Phone Number",
+            header: "Numero de telefono",
             accessorKey: "phone",
             enableColumnFilter: false,
         },
         {
-            header: "Location",
+            header: "Ubicación",
             accessorKey: "location",
             enableColumnFilter: false,
         },
         {
-            header: "Experience",
+            header: "Experiencia",
             accessorKey: "experience",
             enableColumnFilter: false,
         },
         {
-            header: "Joining Date",
+            header: "Fecha de ingreso",
             accessorKey: "joinDate",
             enableColumnFilter: false,
         },
         {
-            header: "Action",
+            header: "Acciones",
             enableColumnFilter: false,
             enableSorting: true,
             cell: (cell: any) => (
@@ -242,16 +243,16 @@ const EmployeeList = () => {
 
     return (
         <React.Fragment>
-            <BreadCrumb title='Employee List' pageTitle='HR Management' />
+            <BreadCrumb title='Lista de Empleados' pageTitle='Administración Empleados' />
             <DeleteModal show={deleteModal} onHide={deleteToggle} onDelete={handleDelete} />
             <ToastContainer closeButton={false} limit={1} />
             <div className="card" id="employeeTable">
                 <div className="card-body">
                     <div className="flex items-center gap-3 mb-4">
-                        <h6 className="text-15 grow">Employee (<b className="total-Employs">{data.length}</b>)</h6>
+                        <h6 className="text-15 grow">Empleados (<b className="total-Employs">{data.length}</b>)</h6>
                         <div className="shrink-0">
                             <Link to="#!" data-modal-target="addEmployeeModal" type="button" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20 add-employee" onClick={toggle}>
-                                <Plus className="inline-block size-4" /> <span className="align-middle">Add Employee</span>
+                                <Plus className="inline-block size-4" /> <span className="align-middle">Añadir empleado</span>
                             </Link>
                         </div>
                     </div>
@@ -375,11 +376,11 @@ const EmployeeList = () => {
                                     id="joiningDateInput"
                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                     options={{
-                                        dateFormat: "d M, Y"
+                                        dateFormat: "Y-m-d"
                                     }}
                                     placeholder='Select date'
                                     name='joinDate'
-                                    onChange={(date: any) => validation.setFieldValue("joinDate", moment(date[0]).format("DD MMMM ,YYYY"))}
+                                    onChange={(date: any) => validation.setFieldValue("joinDate", moment(date[0]).format("YYYY-MM-DD"))}
                                     value={validation.values.joinDate || ''}
                                 />
                                 {validation.touched.joinDate && validation.errors.joinDate ? (

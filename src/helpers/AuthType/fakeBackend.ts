@@ -694,44 +694,34 @@ const fakeBackend = () => {
 
   // HR Management
   // Employee List
-  mock.onGet(url.GET_EMPLOYEE).reply(() => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (EmployeeListData) {
-          // Passing fake JSON data as response
-          resolve([200, EmployeeListData]);
-        } else {
-          reject([400, "cannot get data"]);
-        }
-      });
-    });
-  });
+  // mock.onGet(url.GET_EMPLOYEE).reply(() => {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       if (EmployeeListData) {
+  //         // Passing fake JSON data as response
+  //         resolve([200, EmployeeListData]);
+  //       } else {
+  //         reject([400, "cannot get data"]);
+  //       }
+  //     });
+  //   });
+  // });
 
-  mock.onPost(url.ADD_EMPLOYEE).reply((event: any) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (event && event.data) {
-          // Passing fake JSON data as response
-          resolve([200, event.data]);
-        } else {
-          reject([400, "cannot add data"]);
-        }
-      });
-    });
-  });
+ 
+  
 
-  mock.onPatch(url.UPDATE_EMPLOYEE).reply((event: any) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (event && event.data) {
-          // Passing fake JSON data as response
-          resolve([200, event.data]);
-        } else {
-          reject([400, "cannot update data"]);
-        }
-      });
-    });
-  });
+  // mock.onPatch(url.UPDATE_EMPLOYEE).reply((event: any) => {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       if (event && event.data) {
+  //         // Passing fake JSON data as response
+  //         resolve([200, event.data]);
+  //       } else {
+  //         reject([400, "cannot update data"]);
+  //       }
+  //     });
+  //   });
+  // });
 
   mock.onDelete(url.DELETE_EMPLOYEE).reply((config: any) => {
     return new Promise((resolve, reject) => {

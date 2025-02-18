@@ -1,5 +1,4 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-
 import {
     getEmployee as getEmployeeApi,
     addEmployee as addEmployeeApi,
@@ -40,17 +39,20 @@ import 'react-toastify/dist/ReactToastify.css';
 export const getEmployee = createAsyncThunk("hrManagement/getEmployee", async () => {
     try {
         const response = getEmployeeApi();
-        return response;
+        console.log(response);
+        return (await response).data;
     } catch (error) {
         return error;
     }
 });
 export const addEmployee = createAsyncThunk("hrManagement/addEmployee", async (event: any) => {
     try {
+        console.log("event", event);
         const response = addEmployeeApi(event);
         const data = await response;
-        toast.success("Employee Added Successfully", { autoClose: 2000 });
-        return data;
+        console.log("data", data);
+        toast.success("Empleado creado con éxito", { autoClose: 2000 });
+        return event;
     } catch (error) {
         toast.error("Employee Added Failed", { autoClose: 2000 });
         return error;
@@ -58,10 +60,11 @@ export const addEmployee = createAsyncThunk("hrManagement/addEmployee", async (e
 });
 export const updateEmployee = createAsyncThunk("hrManagement/updateEmployee", async (event: any) => {
     try {
+        console.log("event", event);
         const response = updateEmployeeApi(event);
         const data = await response;
         toast.success("Employee updated Successfully", { autoClose: 2000 });
-        return data;
+        return event;
     } catch (error) {
         toast.error("Employee updated Failed", { autoClose: 2000 });
         return error;
@@ -69,9 +72,10 @@ export const updateEmployee = createAsyncThunk("hrManagement/updateEmployee", as
 });
 export const deleteEmployee = createAsyncThunk("hrManagement/deleteEmployee", async (event: any) => {
     try {
+        console.log("event", event);
         const response = deleteEmployeeApi(event);
         toast.success("Employee deleted Successfully", { autoClose: 2000 });
-        return response;
+        return event;
     } catch (error) {
         toast.error("Employee deleted Failed", { autoClose: 2000 });
         return error;

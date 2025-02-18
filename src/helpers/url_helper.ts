@@ -69,10 +69,10 @@ export const DELETE_REVIEW = "/delete-review";
 
 // HR Management
 // Employee List
-export const GET_EMPLOYEE = "/get-employee";
-export const ADD_EMPLOYEE = "/add-employee";
-export const UPDATE_EMPLOYEE = "/edit-employee";
-export const DELETE_EMPLOYEE = "/delete-employee";
+export const GET_EMPLOYEE = "http://localhost:3000/hr/get-employee";
+export const ADD_EMPLOYEE = "http://localhost:3000/hr/add-employee";
+export const UPDATE_EMPLOYEE = "http://localhost:3000/hr/edit-employee";
+export const DELETE_EMPLOYEE = "http://localhost:3000/hr/delete-employee";
 
 // Holidays
 export const GET_HOLIDAYS = "/get-holidays";
