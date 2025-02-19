@@ -169,7 +169,7 @@ const TicketList = () => {
     // columns
     const columns = useMemo(() => [
         {
-            header: "Empleado ID",
+            header: "Ticket ID",
             accessorKey: "employeeId",
             enableColumnFilter: false,
             cell: (cell: any) => (
@@ -177,7 +177,7 @@ const TicketList = () => {
             ),
         },
         {
-            header: "Nombre",
+            header: "Fecha",
             accessorKey: "name",
             enableColumnFilter: false,
             cell: (cell: any) => (
@@ -190,35 +190,35 @@ const TicketList = () => {
             ),
         },
         {
-            header: "Cargo",
+            header: "Hecho por",
             accessorKey: "designation",
             enableColumnFilter: false
         },
         {
-            header: "Correo Electrónico",
+            header: "Total",
             accessorKey: "email",
             enableColumnFilter: false,
         },
-        {
-            header: "Numero de telefono",
-            accessorKey: "phone",
-            enableColumnFilter: false,
-        },
-        {
-            header: "Ubicación",
-            accessorKey: "location",
-            enableColumnFilter: false,
-        },
-        {
-            header: "Experiencia",
-            accessorKey: "experience",
-            enableColumnFilter: false,
-        },
-        {
-            header: "Fecha de ingreso",
-            accessorKey: "joinDate",
-            enableColumnFilter: false,
-        },
+        // {
+        //     header: "Numero de telefono",
+        //     accessorKey: "phone",
+        //     enableColumnFilter: false,
+        // },
+        // {
+        //     header: "Ubicación",
+        //     accessorKey: "location",
+        //     enableColumnFilter: false,
+        // },
+        // {
+        //     header: "Experiencia",
+        //     accessorKey: "experience",
+        //     enableColumnFilter: false,
+        // },
+        // {
+        //     header: "Fecha de ingreso",
+        //     accessorKey: "joinDate",
+        //     enableColumnFilter: false,
+        // },
         {
             header: "Acciones",
             enableColumnFilter: false,
@@ -226,7 +226,7 @@ const TicketList = () => {
             cell: (cell: any) => (
                 <div className="flex gap-3">
                     <Link className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" to="/pages-account"><Eye className="inline-block size-3" /> </Link>
-                    <Link to="#!" data-modal-target="addEmployeeModal" className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md edit-item-btn bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" onClick={() => {
+                    <Link to="#!" data-modal-target="viewTicketModal" className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md edit-item-btn bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" onClick={() => {
                         const data = cell.row.original;
                         handleUpdateDataClick(data);
                     }}>
@@ -261,7 +261,7 @@ const TicketList = () => {
                             isPagination={true}
                             columns={(columns || [])}
                             data={(data || [])}
-                            customPageSize={7}
+                            customPageSize={10}
                             divclassName="-mx-5 overflow-x-auto"
                             tableclassName="w-full whitespace-nowrap"
                             theadclassName="ltr:text-left rtl:text-right bg-slate-100 dark:bg-zink-600"
