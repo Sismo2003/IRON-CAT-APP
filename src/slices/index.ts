@@ -27,6 +27,9 @@ import EcommerceReducer from "./ecommerce/reducer";
 // HR Managment
 import HRManagmentReducer from "./hrManagement/reducer";
 
+// TICKET Managment
+import TICKETManagmentReducer from "./ticketManagement/reducer";
+
 // Notes
 import NotesReducer from "./notes/reducer";
 
@@ -49,6 +52,7 @@ const rootReducer = combineReducers({
     Calendar: CalendarReducer,
     Ecommerce: EcommerceReducer,
     HRManagment: HRManagmentReducer,
+    TICKETManagment: TICKETManagmentReducer,
     Notes: NotesReducer,
     Social: SocialReducer,
     Invoice: InvoiceReducer,

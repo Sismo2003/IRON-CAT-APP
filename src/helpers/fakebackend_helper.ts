@@ -120,6 +120,13 @@ export const addReview = (data: any) => api.create(url.ADD_REVIEW, data);
 export const updateReview = (data: any) => api.update(url.UPDATE_REVIEW, data);
 export const deleteReview = (data: any) => api.delete(url.DELETE_REVIEW, { headers: { data } });
 
+// TICKET Management
+// Ticket List
+export const getTicket = () => api.get(url.GET_TICKET, null);
+export const addTicket = (data: any) => api.create(url.ADD_TICKET, data);
+export const updateTicket = (data: any) => api.update(url.UPDATE_TICKET + '/' + data.id, data);
+export const deleteTicket = (data: any) => api.delete(url.DELETE_TICKET + '/' + data, { headers: { data } });
+
 // HR Management
 // Employee List
 export const getEmployee = () => api.get(url.GET_EMPLOYEE, null);

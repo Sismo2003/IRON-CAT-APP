@@ -313,7 +313,7 @@ const menuData: any = [
             {
                 id: 'employeelist',
                 label: 'Ticket List',
-                link: '/apps-hr-employee',
+                link: '/apps-tk-ticket',
                 parentId: 'tkmanagement'
             }
         ],

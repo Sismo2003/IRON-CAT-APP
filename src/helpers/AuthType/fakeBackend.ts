@@ -723,7 +723,51 @@ const fakeBackend = () => {
   //   });
   // });
 
-  mock.onDelete(url.DELETE_EMPLOYEE).reply((config: any) => {
+  // mock.onDelete(url.DELETE_EMPLOYEE).reply((config: any) => {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       if (config && config.headers) {
+  //         // Passing fake JSON data as response
+  //         resolve([200, config.headers.data]);
+  //       } else {
+  //         reject([400, "cannot delete data"]);
+  //       }
+  //     });
+  //   });
+  // });
+
+  // TICKET Management
+  // Ticket List
+  mock.onGet(url.GET_TICKET).reply(() => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (EmployeeListData) {
+          // Passing fake JSON data as response
+          resolve([200, EmployeeListData]);
+        } else {
+          reject([400, "cannot get data"]);
+        }
+      });
+    });
+  });
+
+ 
+  
+
+  mock.onPatch(url.UPDATE_TICKET).reply((event: any) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (event && event.data) {
+          // Passing fake JSON data as response
+          resolve([200, event.data]);
+        } else {
+          reject([400, "cannot update data"]);
+        }
+      });
+    });
+  });
+
+  mock.onDelete(url.DELETE_TICKET).reply((config: any) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (config && config.headers) {

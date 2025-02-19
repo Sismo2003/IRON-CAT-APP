@@ -74,6 +74,13 @@ export const ADD_EMPLOYEE = "http://localhost:3000/hr/add-employee";
 export const UPDATE_EMPLOYEE = "http://localhost:3000/hr/edit-employee";
 export const DELETE_EMPLOYEE = "http://localhost:3000/hr/delete-employee";
 
+// TICKET Management
+// Ticket List
+export const GET_TICKET = "http://localhost:3000/hr/get-ticket";
+export const ADD_TICKET = "http://localhost:3000/hr/add-ticket";
+export const UPDATE_TICKET = "http://localhost:3000/hr/edit-ticket";
+export const DELETE_TICKET = "http://localhost:3000/hr/delete-ticket";
+
 // Holidays
 export const GET_HOLIDAYS = "/get-holidays";
 export const ADD_HOLIDAYS = "/add-holidays";
