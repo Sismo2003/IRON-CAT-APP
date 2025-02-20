@@ -1,4 +1,26 @@
-import { Award, CalendarDays, CircuitBoard, Codesandbox, FileText, LifeBuoy, LocateFixed, Mail, Map, MessageSquare, MonitorDot, PackagePlus, PictureInPicture2, PieChart, RadioTower, ScrollText, Share2, ShoppingBag, Table, Trophy, UserRound } from "lucide-react";
+import { 
+    // Award,
+    // CalendarDays, 
+    // Codesandbox, 
+    // FileText, 
+    // LifeBuoy, 
+    // LocateFixed, 
+    // Mail, 
+    // Map, 
+    // MessageSquare, 
+    // PackagePlus, 
+    // PictureInPicture2, 
+    // PieChart, 
+    // RadioTower, 
+    // Share2, 
+    // Table, 
+    // Trophy, 
+    // UserRound, 
+    ScrollText, 
+    CircuitBoard, 
+    MonitorDot, 
+    ShoppingBag
+} from "lucide-react";
 
 const menuData: any = [
     {
@@ -30,6 +52,75 @@ const menuData: any = [
     {
         label: 'Apps',
         isTitle: true,
+    },
+    {
+        id: "ecommerce",
+        label: 'Ecommerce',
+        link: "/#",
+        icon: <ShoppingBag />,
+        subItems: [
+            {
+                id: 'product',
+                label: 'Products',
+                parentId: 'ecommerce',
+                subItems: [
+                    {
+                        id: 'listview',
+                        label: 'List View',
+                        link: '/apps-ecommerce-product-list',
+                        parentId: 'product'
+                    },
+                    // {
+                    //     id: 'gridview',
+                    //     label: 'Grid View',
+                    //     link: '/apps-ecommerce-product-grid',
+                    //     parentId: 'product'
+                    // },
+                    // {
+                    //     id: 'overview',
+                    //     label: 'Overview',
+                    //     link: '/apps-ecommerce-product-overview',
+                    //     parentId: 'product'
+                    // },
+                    {
+                        id: 'addnew',
+                        label: 'Add New',
+                        link: '/apps-ecommerce-product-create',
+                        parentId: 'product'
+                    },
+                ]
+            },
+            {
+                id: 'shoppingcart',
+                label: 'Shopping Cart',
+                link: '/apps-ecommerce-cart',
+                parentId: 'ecommerce'
+            },
+            // {
+            //     id: 'checkout',
+            //     label: 'Checkout',
+            //     link: '/apps-ecommerce-checkout',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'order',
+            //     label: 'Orders',
+            //     link: '/apps-ecommerce-orders',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'orderoverview',
+            //     label: 'Order Overview',
+            //     link: '/apps-ecommerce-order-overview',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'sellers',
+            //     label: 'Sellers',
+            //     link: '/apps-ecommerce-sellers',
+            //     parentId: 'ecommerce'
+            // },
+        ]
     },
     {
         id: "hr-management",
