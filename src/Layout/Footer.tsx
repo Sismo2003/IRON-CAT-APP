@@ -7,11 +7,11 @@ const Footer = () => {
                 <div className="group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl w-full">
                     <div className="grid items-center grid-cols-1 text-center lg:grid-cols-2 text-slate-400 dark:text-zink-200 ltr:lg:text-left rtl:lg:text-right">
                         <div>
-                            {new Date().getFullYear()} © Tailwick.
+                            {new Date().getFullYear()} © Nimbus Cloud.
                         </div>
                         <div className="hidden lg:block">
                             <div className="ltr:text-right rtl:text-left">
-                                Design & Develop by Themesdesign
+                                Soporte: <a href="mailto:soporte@nimbuscloud.mx" className="text-blue-500">Abrir un ticket</a>
                             </div>
                         </div>
                     </div>

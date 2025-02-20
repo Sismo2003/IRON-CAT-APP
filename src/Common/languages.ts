@@ -1,5 +1,6 @@
 import flagUs from "assets/images/flags/20/us.svg";
-import flagspain from "assets/images/flags/20/es.svg";
+import flagspain from "assets/images/flags/mx.svg";
+
 // import flaggermany from "assets/images/flags/20/de.svg";
 // import flagfrench from "assets/images/flags/20/fr.svg";
 // import flagjapan from "assets/images/flags/20/jp.svg";
@@ -11,7 +12,7 @@ import flagspain from "assets/images/flags/20/es.svg";
 
 const languages = {
   sp: {
-    label: "Española",
+    label: "Español",
     flag: flagspain,
   },
   // gr: {

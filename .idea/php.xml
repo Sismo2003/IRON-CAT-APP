@@ -57,7 +57,7 @@
       <path value="$PROJECT_DIR$/scssphp/vendor/thoughtbot/bourbon" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration">
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.4">
     <option name="suggestChangeDefaultLanguageLevel" value="false" />
   </component>
   <component name="PhpStanOptionsConfiguration">

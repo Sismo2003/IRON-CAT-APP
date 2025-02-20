@@ -1,4 +1,4 @@
-import { Goal, MousePointerClick, MousePointerSquare, Rocket } from 'lucide-react';
+import { Goal, MousePointerClick, MousePointer, Rocket } from 'lucide-react';
 import { ReactElement } from 'react';
 
 // Images
@@ -299,7 +299,7 @@ const widgetsData: WidgetData[] = [
     },
     {
         id: 3,
-        icon: <MousePointerSquare className="inline-block size-4 ltr:mr-1 rtl:ml-1" />,
+        icon: <MousePointer className="inline-block size-4 ltr:mr-1 rtl:ml-1" />,
         price: 3.79,
         name: "CLICKS RATE",
         description: "29 Clicks",

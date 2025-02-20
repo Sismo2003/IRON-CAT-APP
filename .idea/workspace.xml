@@ -5,7 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0262388d-c0eb-44c8-b4c7-0bc111cbde00" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Common/BreadCrumb.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/BreadCrumb.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Common/data/dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/data/dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Common/languages.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/languages.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Layout/LayoutMenuData.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Layout/LayoutMenuData.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/locales/sp.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/sp.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/Charts.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/Charts.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/Widgets.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/Widgets.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +124,7 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
     &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/sismo/Developer/CRM-MEDICOS/assets/libs/tailwindcss/node_modules/prettier&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Applications/PhpStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/sismo/Developer/CRM-MEDICOS/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -153,6 +165,11 @@
       <workItem from="1739043071164" duration="20687000" />
       <workItem from="1739079961385" duration="6769000" />
       <workItem from="1739232784130" duration="731000" />
+      <workItem from="1739234372024" duration="1246000" />
+      <workItem from="1739248660889" duration="2379000" />
+      <workItem from="1739328716143" duration="724000" />
+      <workItem from="1739994844917" duration="2659000" />
+      <workItem from="1740018167073" duration="3029000" />
     </task>
     <servers />
   </component>
