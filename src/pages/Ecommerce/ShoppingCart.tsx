@@ -4,7 +4,7 @@ import BreadCrumb from "Common/BreadCrumb";
 import Select from 'react-select';
 import { Link } from "react-router-dom";
 // import DeleteModal from "Common/DeleteModal";
-import img01 from "assets/images/product/img-01.png";
+import scale from "assets/images/scale.png";
 
 const materials = [
   { value: 10, label: "Iron" },
@@ -13,9 +13,9 @@ const materials = [
 ];
 
 const scales = [
-  { id: 1, name: "Bascula 1", img: img01 },
-  { id: 2, name: "Bascula 2", img: "/logo192.png" },
-  { id: 3, name: "Bascula 3", img: "assets/images/product/img-01.png" },
+  { id: 1, name: "Bascula 1", img: scale },
+  { id: 2, name: "Bascula 2", img: scale },
+  { id: 3, name: "Bascula 3", img: scale },
 ];
 
 const ShoppingCart = () => {
@@ -45,11 +45,11 @@ const ShoppingCart = () => {
       <BreadCrumb title="Carrito de Compra" pageTitle="Punto de Venta" />
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
         <div className="xl:col-span-9">
-          <h5 className="underline text-16 mb-5">Scales</h5>
+          <h5 className="underline text-16 mb-5">Basculas</h5>
           {scales.map((scale) => (
             <div key={scale.id} className="card p-4 mb-4 bg-white shadow rounded-lg">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <img src={scale.img} alt={scale.name} className="rounded-lg" />
+                <img src={scale.img} alt={scale.name} className="w-full max-w-[100px] h-auto rounded-lg mx-auto" />
                 <div>
                   <h5>{scale.name}</h5>
                   <p className="text-slate-500">Weight: {weights[scale.id] || 0} kg</p>
