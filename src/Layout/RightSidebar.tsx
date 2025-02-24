@@ -75,8 +75,8 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
             <Drawer show={isOpen} onHide={handleToggleDrawer} id="customizerButton" drawer-end="true" className="fixed inset-y-0 flex flex-col w-full transition-transform duration-300 ease-in-out transform bg-white shadow ltr:right-0 rtl:left-0 md:w-96 z-drawer dark:bg-zink-600">
                 <div className="flex justify-between p-4 border-b border-slate-200 dark:border-zink-500">
                     <div className="grow">
-                        <h5 className="mb-1 text-16">Tailwick Theme Customizer</h5>
-                        <p className="font-normal text-slate-500 dark:text-zink-200">Choose your themes & layouts etc.</p>
+                        <h5 className="mb-1 text-16">Iron Cat - Configuración</h5>
+                        <p className="font-normal text-slate-500 dark:text-zink-200">Personaliza el tema a tu gusto</p>
                     </div>
                     <div className="shrink-0">
                         <Drawer.Header data-drawer-close="customizerButton" className="transition-all duration-150 ease-linear text-slate-500 hover:text-slate-800 dark:text-zink-200 dark:hover:text-zink-50">
@@ -86,7 +86,7 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
                 <Drawer.Body className="h-full p-6 overflow-y-auto">
                     <div>
                         {/* Layout Type */}
-                        <h5 className="mb-3 underline capitalize text-15">Choose Layouts</h5>
+                        <h5 className="mb-3 underline capitalize text-15">Orden de Apariencia</h5>
                         <div className="grid grid-cols-1 mb-5 gap-7 sm:grid-cols-2">
                             <div className="relative">
                                 <input
@@ -165,14 +165,14 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
                                     />
                                     <label htmlFor="customDefaultSwitch" className="block h-5 overflow-hidden transition duration-300 ease-linear border rounded-full cursor-pointer border-slate-200 bg-slate-200 peer-checked/published:bg-custom-500 peer-checked/published:border-custom-500 dark:border-zink-500 dark:bg-zink-600"></label>
                                 </div>
-                                <label htmlFor="customDefaultSwitch" className="inline-block text-base font-medium">Semi Dark (Sidebar & Header)</label>
+                                <label htmlFor="customDefaultSwitch" className="inline-block text-base font-medium">Oscuro Suave (Sidebar & Topbar)</label>
                             </div>
                         </div>
                     </div>
 
                     {/* Skin Layouts */}
                     <div className="mt-6">
-                        <h5 className="mb-3 underline capitalize text-15">Skin Layouts</h5>
+                        <h5 className="mb-3 underline capitalize text-15">Diseños de Apariencia</h5>
                         <div className="grid grid-cols-1 mb-5 gap-7 sm:grid-cols-2">
                             <div className="relative">
                                 <input
@@ -206,9 +206,8 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
                                         </span>
                                     </span>
                                 </label>
-                                <h5 className="mt-2 text-center text-15">Default</h5>
+                                <h5 className="mt-2 text-center text-15">Por Defecto</h5>
                             </div>
-
                             <div className="relative">
                                 <input
                                     id="layoutSkitTwo"
@@ -241,14 +240,14 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
                                         </span>
                                     </span>
                                 </label>
-                                <h5 className="mt-2 text-center text-15">Bordered</h5>
+                                <h5 className="mt-2 text-center text-15">Clásico</h5>
                             </div>
                         </div>
                     </div>
 
                     {/* Light & Dark Mode */}
                     <div className="mt-6">
-                        <h5 className="mb-3 underline capitalize text-15">Light & Dark</h5>
+                        <h5 className="mb-3 underline capitalize text-15">Modo Oscuro o Claro</h5>
                         <div className="flex gap-3">
                             <button
                                 type="button"
@@ -267,7 +266,7 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
                                 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500
                                 ${layoutModeType === LAYOUT_MODE_TYPES.LIGHTMODE ? "active" : ""}
                               `}>
-                                Light Mode
+                                Modo Claro
                             </button>
                             <button
                                 value={LAYOUT_MODE_TYPES.DARKMODE}
@@ -276,13 +275,14 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
                                     dispatch(changeLayoutTopbarColor(LAYOUT_TOPBAR_THEME_TYPES.DARK));
                                     dispatch(changeLeftSidebarColorType(LEFT_SIDEBAR_COLOR_TYPES.DARK));
                                 }}
-                                type="button" id="dataModeTwo" name="dataMode" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutModeType === LAYOUT_MODE_TYPES.DARKMODE ? "active" : ""}`}>Dark Mode</button>
+                                type="button" id="dataModeTwo" name="dataMode" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutModeType === LAYOUT_MODE_TYPES.DARKMODE ? "active" : ""}`}
+                                >Modo Oscuro</button>
                         </div>
                     </div>
 
                     {/* Ltr & Rtl Mode */}
                     <div className="mt-6">
-                        <h5 className="mb-3 underline capitalize text-15">LTR & RTL</h5>
+                        <h5 className="mb-3 underline capitalize text-15">Dirreción de Texto</h5>
                         <div className="flex flex-wrap gap-3">
                             <button
                                 type="button"
@@ -292,17 +292,17 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
                                 onClick={() => {
                                     dispatch(changeDirection(LAYOUT_DIRECTION.LTR));
                                 }}
-                                className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500  ${layoutDirectionType === LAYOUT_DIRECTION.LTR ? "active" : ""}`}>LTR Mode</button>
+                                className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500  ${layoutDirectionType === LAYOUT_DIRECTION.LTR ? "active" : ""}`}>Modo LTR </button>
                             <button
                                 value={LAYOUT_DIRECTION.RTL}
                                 onClick={() => {
                                     dispatch(changeDirection(LAYOUT_DIRECTION.RTL));
                                 }}
-                                type="button" id="diractionTwo" name="dir" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutDirectionType === LAYOUT_DIRECTION.RTL ? "active" : ""}`}>RTL Mode</button>
+                                type="button" id="diractionTwo" name="dir" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutDirectionType === LAYOUT_DIRECTION.RTL ? "active" : ""}`}>Modo RTL</button>
                         </div>
                     </div>
 
-                    {/* Content Width */}
+                    {/* Content Width
                     <div className="mt-6">
                         <h5 className="mb-3 underline capitalize text-15">Content Width</h5>
                         <div className="flex gap-3">
@@ -311,77 +311,86 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
                                 onClick={() => {
                                     dispatch(changeLayoutContentWidth(LAYOUT_CONTENT_WIDTH.FLUID));
                                 }}
-                                type="button" id="datawidthOne" name="datawidth" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutContentWidthType === LAYOUT_CONTENT_WIDTH.FLUID ? "active" : ""}`}>Fluid</button>
+                                type="button" id="datawidthOne" name="datawidth" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutContentWidthType === LAYOUT_CONTENT_WIDTH.FLUID ? "active" : ""}`}
+                                >Fluido</button>
                             <button
                                 value={LAYOUT_CONTENT_WIDTH.BOXED}
                                 onClick={() => {
                                     dispatch(changeLayoutContentWidth(LAYOUT_CONTENT_WIDTH.BOXED));
                                 }}
                                 type="button"
-                                id="datawidthTwo" name="datawidth" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutContentWidthType === LAYOUT_CONTENT_WIDTH.BOXED ? "active" : ""}`}>Boxed</button>
+                                id="datawidthTwo" name="datawidth" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutContentWidthType === LAYOUT_CONTENT_WIDTH.BOXED ? "active" : ""}`}
+                                >Boxed</button>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* LEFT_SIDEBAR_SIZE_TYPES */}
                     {/* Sidebar Sizes */}
                     {layoutType === "vertical" && <div className="mt-6" id="sidebar-size">
-                        <h5 className="mb-3 underline capitalize text-15">Sidebar Size</h5>
+                        <h5 className="mb-3 underline capitalize text-15">Barra Lateral </h5>
                         <div className="flex flex-wrap gap-3">
                             <button
                                 value={LEFT_SIDEBAR_SIZE_TYPES.DEFAULT}
                                 onClick={() => {
                                     dispatch(changeLeftsidebarSizeType(LEFT_SIDEBAR_SIZE_TYPES.DEFAULT));
                                 }}
-                                type="button" id="sidebarSizeOne" name="sidebarSize" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutSidebarSizeType === LEFT_SIDEBAR_SIZE_TYPES.DEFAULT ? "active" : ""}`}>Default</button>
+                                type="button" id="sidebarSizeOne" name="sidebarSize" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutSidebarSizeType === LEFT_SIDEBAR_SIZE_TYPES.DEFAULT ? "active" : ""}`}
+                                >Por Defecto</button>
                             <button
                                 value={LEFT_SIDEBAR_SIZE_TYPES.COMPACT}
                                 onClick={() => {
                                     dispatch(changeLeftsidebarSizeType(LEFT_SIDEBAR_SIZE_TYPES.COMPACT));
                                 }}
-                                type="button" id="sidebarSizeTwo" name="sidebarSize" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutSidebarSizeType === LEFT_SIDEBAR_SIZE_TYPES.COMPACT ? "active" : ""}`}>Compact</button>
+                                type="button" id="sidebarSizeTwo" name="sidebarSize" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutSidebarSizeType === LEFT_SIDEBAR_SIZE_TYPES.COMPACT ? "active" : ""}`}
+                                >Compacto</button>
                             <button
                                 value={LEFT_SIDEBAR_SIZE_TYPES.SMALLICON}
                                 onClick={() => {
                                     dispatch(changeLeftsidebarSizeType(LEFT_SIDEBAR_SIZE_TYPES.SMALLICON));
                                 }}
-                                type="button" id="sidebarSizeThree" name="sidebarSize" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutSidebarSizeType === LEFT_SIDEBAR_SIZE_TYPES.SMALLICON ? "active" : ""}`}>Small (Icon)</button>
+                                type="button" id="sidebarSizeThree" name="sidebarSize" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutSidebarSizeType === LEFT_SIDEBAR_SIZE_TYPES.SMALLICON ? "active" : ""}`}
+                                >Pequeño (Icono)</button>
                         </div>
                     </div>}
 
                     {/* Navigation Types */}
                     <div className="mt-6">
-                        <h5 className="mb-3 underline capitalize text-15">Navigation Type</h5>
+                        <h5 className="mb-3 underline capitalize text-15">Barra Superior</h5>
                         <div className="flex flex-wrap gap-3">
                             <button
                                 value={LEFT_NAVIGATION_TYPES.STICKY}
                                 onClick={() => {
                                     dispatch(changeNavigation(LEFT_NAVIGATION_TYPES.STICKY));
                                 }}
-                                type="button" id="navbarTwo" name="navbar" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutNavigationType === LEFT_NAVIGATION_TYPES.STICKY ? "active" : ""}`}>Sticky</button>
+                                type="button" id="navbarTwo" name="navbar" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutNavigationType === LEFT_NAVIGATION_TYPES.STICKY ? "active" : ""}`}
+                                >Por defecto</button>
                             <button
                                 value={LEFT_NAVIGATION_TYPES.SCROLL}
                                 onClick={() => {
                                     dispatch(changeNavigation(LEFT_NAVIGATION_TYPES.SCROLL));
                                 }}
-                                type="button" id="navbarOne" name="navbar" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutNavigationType === LEFT_NAVIGATION_TYPES.SCROLL ? "active" : ""}`}>Scroll</button>
+                                type="button" id="navbarOne" name="navbar" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutNavigationType === LEFT_NAVIGATION_TYPES.SCROLL ? "active" : ""}`}
+                                >Scroll</button>
                             <button
                                 value={LEFT_NAVIGATION_TYPES.BORDERED}
                                 onClick={() => {
                                     dispatch(changeNavigation(LEFT_NAVIGATION_TYPES.BORDERED));
                                 }}
-                                type="button" id="navbarThree" name="navbar" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutNavigationType === LEFT_NAVIGATION_TYPES.BORDERED ? "active" : ""}`}>Bordered</button>
+                                type="button" id="navbarThree" name="navbar" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutNavigationType === LEFT_NAVIGATION_TYPES.BORDERED ? "active" : ""}`}
+                                >Bordeado</button>
                             <button
                                 value={LEFT_NAVIGATION_TYPES.HIDDEN}
                                 onClick={() => {
                                     dispatch(changeNavigation(LEFT_NAVIGATION_TYPES.HIDDEN));
                                 }}
-                                type="button" id="navbarFour" name="navbar" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutNavigationType === LEFT_NAVIGATION_TYPES.HIDDEN ? "active" : ""}`}>Hidden</button>
+                                type="button" id="navbarFour" name="navbar" className={`transition-all duration-200 ease-linear bg-white border-dashed text-slate-500 btn border-slate-200 hover:text-slate-500 hover:bg-slate-50 hover:border-slate-200 [&.active]:text-custom-500 [&.active]:bg-custom-50 [&.active]:border-custom-200 dark:bg-zink-600 dark:text-zink-200 dark:border-zink-400 dark:hover:bg-zink-600 dark:hover:text-zink-100 dark:hover:border-zink-400 dark:[&.active]:bg-custom-500/10 dark:[&.active]:border-custom-500/30 dark:[&.active]:text-custom-500 ${layoutNavigationType === LEFT_NAVIGATION_TYPES.HIDDEN ? "active" : ""}`}
+                                >Escondido</button>
                         </div>
                     </div>
 
                     {/* Sidebar Colors */}
                     {layoutType === "vertical" && <div className="mt-6" id="sidebar-color">
-                        <h5 className="mb-3 underline capitalize text-15">Sidebar Colors</h5>
+                        <h5 className="mb-3 underline capitalize text-15">Color Barra Lateral</h5>
                         <div className="flex flex-wrap gap-3">
                             <button
                                 value={LEFT_SIDEBAR_COLOR_TYPES.LIGHT}
@@ -412,7 +421,7 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
 
                     {/* Topbar Colors */}
                     <div className="mt-6">
-                        <h5 className="mb-3 underline capitalize text-15">Topbar Colors</h5>
+                        <h5 className="mb-3 underline capitalize text-15">Color Barra Superior</h5>
                         <div className="flex flex-wrap gap-3">
                             <button
                                 value={LAYOUT_TOPBAR_THEME_TYPES.LIGHT}
@@ -437,8 +446,10 @@ const RightSidebar = ({ handleToggleDrawer, isOpen }: any) => {
 
                 </Drawer.Body>
                 <div className="flex items-center justify-between gap-3 p-4 border-t border-slate-200 dark:border-zink-500">
-                    <button type="button" id="reset-layout" className="w-full transition-all duration-200 ease-linear text-slate-500 btn bg-slate-200 border-slate-200 hover:text-slate-600 hover:bg-slate-300 hover:border-slate-300 focus:text-slate-600 focus:bg-slate-300 focus:border-slate-300 focus:ring focus:ring-slate-100">Reset</button>
-                    <a href="#!" className="w-full text-white transition-all duration-200 ease-linear bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100">Buy Now</a>
+                    <button type="button" id="reset-layout" className="w-full transition-all duration-200 ease-linear text-slate-500 btn bg-slate-200 border-slate-200 hover:text-slate-600 hover:bg-slate-300 hover:border-slate-300 focus:text-slate-600 focus:bg-slate-300 focus:border-slate-300 focus:ring focus:ring-slate-100"
+                    >Borrar Config</button>
+                    {/* <a href="#!" className="w-full text-white transition-all duration-200 ease-linear bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100"
+                    >Buy Now</a> */}
                 </div>
             </Drawer>
         </React.Fragment>

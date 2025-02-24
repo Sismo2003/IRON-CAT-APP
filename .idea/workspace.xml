@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0262388d-c0eb-44c8-b4c7-0bc111cbde00" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Common/BreadCrumb.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/BreadCrumb.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Common/data/dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/data/dashboard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Common/languages.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/languages.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Layout/LayoutMenuData.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Layout/LayoutMenuData.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/locales/sp.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/sp.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/Charts.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/Charts.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/Widgets.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/Widgets.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Dashboards/Ecommerce/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,12 +35,12 @@
     &quot;assignee&quot;: &quot;Sismo2003&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Sismo2003/CRM-MEDICOS.git&quot;,
-    &quot;accountId&quot;: &quot;294ab90f-ea6b-43db-a3da-e96372a7a229&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Sismo2003/IRON-CAT-APP.git",
+    "accountId": "294ab90f-ea6b-43db-a3da-e96372a7a229"
   }
-}</component>
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/views/app.js" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/views/load.php" root0="FORCE_HIGHLIGHTING" root1="SKIP_INSPECTION" />
@@ -169,7 +157,7 @@
       <workItem from="1739248660889" duration="2379000" />
       <workItem from="1739328716143" duration="724000" />
       <workItem from="1739994844917" duration="2659000" />
-      <workItem from="1740018167073" duration="3029000" />
+      <workItem from="1740018167073" duration="4531000" />
     </task>
     <servers />
   </component>
