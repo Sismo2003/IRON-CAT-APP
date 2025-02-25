@@ -38,11 +38,12 @@ const EmployeeList = () => {
     const selectDataList = createSelector(
         (state: any) => state.HRManagment,
         (state) => ({
-            dataList: state.employeelist
+            dataList: state.employeelist,
+            loading : state.loading
         })
     );
 
-    const { dataList } = useSelector(selectDataList);
+    const { dataList, loading } = useSelector(selectDataList);
 
     const [data, setData] = useState<any>([]);
     const [eventData, setEventData] = useState<any>();
@@ -256,27 +257,36 @@ const EmployeeList = () => {
                             </Link>
                         </div>
                     </div>
-                    {data && data.length > 0 ?
-                        <TableContainer
-                            isPagination={true}
-                            columns={(columns || [])}
-                            data={(data || [])}
-                            customPageSize={7}
-                            divclassName="-mx-5 overflow-x-auto"
-                            tableclassName="w-full whitespace-nowrap"
-                            theadclassName="ltr:text-left rtl:text-right bg-slate-100 dark:bg-zink-600"
-                            thclassName="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold border-b border-slate-200 dark:border-zink-500"
-                            tdclassName="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500"
-                            PaginationClassName="flex flex-col items-center gap-4 px-4 mt-4 md:flex-row"
-                        />
-                        :
-                        (<div className="noresult">
-                            <div className="py-6 text-center">
-                                <Search className="size-6 mx-auto text-sky-500 fill-sky-100 dark:sky-500/20" />
-                                <h5 className="mt-2 mb-1">Sorry! No Result Found</h5>
-                                <p className="mb-0 text-slate-500 dark:text-zink-200">We've searched more than 299+ Employee We did not find any Employee for you search.</p>
-                            </div>
-                        </div>)}
+                    { 
+                        loading ? (
+                        // Spinner de carga
+                        <div className="flex justify-center py-6">
+                            <div className="w-10 h-10 border-4 border-blue-500 border-solid rounded-full animate-spin border-t-transparent"></div>
+                        </div>
+                        ) : (
+                            data && data.length > 0 ?
+                            <TableContainer
+                                isPagination={true}
+                                columns={(columns || [])}
+                                data={(data || [])}
+                                customPageSize={7}
+                                divclassName="-mx-5 overflow-x-auto"
+                                tableclassName="w-full whitespace-nowrap"
+                                theadclassName="ltr:text-left rtl:text-right bg-slate-100 dark:bg-zink-600"
+                                thclassName="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold border-b border-slate-200 dark:border-zink-500"
+                                tdclassName="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500"
+                                PaginationClassName="flex flex-col items-center gap-4 px-4 mt-4 md:flex-row"
+                            />
+                            :
+                            (<div className="noresult">
+                                <div className="py-6 text-center">
+                                    <Search className="size-6 mx-auto text-sky-500 fill-sky-100 dark:sky-500/20" />
+                                    <h5 className="mt-2 mb-1">Sorry! No Result Found</h5>
+                                    <p className="mb-0 text-slate-500 dark:text-zink-200">We've searched more than 299+ Employee We did not find any Employee for you search.</p>
+                                </div>
+                            </div>)
+                        )
+                    }
                 </div>
             </div>
 

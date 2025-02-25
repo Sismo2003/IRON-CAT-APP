@@ -46,7 +46,8 @@ export const initialState = {
     mainAttendancelist: [],
     leaveManageEmployeelist: [],
     paymentslist: [],
-    errors: {}
+    errors: {},
+    loading: false
 };
 
 const HRManagementSlice = createSlice({
@@ -55,10 +56,15 @@ const HRManagementSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         // Employee
+        builder.addCase(getEmployee.pending, (state: any) => {
+            state.loading = true;
+        });
         builder.addCase(getEmployee.fulfilled, (state: any, action: any) => {
+            state.loading = false;
             state.employeelist = action.payload;
         });
         builder.addCase(getEmployee.rejected, (state: any, action: any) => {
+            state.loading = false;
             state.error = action.payload.error || null;
         });
         builder.addCase(addEmployee.fulfilled, (state: any, action: any) => {
