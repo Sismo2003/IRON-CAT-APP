@@ -55,7 +55,7 @@ const menuData: any = [
     },
     {
         id: "ecommerce",
-        label: 'Ecommerce',
+        label: 'Sales',
         link: "/#",
         icon: <ShoppingBag />,
         subItems: [
@@ -66,7 +66,7 @@ const menuData: any = [
                 subItems: [
                     {
                         id: 'listview',
-                        label: 'List View',
+                        label: 'List of Products',
                         link: '/apps-ecommerce-product-list',
                         parentId: 'product'
                     },
@@ -84,7 +84,7 @@ const menuData: any = [
                     // },
                     {
                         id: 'addnew',
-                        label: 'Add New',
+                        label: 'New Product',
                         link: '/apps-ecommerce-product-create',
                         parentId: 'product'
                     },
