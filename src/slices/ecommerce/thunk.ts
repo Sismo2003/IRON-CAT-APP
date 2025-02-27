@@ -110,28 +110,32 @@ export const deleteSellers = createAsyncThunk("ecommerce/deleteSellers", async (
 export const getProductList = createAsyncThunk("ecommerce/getProductList", async () => {
     try {
         const response = getProductListApi();
-        return response;
+        return (await response).data;
     } catch (error) {
         return error;
     }
 });
 export const addProductList = createAsyncThunk("ecommerce/addProductList", async (event: any) => {
     try {
-        const response = addProductListApi(event);
-        const data = await response;
+        console.log("Event: ", event);
+        const response = await addProductListApi(event); // Usa await aquí
+        console.log("data: ", response); // Ahora response debería ser la respuesta de la API
+        // await response;
         toast.success("Data Added Successfully", { autoClose: 2000 });
-        return data;
+        return event;
     } catch (error) {
         toast.error("Data Added Failed", { autoClose: 2000 });
         return error;
     }
 });
 export const updateProductList = createAsyncThunk("ecommerce/updateProductList", async (event: any) => {
+    console.log("Event update: ", event);
     try {
         const response = updateProductListApi(event);
         const data = await response;
+        console.log("data update: ", data);
         toast.success("Data updated Successfully", { autoClose: 2000 });
-        return data;
+        return event;
     } catch (error) {
         toast.error("Data updated Failed", { autoClose: 2000 });
         return error;
@@ -140,8 +144,9 @@ export const updateProductList = createAsyncThunk("ecommerce/updateProductList",
 export const deleteProductList = createAsyncThunk("ecommerce/deleteProductList", async (event: any) => {
     try {
         const response = deleteProductListApi(event);
+        console.log("data delete: ", response);
         toast.success("Data deleted Successfully", { autoClose: 2000 });
-        return response;
+        return event;
     } catch (error) {
         toast.error("Data deleted Failed", { autoClose: 2000 });
         return error;

@@ -28,7 +28,8 @@ export const initialState = {
     productList: [],
     productGrid: [],
     reviews: [],
-    errors: {}
+    errors: {},
+    loading: false
 };
 
 const EcommerceSlice = createSlice({
@@ -103,12 +104,18 @@ const EcommerceSlice = createSlice({
         // Products
         // List View
         builder.addCase(getProductList.fulfilled, (state: any, action: any) => {
+            state.loading = false;
             state.productList = action.payload;
         });
+        builder.addCase(getProductList.pending, (state: any, action: any) => {
+            state.loading = true;
+        });
         builder.addCase(getProductList.rejected, (state: any, action: any) => {
+            state.loading = false;
             state.error = action.payload.error || null;
         });
         builder.addCase(addProductList.fulfilled, (state: any, action: any) => {
+            // console.log(action.payload);
             state.productList.unshift(action.payload);
         });
         builder.addCase(addProductList.rejected, (state: any, action: any) => {

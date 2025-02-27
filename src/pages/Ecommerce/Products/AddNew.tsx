@@ -1,30 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Flatpickr from 'react-flatpickr';
+import { useLocation } from "react-router-dom";
+// import Flatpickr from 'react-flatpickr';
 import BreadCrumb from "Common/BreadCrumb";
-import Select from 'react-select';
+// import Select from 'react-select';
+
+// react-redux
+import { useDispatch /*, useSelector */} from 'react-redux';
+// import { createSelector } from 'reselect';
+
+// UUID
+// import { v4 as uuidv4 } from "uuid";
 
 // Icon
-import { Pencil, UploadCloud } from 'lucide-react';
+import { /*Penci, l*/ UploadCloud } from 'lucide-react';
 
-// Image
-import productImg03 from "assets/images/product/img-03.png";
+// Dropzone
 import Dropzone from "react-dropzone";
 
-const codigo_producto : string = "CODIGO_AQUI_DB";
+// Formik
+import * as Yup from "yup";
+import { useFormik } from "formik";
+
+import {
+    addProductList as onAddProductList,
+    updateProductList as onUpdateProductList
+} from 'slices/thunk';
+import { ToastContainer } from 'react-toastify';
+
+// const codigo_producto : string = "CODIGO_AQUI_DB";
 
 const AddNew = () => {
-    const [selectfiles, setSelectfiles] = useState([]);
+    const location = useLocation();
+    const { mode, data } = location.state || { mode: "create", data: null };
+    interface FileWithPreview {
+        name: string;
+        size: number;
+        type: string;
+        priview: string;
+        formattedSize: string;
+    }
 
-    const handleAcceptfiles = (files: any) => {
-        files?.map((file: any) => {
-            return Object.assign(file, {
-                priview: URL.createObjectURL(file),
-                formattedSize: formatBytes(file.size),
-            });
-        });
-        setSelectfiles(files);
-    };
+    const dispatch = useDispatch<any>();
+
+    const [selectfiles, setSelectfiles] = useState<FileWithPreview[]>([]);
+    const [eventData, setEventData] = useState<any>(mode === "edit" ? data : null);
+
 
     const formatBytes = (bytes: any, decimals = 2) => {
         if (bytes === 0) return "0 Bytes";
@@ -36,87 +57,185 @@ const AddNew = () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
     };
 
-    const options = [
-        { value: '', label: 'Select Category' },
-        { value: 'Mobiles, Computers', label: 'Mobiles, Computers' },
-        { value: 'TV, Appliances, Electronics', label: 'TV, Appliances, Electronics' },
-        { value: "Men's Fashion", label: "Men's Fashion" },
-        { value: "Women's Fashion", label: "Women's Fashion" },
-        { value: 'Home, Kitchen, Pets', label: 'Home, Kitchen, Pets' },
-        { value: 'Beauty, Health, Grocery', label: 'Beauty, Health, Grocery' },
-        { value: 'Books', label: 'Books' },
-    ];
+    const handleAcceptfiles = (files: File[]) => {
+        const file = files[0]; // Solo tomamos el primer archivo
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+                const base64 = reader.result as string; // Convertir a base64
+    
+                // Crear el objeto con la estructura correcta
+                const fileWithPreview: FileWithPreview = {
+                    ...file,
+                    priview: base64,
+                    formattedSize: formatBytes(file.size),
+                };
 
-    const productTypeSelect = [
-        { value: '', label: 'Select Type' },
-        { value: 'Single', label: 'Single' },
-        { value: 'Unit', label: 'Unit' },
-        { value: 'Boxed', label: 'Boxed' },
-    ];
+                validation.setFieldValue('img', e.target.result);
 
-    const genderSelect = [
-        { value: '', label: 'Select Gender' },
-        { value: 'Male', label: 'Male' },
-        { value: 'Female', label: 'Female' },
-        { value: 'Unisex', label: 'Unisex' },
-    ];
+                // Actualizar el estado con la imagen en base64
+                setSelectfiles([fileWithPreview]);
+                
+            };
+            reader.readAsDataURL(file); // Leer el archivo como base64
+        }
+    };
+
+    useEffect(() => {
+        if (mode === "edit" && data.img) {
+            const fileWithPreview = {
+                name: "imagen.jpg",
+                size: 0,
+                type: "image/jpeg",
+                priview: data.img,
+                formattedSize: "0 Bytes",
+            };
+            setSelectfiles([fileWithPreview]);
+        }
+    }, [mode, data]);
+
+    // validation
+    const validation: any = useFormik({
+        enableReinitialize: true,
+        initialValues: {
+            material: (eventData && eventData.material) || '',
+            wholesale_price: (eventData && eventData.wholesale_price) || '',
+            retail_price: (eventData && eventData.retail_price) || '',
+            img: (eventData && eventData.img) || null, // Incluir la imagen en los valores iniciales
+        },
+        validationSchema: Yup.object({
+            material: Yup.string().required("Por favor ingresa el nombre del material"),
+            wholesale_price: Yup.number().required("Por favor ingresa el precio de mayoreo"),
+            retail_price: Yup.number().required("Por favor ingresa el precio de menudeo"),
+            img: Yup.mixed()
+                .required("Por favor selecciona una imagen")
+                .test("fileSize", "La imagen es demasiado grande", (value) => {
+                    if (typeof value === "string") {
+                        // Calcular el tamaño en bytes de la cadena base64
+                        const base64Length = value.length - (value.indexOf(",") + 1);
+                        const padding = value.charAt(value.length - 2) === "=" ? 2 : value.charAt(value.length - 1) === "=" ? 1 : 0;
+                        const sizeInBytes = (base64Length * 3) / 4 - padding;
+        
+                        // Limitar el tamaño a 5MB (en bytes)
+                        return sizeInBytes <= 5 * 1024 * 1024;
+                    }
+                    return false; // Si no es una cadena base64, no es válido
+                })
+                .test("fileType", "Formato de imagen no válido", (value) => {
+                    if (typeof value === "string") {
+                        // Verificar el tipo de imagen basado en el prefijo de la cadena base64
+                        const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+                        const prefix = value.split(";")[0].split(":")[1];
+                        return validTypes.includes(prefix);
+                    }
+                    return false; // Si no es una cadena base64, no es válido
+                }),
+        }),
+        onSubmit: (values) => {
+            const newData = {
+                ...values,
+                wholesale_price: parseFloat(values.wholesale_price),
+                retail_price: parseFloat(values.retail_price),
+            };
+
+            if (mode === "edit") {
+                console.log("Actualizando producto:", newData);
+                dispatch(onUpdateProductList({ id: data.id, ...newData }));
+            } else {
+                console.log("Creando nuevo producto:", newData);
+                dispatch(onAddProductList(newData));
+            }
+        },
+    });
 
     return (
         <React.Fragment>
             <BreadCrumb title='Nuevo Producto' pageTitle='Products' />
+            <ToastContainer closeButton={false} limit={1} />
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
-                <div className="xl:col-span-9">
+                <div className="xl:col-span-12">
                     <div className="card">
                         <div className="card-body">
                             <h6 className="mb-4 text-15">Crear Producto</h6>
 
-                            <form action="#!">
+                            <form className="create-form" id="create-form"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    validation.handleSubmit();
+                                    return false;
+                                }}
+                            >
                                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-12">
                                     <div className="xl:col-span-6">
-                                        <label htmlFor="productNameInput" className="inline-block mb-2 text-base font-medium">Nombre del Material*</label>
-                                        <input type="text" id="productNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Nombre del material" required />
+                                        <label htmlFor="materialNameInput" className="inline-block mb-2 text-base font-medium">Nombre del Material*</label>
+                                        <input type="text" id="materialNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Nombre del material" 
+                                            name="material"
+                                            onChange={validation.handleChange}
+                                            value={validation.values.material || ""}
+                                        />
+                                        {validation.touched.material && validation.errors.material ? (
+                                            <p className="text-red-400">{validation.errors.material}</p>
+                                        ) : null}
                                         <p className="mt-1 text-sm text-slate-400 dark:text-zink-200">No se exceda de los 50 caracteres.</p>
                                     </div>
 
                                     <div className="xl:col-span-6">
                                         <label htmlFor="productVisibility" className="inline-block mb-2 text-base font-medium">Cliente Asociado</label>
-                                        <select className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" data-choices data-choices-search-false name="productVisibility" id="productVisibility">
-                                            <option value=" " defaultChecked>Ninguno - Por Defecto</option>
-                                            <option value="Public">juan perez</option>
-                                            <option value="Public">iker cobbi</option>
-                                            <option value="Public">Famosin chkilin</option>
-                                            <option value="Public">votanta</option>
-                                            
+                                        <select className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" data-choices data-choices-search-false id="productVisibility"
+                                            name="client_id"
+                                            onChange={validation.handleChange}
+                                            value={validation.values.client_id || ""}
+                                        >
+                                            <option value="" defaultChecked>Ninguno - Por Defecto</option>
+                                            <option value="1">juan perez</option>
+                                            <option value="2">iker cobbi</option>
+                                            <option value="3">Famosin chkilin</option>
+                                            <option value="4">votanta</option>
                                         </select>
+                                        {validation.touched.client_id && validation.errors.client_id ? (
+                                            <p className="text-red-400">{validation.errors.client_id}</p>
+                                        ) : null}
                                     </div>
                                 
                                     
                                     <div className="xl:col-span-4">
-                                        <label htmlFor="price_wholesale" className="inline-block mb-2 text-base font-medium">Precio Mayoreo por Kg*</label>
-                                        <input type="number" id="price_wholesale"  placeholder="$ 10.2"  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" required />
+                                        <label htmlFor="wholesale_price" className="inline-block mb-2 text-base font-medium">Precio Mayoreo por Kg*</label>
+                                        <input type="number" id="wholesale_price" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="$ 10.2"
+                                            name="wholesale_price"
+                                            onChange={validation.handleChange}
+                                            value={validation.values.wholesale_price || ""}
+                                        />
+                                        {validation.touched.wholesale_price && validation.errors.wholesale_price ? (
+                                            <p className="text-red-400">{validation.errors.wholesale_price}</p>
+                                        ) : null}
                                     </div>
                                     <div className="xl:col-span-4">
-                                        <label htmlFor="price_retail" className="inline-block mb-2 text-base font-medium">Precio Menudo por Kg*</label>
-                                        <input type="number" id="price_retail"  placeholder="$ 13.2"  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" required />
-                                    </div>
-                                    <div className="xl:col-span-4">
-                                        <label htmlFor="price_retail" className="inline-block mb-2 text-base font-medium">Precio Especial por Kg</label>
-                                        <input type="number" id="price_retail"  placeholder="$ 9.00"  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"  />
+                                        <label htmlFor="retail_price" className="inline-block mb-2 text-base font-medium">Precio Menudeo por Kg*</label>
+                                        <input type="number" id="retail_price"  placeholder="$ 13.2"  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" 
+                                            name="retail_price"
+                                            onChange={validation.handleChange}
+                                            value={validation.values.retail_price || ""}
+                                        />
+                                        {validation.touched.retail_price && validation.errors.retail_price ? (
+                                            <p className="text-red-400">{validation.errors.retail_price}</p>
+                                        ) : null}
                                     </div>
 
-                                   
 
                                     <div className="lg:col-span-2 xl:col-span-12">
                                         <label htmlFor="genderSelect" className="inline-block mb-2 text-base font-medium">Imagen del producto*</label>
                                         <Dropzone
                                             onDrop={(acceptedFiles: File[]) => {
-                                                handleAcceptfiles(acceptedFiles);
+                                                if (acceptedFiles.length > 0) {
+                                                    handleAcceptfiles([acceptedFiles[0]]); // Solo toma el primer archivo
+                                                }
                                             }}
                                             accept={{
                                                 "image/png": [],
                                                 "image/jpeg": [],
                                                 "image/jpg": [],
                                             }}
+                                            maxFiles={1} // Solo permite un archivo
                                         >
                                             {({ getRootProps, getInputProps }) => (
                                                 <div 
@@ -124,23 +243,25 @@ const AddNew = () => {
                                                     {...getRootProps()}
                                                 >
                                                     <input {...getInputProps()} />
-
                                                     <div className="w-full py-5 text-lg text-center dz-message needsclick">
                                                         <div className="mb-3">
                                                             <UploadCloud className="block size-12 mx-auto text-slate-500 fill-slate-200 dark:text-zink-200 dark:fill-zink-500" />
                                                         </div>
                                                         <h5 className="mb-0 font-normal text-slate-500 dark:text-zink-200 text-15">
-                                                            Arrastra y suelta las imágenes de tus productos o <Link to="#!">busca</Link> la imagen en tu ordenador
+                                                            Arrastra y suelta la imagen de tu producto o <Link to="#!">busca</Link> la imagen en tu ordenador
                                                         </h5>
                                                     </div>
                                                 </div>
                                             )}
                                         </Dropzone>
+                                        {validation.touched.img && validation.errors.img ? (
+                                            <p className="text-red-400">{validation.errors.img}</p>
+                                        ) : null}
                                         <ul className="flex flex-wrap mb-0 gap-x-5" id="dropzone-preview2">
                                             {
                                                 (selectfiles || [])?.map((file: any, index: number) => {
                                                     return (
-                                                        <li className="mt-5" id="dropzone-preview-list2">
+                                                        <li className="mt-5" id="dropzone-preview-list2" key={index}>
                                                             <div className="border rounded border-slate-200 dark:border-zink-500">
                                                                 <div className="p-2 text-center">
                                                                     <div>
@@ -158,7 +279,11 @@ const AddNew = () => {
                                                                             const newImages = [...selectfiles];
                                                                             newImages.splice(index, 1);
                                                                             setSelectfiles(newImages);
-                                                                        }}>Delete</button>
+                                                                            setEventData((prevData: any) => ({
+                                                                                ...prevData,
+                                                                                img: null, // Limpiar la imagen en eventData
+                                                                            }));
+                                                                        }}>Eliminar</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -168,86 +293,14 @@ const AddNew = () => {
                                             }
                                         </ul>
                                     </div>
-                               
-                                 
-                                    
-                                    {/* <div className="xl:col-span-4">
-                                        <label htmlFor="productStatus" className="inline-block mb-2 text-base font-medium">Status</label>
-                                        <select className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" data-choices data-choices-search-false name="productStatus" id="productStatus">
-                                            <option value="Draft">Draft</option>
-                                            <option value="Published">Published</option>
-                                            <option value="Scheduled">Scheduled</option>
-                                            <option value="Entertainment">Entertainment</option>
-                                        </select>
-                                    </div> */}
                                 
                                 </div>
                                 <div className="flex justify-end gap-2 mt-4">
-                                    <button type="reset" className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-700 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10">Reset</button>
-                                    <button type="submit" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Create Product</button>
-                                    <button type="button" className="text-white bg-green-500 border-green-500 btn hover:text-white hover:bg-green-600 hover:border-green-600 focus:text-white focus:bg-green-600 focus:border-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:border-green-600 active:ring active:ring-green-100 dark:ring-green-400/10">Draft & Preview</button>
+                                    <button type="reset" className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-700 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10">Cancelar</button>
+                                    <button type="submit" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">{ mode === "edit" ? "Editar Producto" : "Crear Producto" }</button>
+                                    {/* <button type="button" className="text-white bg-green-500 border-green-500 btn hover:text-white hover:bg-green-600 hover:border-green-600 focus:text-white focus:bg-green-600 focus:border-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:border-green-600 active:ring active:ring-green-100 dark:ring-green-400/10">Draft & Preview</button> */}
                                 </div>
                             </form>
-                        </div>
-                    </div>
-                </div>
-                <div className="xl:col-span-3">
-                    <div className="card sticky top-[calc(theme('spacing.header')_*_1.3)]">
-                        <div className="card-body">
-                            <h6 className="mb-4 text-15">Product Card Preview</h6>
-
-                            <div className="px-5 py-8 rounded-md bg-sky-50 dark:bg-zink-600">
-                                <img src={productImg03} alt="" className="block mx-auto h-44" />
-                            </div>
-
-                            <div className="mt-3">
-                                <h5 className="mb-2">$145.99 <small className="font-normal line-through">299.99</small></h5>
-                                <h6 className="mb-1 text-15">Fastcolors Typography Men</h6>
-                                <p className="text-slate-500 dark:text-zink-200">Men's Fashion</p>
-                            </div>
-                            <h6 className="mt-3 mb-2 text-15">Colors</h6>
-                            <div className="flex flex-wrap items-center gap-2">
-                                <div>
-                                    <input id="selectColorPre1" className="inline-block size-5 align-middle border rounded-full appearance-none cursor-pointer bg-sky-500 border-sky-500 checked:bg-sky-500 checked:border-sky-500 disabled:opacity-75 disabled:cursor-default" type="checkbox" value="color1" name="selectColorPre" />
-                                </div>
-                                <div>
-                                    <input id="selectColorPre2" className="inline-block size-5 align-middle bg-orange-500 border border-orange-500 rounded-full appearance-none cursor-pointer checked:bg-orange-500 checked:border-orange-500 disabled:opacity-75 disabled:cursor-default" type="checkbox" value="color2" name="selectColorPre" defaultChecked />
-                                </div>
-                                <div>
-                                    <input id="selectColorPre3" className="inline-block size-5 align-middle bg-green-500 border border-green-500 rounded-full appearance-none cursor-pointer checked:bg-green-500 checked:border-green-500 disabled:opacity-75 disabled:cursor-default" type="checkbox" value="color3" name="selectColorPre" />
-                                </div>
-                                <div>
-                                    <input id="selectColorPre4" className="inline-block size-5 align-middle bg-purple-500 border border-purple-500 rounded-full appearance-none cursor-pointer checked:bg-purple-500 checked:border-purple-500 disabled:opacity-75 disabled:cursor-default" type="checkbox" value="color4" name="selectColorPre" />
-                                </div>
-                            </div>
-
-                            <h6 className="mt-3 mb-2 text-15">Colors</h6>
-                            <div className="flex flex-wrap items-center gap-2">
-                                <div>
-                                    <input id="selectSizePreXS" className="hidden peer" type="checkbox" value="XS" name="selectSizePre" />
-                                    <label htmlFor="selectSizePreXS" className="flex items-center justify-center size-8 text-xs border rounded-md cursor-pointer border-slate-200 dark:border-zink-500 peer-checked:bg-custom-50 dark:peer-checked:bg-custom-500/20 peer-checked:border-custom-300 dark:peer-checked:border-custom-700 peer-disabled:bg-slate-50 dark:peer-disabled:bg-slate-500/15 peer-disabled:border-slate-100 dark:peer-disabled:border-slate-800 peer-disabled:cursor-default peer-disabled:text-slate-500 dark:peer-disabled:text-zink-200">XS</label>
-                                </div>
-                                <div>
-                                    <input id="selectSizePreS" className="hidden peer" type="checkbox" value="S" name="selectSizePre" />
-                                    <label htmlFor="selectSizePreS" className="flex items-center justify-center size-8 text-xs border rounded-md cursor-pointer border-slate-200 dark:border-zink-500 peer-checked:bg-custom-50 dark:peer-checked:bg-custom-500/20 peer-checked:border-custom-300 dark:peer-checked:border-custom-700 peer-disabled:bg-slate-50 dark:peer-disabled:bg-slate-500/15 peer-disabled:border-slate-100 dark:peer-disabled:border-slate-800 peer-disabled:cursor-default peer-disabled:text-slate-500 dark:peer-disabled:text-zink-200">S</label>
-                                </div>
-                                <div>
-                                    <input id="selectSizePreM" className="hidden peer" type="checkbox" value="M" name="selectSizePre" />
-                                    <label htmlFor="selectSizePreM" className="flex items-center justify-center size-8 text-xs border rounded-md cursor-pointer border-slate-200 dark:border-zink-500 peer-checked:bg-custom-50 dark:peer-checked:bg-custom-500/20 peer-checked:border-custom-300 dark:peer-checked:border-custom-700 peer-disabled:bg-slate-50 dark:peer-disabled:bg-slate-500/15 peer-disabled:border-slate-100 dark:peer-disabled:border-slate-800 peer-disabled:cursor-default peer-disabled:text-slate-500 dark:peer-disabled:text-zink-200">M</label>
-                                </div>
-                                <div>
-                                    <input id="selectSizePreL" className="hidden peer" type="checkbox" value="L" name="selectSizePre" />
-                                    <label htmlFor="selectSizePreL" className="flex items-center justify-center size-8 text-xs border rounded-md cursor-pointer border-slate-200 dark:border-zink-500 peer-checked:bg-custom-50 dark:peer-checked:bg-custom-500/20 peer-checked:border-custom-300 dark:peer-checked:border-custom-700 peer-disabled:bg-slate-50 dark:peer-disabled:bg-slate-500/15 peer-disabled:border-slate-100 dark:peer-disabled:border-slate-800 peer-disabled:cursor-default peer-disabled:text-slate-500 dark:peer-disabled:text-zink-200">L</label>
-                                </div>
-                                <div>
-                                    <input id="selectSizePreXL" className="hidden peer" type="checkbox" value="XL" name="selectSizePre" />
-                                    <label htmlFor="selectSizePreXL" className="flex items-center justify-center size-8 text-xs border rounded-md cursor-pointer border-slate-200 dark:border-zink-500 peer-checked:bg-custom-50 dark:peer-checked:bg-custom-500/20 peer-checked:border-custom-300 dark:peer-checked:border-custom-700 peer-disabled:bg-slate-50 dark:peer-disabled:bg-slate-500/15 peer-disabled:border-slate-100 dark:peer-disabled:border-slate-800 peer-disabled:cursor-default peer-disabled:text-slate-500 dark:peer-disabled:text-zink-200">XL</label>
-                                </div>
-                            </div>
-                            <div className="flex gap-2 mt-4">
-                                <button type="button" className="w-full bg-white border-dashed text-custom-500 btn border-custom-500 hover:text-custom-500 hover:bg-custom-50 hover:border-custom-600 focus:text-custom-600 focus:bg-custom-50 focus:border-custom-600 active:text-custom-600 active:bg-custom-50 active:border-custom-600 dark:bg-zink-700 dark:ring-custom-400/20 dark:hover:bg-custom-800/20 dark:focus:bg-custom-800/20 dark:active:bg-custom-800/20">Create Products</button>
-                                <button type="button" className="w-full text-white bg-purple-500 border-purple-500 btn hover:text-white hover:bg-purple-600 hover:border-purple-600 focus:text-white focus:bg-purple-600 focus:border-purple-600 focus:ring focus:ring-purple-100 active:text-white active:bg-purple-600 active:border-purple-600 active:ring active:ring-purple-100 dark:ring-purple-400/10">Draft</button>
-                            </div>
                         </div>
                     </div>
                 </div>

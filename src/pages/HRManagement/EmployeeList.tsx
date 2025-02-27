@@ -259,17 +259,17 @@ const EmployeeList = () => {
                     </div>
                     { 
                         loading ? (
-                        // Spinner de carga
-                        <div className="flex justify-center py-6">
-                            <div className="w-10 h-10 border-4 border-blue-500 border-solid rounded-full animate-spin border-t-transparent"></div>
-                        </div>
+                            // Spinner de carga
+                            <div className="flex justify-center py-6">
+                                <div className="w-10 h-10 border-4 border-blue-500 border-solid rounded-full animate-spin border-t-transparent"></div>
+                            </div>
                         ) : (
                             data && data.length > 0 ?
                             <TableContainer
                                 isPagination={true}
                                 columns={(columns || [])}
                                 data={(data || [])}
-                                customPageSize={7}
+                                customPageSize={data.length > 7 ? 7 : data.length}
                                 divclassName="-mx-5 overflow-x-auto"
                                 tableclassName="w-full whitespace-nowrap"
                                 theadclassName="ltr:text-left rtl:text-right bg-slate-100 dark:bg-zink-600"

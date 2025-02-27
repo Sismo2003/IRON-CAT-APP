@@ -60,9 +60,8 @@ export const addEmployee = createAsyncThunk("hrManagement/addEmployee", async (e
 });
 export const updateEmployee = createAsyncThunk("hrManagement/updateEmployee", async (event: any) => {
     try {
-        console.log("event", event);
         const response = updateEmployeeApi(event);
-        const data = await response;
+        await response;
         toast.success("Employee updated Successfully", { autoClose: 2000 });
         return event;
     } catch (error) {
@@ -72,8 +71,8 @@ export const updateEmployee = createAsyncThunk("hrManagement/updateEmployee", as
 });
 export const deleteEmployee = createAsyncThunk("hrManagement/deleteEmployee", async (event: any) => {
     try {
-        console.log("event", event);
         const response = deleteEmployeeApi(event);
+        console.log(response)
         toast.success("Employee deleted Successfully", { autoClose: 2000 });
         return event;
     } catch (error) {

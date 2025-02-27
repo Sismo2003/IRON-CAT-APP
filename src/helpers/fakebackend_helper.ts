@@ -105,8 +105,8 @@ export const deleteSellers = (data: any) => api.delete(url.DELETE_SELLERS, { hea
 // List View
 export const getProductList = () => api.get(url.GET_PRODUCT_LIST, null);
 export const addProductList = (data: any) => api.create(url.ADD_PRODUCT_LIST, data);
-export const updateProductList = (data: any) => api.update(url.UPDATE_PRODUCT_LIST, data);
-export const deleteProductList = (data: any) => api.delete(url.DELETE_PRODUCT_LIST, { headers: { data } });
+export const updateProductList = (data: any) => api.update(url.UPDATE_PRODUCT_LIST + '/' + data.id, data);
+export const deleteProductList = (data: any) => api.delete(url.DELETE_PRODUCT_LIST + '/' + data, { headers: { data } });
 
 // Grid View
 export const getProductGrid = () => api.get(url.GET_PRODUCT_GRID, null);

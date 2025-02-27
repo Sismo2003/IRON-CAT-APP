@@ -50,10 +50,10 @@ export const DELETE_SELLERS = "/delete-sellers";
 
 // Products
 // List View
-export const GET_PRODUCT_LIST = "/get-product-list";
-export const ADD_PRODUCT_LIST = "/add-product-list";
-export const UPDATE_PRODUCT_LIST = "/edit-product-list";
-export const DELETE_PRODUCT_LIST = "/delete-product-list";
+export const GET_PRODUCT_LIST = "http://localhost:3000/ecommerce/get-product-list";
+export const ADD_PRODUCT_LIST = "http://localhost:3000/ecommerce/add-product-list";
+export const UPDATE_PRODUCT_LIST = "http://localhost:3000/ecommerce/edit-product-list";
+export const DELETE_PRODUCT_LIST = "http://localhost:3000/ecommerce/delete-product-list";
 
 // Grid View
 export const GET_PRODUCT_GRID = "/get-product-grid";
