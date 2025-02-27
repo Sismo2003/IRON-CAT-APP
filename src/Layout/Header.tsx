@@ -7,12 +7,6 @@ import { createSelector } from 'reselect';
 //import images
 import userProfile from "assets/images/users/user-profile.png";
 
-import logoSm from "assets/images/logo-sm.png";
-import logoDark from "assets/images/logo-dark.png";
-import logoLight from "assets/images/logo-light.png";
-
-
-
 import icon_bk from "assets/images/iron-cat-logo-tmp-svg/black_icon.svg";
 import icon_wh from "assets/images/iron-cat-logo-tmp-svg/white_icon.svg";
 

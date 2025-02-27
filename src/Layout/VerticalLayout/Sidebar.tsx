@@ -1,19 +1,13 @@
 import React from 'react';
 
-//import images
-import logoSm from "assets/images/logo-sm.png";
-import logoDark from "assets/images/logo-dark.png";
-import logoLight from "assets/images/logo-light.png";
 
 
+// Imagenes 
 import icon_bk from "assets/images/iron-cat-logo-3/logo-bk.png";
 import icon_wh from "assets/images/iron-cat-logo-3/Icon_wh.png";
 
-// import logo_bk from "assets/images/iron-cat-logo-tmp-svg/black_logo.svg";
 import logo_bk from "assets/images/iron-cat-logo-3/logo-black-h.png";
 import logo_wh from "assets/images/iron-cat-logo-3/logo-white-H.png";
-// import logo_wh from "assets/images/iron-cat-logo-tmp-svg/white_logo.svg";
-// import logo_wh from "assets/images/wh-logo.png";
 
 
 
@@ -42,7 +36,7 @@ const Sidebar = ({ layoutType, layoutSidebarSizeType }: any) => {
                             <img src={icon_wh} alt="" className=" mx-auto" />
                         </span>
                         <span className="group-data-[sidebar-size=sm]:hidden">
-                            <img src={logo_wh} alt="" className="h-10 mx-auto" />
+                            <img src={logo_wh} alt="" className=" mx-auto" />
                         </span>
                     </Link>
                     <button type="button" className="hidden p-0 float-end" id="vertical-hover">
