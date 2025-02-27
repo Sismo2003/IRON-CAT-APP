@@ -6,9 +6,20 @@ import { createSelector } from 'reselect';
 
 //import images
 import userProfile from "assets/images/users/user-profile.png";
+
 import logoSm from "assets/images/logo-sm.png";
 import logoDark from "assets/images/logo-dark.png";
 import logoLight from "assets/images/logo-light.png";
+
+
+
+import icon_bk from "assets/images/iron-cat-logo-tmp-svg/black_icon.svg";
+import icon_wh from "assets/images/iron-cat-logo-tmp-svg/white_icon.svg";
+
+import logo_bk from "assets/images/iron-cat-logo-tmp-svg/black_logo.svg";
+import logo_wh from "assets/images/iron-cat-logo-tmp-svg/white_logo.svg";
+
+
 
 //import components
 import LanguageDropdown from 'Common/LanguageDropdown';
@@ -16,6 +27,25 @@ import LightDark from 'Common/LightDark';
 import NotificationDropdown from 'Common/NotificationDropdown';
 import { Dropdown } from 'Common/Components/Dropdown';
 import { changeLeftsidebarSizeType } from 'slices/thunk';
+
+
+const username : string = "Iker F.";
+const userRole : string = "Desarollador Js";
+
+
+
+function obtenerSaludo(): string {
+    const hora = new Date().getHours();
+  
+    if (hora >= 6 && hora < 12) {
+      return "¡Buenos días!";
+    } else if (hora >= 12 && hora < 18) {
+      return "¡Buenas tardes!";
+    } else {
+      return "¡Buenas noches!";
+    }
+  }
+
 
 const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
 
@@ -134,18 +164,18 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
                             <div className="items-center justify-center hidden px-5 text-center h-header group-data-[layout=horizontal]:md:flex group-data-[layout=horizontal]:ltr::pl-0 group-data-[layout=horizontal]:rtl:pr-0">
                                 <Link to="/">
                                     <span className="hidden">
-                                        <img src={logoSm} alt="" className="h-6 mx-auto" />
+                                        <img src={icon_bk} alt="" className="h-6 mx-auto" />
                                     </span>
                                     <span className="group-data-[topbar=dark]:hidden group-data-[topbar=brand]:hidden">
-                                        <img src={logoDark} alt="" className="h-6 mx-auto" />
+                                        <img src={logo_bk} alt="" className="h-6 mx-auto" />
                                     </span>
                                 </Link>
                                 <Link to="/" className="hidden group-data-[topbar=dark]:block group-data-[topbar=brand]:block">
                                     <span className="group-data-[topbar=dark]:hidden group-data-[topbar=brand]:hidden">
-                                        <img src={logoSm} alt="" className="h-6 mx-auto" />
+                                        <img src={logo_wh} alt="" className="h-6 mx-auto" />
                                     </span>
                                     <span className="group-data-[topbar=dark]:block group-data-[topbar=brand]:block">
-                                        <img src={logoLight} alt="" className="h-6 mx-auto" />
+                                        <img src={icon_wh} alt="" className="h-6 mx-auto" />
                                     </span>
                                 </Link>
                             </div>
@@ -195,7 +225,7 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
                                         </div>
                                     </Dropdown.Trigger>
                                     <Dropdown.Content placement="right-end" className="absolute z-50 p-4 ltr:text-left rtl:text-right bg-white rounded-md shadow-md !top-4 dropdown-menu min-w-[14rem] dark:bg-zink-600" aria-labelledby="dropdownMenuButton">
-                                        <h6 className="mb-2 text-sm font-normal text-slate-500 dark:text-zink-300">Welcome to Tailwick</h6>
+                                        <h6 className="mb-2 text-sm font-normal text-slate-500 dark:text-zink-300">{obtenerSaludo() }</h6>
                                         <a href="#!" className="flex gap-3 mb-3">
                                             <div className="relative inline-block shrink-0">
                                                 <div className="rounded bg-slate-100 dark:bg-zink-500">
@@ -204,8 +234,8 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
                                                 <span className="-top-1 ltr:-right-1 rtl:-left-1 absolute size-2.5 bg-green-400 border-2 border-white rounded-full dark:border-zink-600"></span>
                                             </div>
                                             <div>
-                                                <h6 className="mb-1 text-15">{user.username || "admin"}</h6>
-                                                <p className="text-slate-500 dark:text-zink-300">CEO & Founder</p>
+                                                <h6 className="mb-1 text-15">{username || "Usuario"}</h6>
+                                                <p className="text-slate-500 dark:text-zink-300">{ userRole || "CEO & Founder"}</p>
                                             </div>
                                         </a>
                                         <ul>

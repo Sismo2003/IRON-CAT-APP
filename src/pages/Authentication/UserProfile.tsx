@@ -17,12 +17,12 @@ import { editProfile } from "slices/thunk";
 const UserProfile = () => {
 
   //meta title
-  document.title = "Profile | Skote - React Admin & Dashboard Template";
+  document.title = "Perfil | Iron Cat Recicladora";
 
   const dispatch = useDispatch<any>();
 
-  const [email, setEmail] = useState<string>("admin@gmail.com");
-  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>("ikerFamoso1260@gmail.com");
+  const [name, setName] = useState<string>('Iker Famoso');
   const [idx, setIdx] = useState<number>(1);
 
   const selectProperties = createSelector(
@@ -50,14 +50,14 @@ const UserProfile = () => {
 
   const validation = useFormic({
     // enableReinitialize : use this flag when initial values needs to be changed
-    enableReinitialize: true,
+    enableReinitialize: true, 
 
     initialValues: {
       username: name || 'admin',
       idx: idx || 1,
     },
     validationSchema: Yup.object({
-      username: Yup.string().required("Please Enter Your UserName"),
+      username: Yup.string().required("Ingresa tu Usuario"),
     }),
     onSubmit: (values) => {
       dispatch(editProfile(values));
@@ -68,15 +68,15 @@ const UserProfile = () => {
     <React.Fragment>
       <div className="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
         {/* Render Breadcrumb */}
-        <BreadCrumb title="Tailwick" pageTitle="Profile" />
+        <BreadCrumb title="Editar Usuario" pageTitle="Usuario" />
 
         <div className="row">
           <div className="grid grid-cols-1 gap-x-5 xl:grid-cols-1">
             {success && <div className="px-4 py-3 mb-3 text-sm text-green-500 border border-green-200 rounded-md bg-green-50 dark:bg-green-400/20 dark:border-green-500/50" id="successAlert">
-              You have <b>successfully</b> user in.
+              Se actualizo con <b>exito</b> el perfil del usuario.
             </div>}
             {error && <div className="px-4 py-3 mb-3 text-sm text-red-500 border border-red-200 rounded-md bg-red-50 dark:bg-red-400/20 dark:border-red-500/50" id="successAlert">
-              You have <b>failed</b> user in.
+              Error <b>desconocido</b> al ajustar el perfil.
             </div>}
 
 
@@ -101,7 +101,7 @@ const UserProfile = () => {
           </div>
         </div>
 
-        <h5 className="mb-4">Change User Name</h5>
+        <h5 className="mb-4">Cambiar Usuario</h5>
 
         <div className="card">
           <div className="card-body">
@@ -113,11 +113,11 @@ const UserProfile = () => {
                 return false;
               }}
             >
-              <label className="inline-block mb-2 text-base font-medium">User Name</label>
+              <label className="inline-block mb-2 text-base font-medium">Nombre de usuario</label>
               <input
                 name="username"
                 className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                placeholder="Enter User Name"
+                placeholder="Ingrese el nombre del usuario"
                 type="text"
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
@@ -128,7 +128,7 @@ const UserProfile = () => {
               ) : null}
               <div className="text-center mt-4">
                 <button type="submit" className="px-2 py-1.5 text-xs text-white btn bg-red-500 hover:text-white hover:bg-red-600 focus:text-white focus:bg-red-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:ring active:ring-custom-100 dark:bg-red-500/20 dark:text-red-500 dark:hover:bg-red-500 dark:hover:text-white dark:focus:bg-red-500 dark:focus:text-white dark:active:bg-red-500 dark:active:text-white dark:ring-red-400/20">
-                  Update User Name
+                  Actualizar usuario
                 </button>
               </div>
             </form>

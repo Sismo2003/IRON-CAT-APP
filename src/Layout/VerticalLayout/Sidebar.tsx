@@ -5,6 +5,18 @@ import logoSm from "assets/images/logo-sm.png";
 import logoDark from "assets/images/logo-dark.png";
 import logoLight from "assets/images/logo-light.png";
 
+
+import icon_bk from "assets/images/iron-cat-logo-3/logo-bk.png";
+import icon_wh from "assets/images/iron-cat-logo-3/Icon_wh.png";
+
+// import logo_bk from "assets/images/iron-cat-logo-tmp-svg/black_logo.svg";
+import logo_bk from "assets/images/iron-cat-logo-3/logo-black-h.png";
+import logo_wh from "assets/images/iron-cat-logo-3/logo-white-H.png";
+// import logo_wh from "assets/images/iron-cat-logo-tmp-svg/white_logo.svg";
+// import logo_wh from "assets/images/wh-logo.png";
+
+
+
 import { Link } from 'react-router-dom';
 
 import VerticalLayout from "../VerticalLayout/Index";
@@ -19,18 +31,18 @@ const Sidebar = ({ layoutType, layoutSidebarSizeType }: any) => {
                 <div className="flex items-center justify-center px-5 text-center h-header group-data-[layout=horizontal]:hidden group-data-[sidebar-size=sm]:fixed group-data-[sidebar-size=sm]:top-0 group-data-[sidebar-size=sm]:bg-vertical-menu group-data-[sidebar-size=sm]:group-data-[sidebar=dark]:bg-vertical-menu-dark group-data-[sidebar-size=sm]:group-data-[sidebar=brand]:bg-vertical-menu-brand group-data-[sidebar-size=sm]:group-data-[sidebar=modern]:bg-vertical-menu-modern group-data-[sidebar-size=sm]:z-10 group-data-[sidebar-size=sm]:w-[calc(theme('spacing.vertical-menu-sm')_-_1px)] group-data-[sidebar-size=sm]:group-data-[sidebar=dark]:dark:bg-zink-700">
                     <Link to="#" className="group-data-[sidebar=dark]:hidden group-data-[sidebar=brand]:hidden group-data-[sidebar=modern]:hidden">
                         <span className="hidden group-data-[sidebar-size=sm]:block">
-                            <img src={logoSm} alt="" className="h-6 mx-auto" />
+                            <img src={icon_bk} alt="" className=" mx-auto" />
                         </span>
                         <span className="group-data-[sidebar-size=sm]:hidden">
-                            <img src={logoDark} alt="" className="h-6 mx-auto" />
+                            <img src={logo_bk} alt="" className=" mx-auto" />
                         </span>
                     </Link>
                     <Link to="#" className="hidden group-data-[sidebar=dark]:block group-data-[sidebar=brand]:block group-data-[sidebar=modern]:block">
                         <span className="hidden group-data-[sidebar-size=sm]:block">
-                            <img src={logoSm} alt="" className="h-6 mx-auto" />
+                            <img src={icon_wh} alt="" className=" mx-auto" />
                         </span>
                         <span className="group-data-[sidebar-size=sm]:hidden">
-                            <img src={logoLight} alt="" className="h-6 mx-auto" />
+                            <img src={logo_wh} alt="" className="h-10 mx-auto" />
                         </span>
                     </Link>
                     <button type="button" className="hidden p-0 float-end" id="vertical-hover">
