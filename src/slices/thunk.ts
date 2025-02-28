@@ -30,6 +30,8 @@ export * from "./hrManagement/thunk";
 
 export * from "./ticketManagement/thunk";
 
+export * from "./customerManagement/thunk";
+
 export * from "./notes/thunk";
 
 export * from "./social/thunk";

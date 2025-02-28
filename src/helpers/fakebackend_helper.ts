@@ -127,6 +127,13 @@ export const addTicket = (data: any) => api.create(url.ADD_TICKET, data);
 export const updateTicket = (data: any) => api.update(url.UPDATE_TICKET + '/' + data.id, data);
 export const deleteTicket = (data: any) => api.delete(url.DELETE_TICKET + '/' + data, { headers: { data } });
 
+// CUSTOMER Management
+// CUSTOMER List
+export const getCustomer = () => api.get(url.GET_CUSTOMER, null);
+export const addCustomer = (data: any) => api.create(url.ADD_CUSTOMER, data);
+export const updateCustomer = (data: any) => api.put(url.UPDATE_CUSTOMER + '/' + data.id, data);
+export const deleteCustomer = (data: any) => api.delete(url.DELETE_CUSTOMER + '/' + data, { headers: { data } });
+
 // HR Management
 // Employee List
 export const getEmployee = () => api.get(url.GET_EMPLOYEE, null);

@@ -15,7 +15,9 @@ import {
     // Share2, 
     // Table, 
     // Trophy, 
-    // UserRound, 
+    // UserRound,
+    Users, 
+    Ticket, 
     ScrollText, 
     CircuitBoard, 
     MonitorDot, 
@@ -252,7 +254,7 @@ const menuData: any = [
     {
         id: "ticket-management",
         label: 'Ticket Management',
-        icon: <CircuitBoard />,
+        icon: <Ticket />,
         parentId: "tkmanagement",
         link: "/#",
         subItems: [
@@ -261,6 +263,21 @@ const menuData: any = [
                 label: 'Ticket List',
                 link: '/apps-tk-ticket',
                 parentId: 'tkmanagement'
+            }
+        ],
+    },
+    {
+        id: "customer-management",
+        label: 'Customer Management',
+        icon: <Users />,
+        parentId: "ctmanagement",
+        link: "/#",
+        subItems: [
+            {
+                id: 'employeelist',
+                label: 'Customer List',
+                link: '/apps-customer-list',
+                parentId: 'ctmanagement'
             }
         ],
     },

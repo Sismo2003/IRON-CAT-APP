@@ -81,6 +81,13 @@ export const ADD_TICKET = "http://localhost:3000/hr/add-ticket";
 export const UPDATE_TICKET = "http://localhost:3000/hr/edit-ticket";
 export const DELETE_TICKET = "http://localhost:3000/hr/delete-ticket";
 
+// CUSTOMER Management
+// CUSTOMER List
+export const GET_CUSTOMER = "http://localhost:3000/customer/get-customer";
+export const ADD_CUSTOMER = "http://localhost:3000/customer/add-customer";
+export const UPDATE_CUSTOMER = "http://localhost:3000/customer/edit-customer";
+export const DELETE_CUSTOMER = "http://localhost:3000/customer/delete-customer";
+
 // Holidays
 export const GET_HOLIDAYS = "/get-holidays";
 export const ADD_HOLIDAYS = "/add-holidays";

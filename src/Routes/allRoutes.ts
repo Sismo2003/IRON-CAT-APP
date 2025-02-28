@@ -30,6 +30,9 @@ import Sellers from "pages/Ecommerce/Sellers";
 //TICKET Management
 import TicketList from "pages/Tickets/TicketList";
 
+//CUSTOMER Management
+import CustomerList from "pages/Customers/CustomerList";
+
 // HR Management
 import EmployeeList from "pages/HRManagement/EmployeeList";
 import Holidays from "pages/HRManagement/Holidays";
@@ -321,6 +324,9 @@ const authProtectedRoutes: Array<RouteObject> = [
 
   // TICKET Management
   { path: "/apps-tk-ticket", component: TicketList },
+
+  // CUSTOMER Management
+  { path: "/apps-customer-list", component: CustomerList },
 
   // HR Management
   { path: "/apps-hr-employee", component: EmployeeList },

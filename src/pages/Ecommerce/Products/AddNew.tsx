@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 // import Flatpickr from 'react-flatpickr';
 import BreadCrumb from "Common/BreadCrumb";
 // import Select from 'react-select';
@@ -8,9 +8,6 @@ import BreadCrumb from "Common/BreadCrumb";
 // react-redux
 import { useDispatch /*, useSelector */} from 'react-redux';
 // import { createSelector } from 'reselect';
-
-// UUID
-// import { v4 as uuidv4 } from "uuid";
 
 // Icon
 import { /*Penci, l*/ UploadCloud } from 'lucide-react';
@@ -26,12 +23,12 @@ import {
     addProductList as onAddProductList,
     updateProductList as onUpdateProductList
 } from 'slices/thunk';
-import { ToastContainer } from 'react-toastify';
 
 // const codigo_producto : string = "CODIGO_AQUI_DB";
 
 const AddNew = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const { mode, data } = location.state || { mode: "create", data: null };
     interface FileWithPreview {
         name: string;
@@ -140,23 +137,27 @@ const AddNew = () => {
 
             if (mode === "edit") {
                 console.log("Actualizando producto:", newData);
-                dispatch(onUpdateProductList({ id: data.id, ...newData }));
+                dispatch(onUpdateProductList({ id: data.id, ...newData })).then(() => {
+                    navigate("/apps-ecommerce-product-list");
+                });
             } else {
                 console.log("Creando nuevo producto:", newData);
-                dispatch(onAddProductList(newData));
+                dispatch(onAddProductList(newData)).then(() => {
+                    navigate("/apps-ecommerce-product-list");
+                });
             }
         },
     });
 
     return (
         <React.Fragment>
-            <BreadCrumb title='Nuevo Producto' pageTitle='Products' />
-            <ToastContainer closeButton={false} limit={1} />
+            <BreadCrumb title={ mode === "edit" ? "Producto" : "Nuevo Producto" } pageTitle='Productos' />
+            {/* <ToastContainer closeButton={false} limit={1} /> */}
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
                 <div className="xl:col-span-12">
                     <div className="card">
                         <div className="card-body">
-                            <h6 className="mb-4 text-15">Crear Producto</h6>
+                            <h6 className="mb-4 text-15">{ mode === "edit" ? "Editar Producto" : "Crear Producto" }</h6>
 
                             <form className="create-form" id="create-form"
                                 onSubmit={(e) => {

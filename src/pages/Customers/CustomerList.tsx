@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import BreadCrumb from 'Common/BreadCrumb';
-import Flatpickr from "react-flatpickr";
-import moment from "moment";
+// import Flatpickr from "react-flatpickr";
+// import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 
 // Icons
@@ -24,22 +24,22 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 
 import {
-    getEmployee as onGetEmployee,
-    addEmployee as onAddEmployee,
-    updateEmployee as onUpdateEmployee,
-    deleteEmployee as onDeleteEmployee
+    getCustomer as onGetCustomer,
+    addCustomer as onAddCustomer,
+    updateCustomer as onUpdateCustomer,
+    deleteCustomer as onDeleteCustomer
 } from 'slices/thunk';
 import { ToastContainer } from 'react-toastify';
 
-const EmployeeList = () => {
+const CustomerList = () => {
 
     const dispatch = useDispatch<any>();
 
     const selectDataList = createSelector(
-        (state: any) => state.HRManagment,
+        (state: any) => state.CUSTOMERManagement,
         (state) => ({
-            dataList: state.employeelist,
-            loading : state.loading
+            dataList: state.customerlist,
+            loading: state.loading
         })
     );
 
@@ -69,7 +69,7 @@ const EmployeeList = () => {
 
     // Get Data
     useEffect(() => {
-        dispatch(onGetEmployee());
+        dispatch(onGetCustomer());
     }, [dispatch]);
 
     useEffect(() => {
@@ -90,7 +90,7 @@ const EmployeeList = () => {
 
     const handleDelete = () => {
         if (eventData) {
-            dispatch(onDeleteEmployee(eventData.id));
+            dispatch(onDeleteCustomer(eventData.id));
             setDeleteModal(false);
         }
     };
@@ -109,44 +109,43 @@ const EmployeeList = () => {
         enableReinitialize: true,
 
         initialValues: {
-            employeeId: (eventData && eventData.employeeId) || '',
+            customer_id: (eventData && eventData.customer_id) || '',
             name: (eventData && eventData.name) || '',
+            last_name: (eventData && eventData.last_name) || '',
             img: (eventData && eventData.img) || '',
-            designation: (eventData && eventData.designation) || '',
+            address: (eventData && eventData.address) || '',
             email: (eventData && eventData.email) || '',
             phone: (eventData && eventData.phone) || '',
-            location: (eventData && eventData.location) || '',
-            experience: (eventData && eventData.experience) || '',
-            joinDate: (eventData && eventData.joinDate) || ''
+            rfc: (eventData && eventData.rfc) || ''
         },
         validationSchema: Yup.object({
-            name: Yup.string().required("Please Enter Name"),
-            img: Yup.string().required("Please Add Image"),
-            designation: Yup.string().required("Please Enter Designation"),
-            email: Yup.string().required("Please Enter Email"),
-            phone: Yup.string().required("Please Enter Phone"),
-            location: Yup.string().required("Please Enter Location"),
-            experience: Yup.number().required("Please Enter Experience"),
-            joinDate: Yup.string().required("Please Enter Date")
+            name: Yup.string().required("Porfavor ingrese el nombre"),
+            last_name: Yup.string().required("Porfavor ingrese el apellido"),
+            img: Yup.string().required("Es necesario agregar una imagen"),
+            address: Yup.string().required("Porfavor ingrese la dirección"),
+            email: Yup.string().required("Porfavor ingrese el email"),
+            phone: Yup.string().required("Porfavor ingrese el número de telefono"),
+            rfc: Yup.string().required("Porfavor ingrese el RFC")
         }),
 
         onSubmit: (values) => {
             if (isEdit) {
                 const updateData = {
                     id: eventData ? eventData.id : 0,
+                    fullname: values.name + " " + values.last_name,
                     ...values,
                 };
                 // update user
-                dispatch(onUpdateEmployee(updateData));
+                dispatch(onUpdateCustomer(updateData));
             } else {
                 const newData = {
                     ...values,
                     id: (Math.floor(Math.random() * (30 - 20)) + 20).toString(),
-                    customer_id: "#TWE" + uuidv4().split("-")[0],
-                    experience: values.experience
+                    customer_id: "#IRON-" + uuidv4().split("-")[0].toUpperCase()
                 };
                 // save new user
-                dispatch(onAddEmployee(newData));
+                console.log("newData", newData);
+                dispatch(onAddCustomer(newData));
             }
             toggle();
         },
@@ -170,8 +169,8 @@ const EmployeeList = () => {
     // columns
     const columns = useMemo(() => [
         {
-            header: "Empleado ID",
-            accessorKey: "employeeId",
+            header: "Cliente ID",
+            accessorKey: "customer_id",
             enableColumnFilter: false,
             cell: (cell: any) => (
                 <Link to="#!" className="transition-all duration-150 ease-linear text-custom-500 hover:text-custom-600">{cell.getValue()}</Link>
@@ -179,7 +178,7 @@ const EmployeeList = () => {
         },
         {
             header: "Nombre",
-            accessorKey: "name",
+            accessorKey: "fullname",
             enableColumnFilter: false,
             cell: (cell: any) => (
                 <Link to="#!" className="flex items-center gap-3">
@@ -191,35 +190,35 @@ const EmployeeList = () => {
             ),
         },
         {
-            header: "Cargo",
-            accessorKey: "designation",
+            header: "Email",
+            accessorKey: "email",
             enableColumnFilter: false
         },
         {
-            header: "Correo Electrónico",
-            accessorKey: "email",
-            enableColumnFilter: false,
-        },
-        {
-            header: "Numero de telefono",
+            header: "Telefono",
             accessorKey: "phone",
             enableColumnFilter: false,
         },
         {
-            header: "Ubicación",
-            accessorKey: "location",
+            header: "RFC",
+            accessorKey: "rfc",
             enableColumnFilter: false,
         },
-        {
-            header: "Experiencia",
-            accessorKey: "experience",
-            enableColumnFilter: false,
-        },
-        {
-            header: "Fecha de ingreso",
-            accessorKey: "joinDate",
-            enableColumnFilter: false,
-        },
+        // {
+        //     header: "Ubicación",
+        //     accessorKey: "location",
+        //     enableColumnFilter: false,
+        // },
+        // {
+        //     header: "Experiencia",
+        //     accessorKey: "experience",
+        //     enableColumnFilter: false,
+        // },
+        // {
+        //     header: "Fecha de ingreso",
+        //     accessorKey: "joinDate",
+        //     enableColumnFilter: false,
+        // },
         {
             header: "Acciones",
             enableColumnFilter: false,
@@ -227,7 +226,7 @@ const EmployeeList = () => {
             cell: (cell: any) => (
                 <div className="flex gap-3">
                     <Link className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" to="/pages-account"><Eye className="inline-block size-3" /> </Link>
-                    <Link to="#!" data-modal-target="addEmployeeModal" className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md edit-item-btn bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" onClick={() => {
+                    <Link to="#!" data-modal-target="viewTicketModal" className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md edit-item-btn bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" onClick={() => {
                         const data = cell.row.original;
                         handleUpdateDataClick(data);
                     }}>
@@ -244,20 +243,20 @@ const EmployeeList = () => {
 
     return (
         <React.Fragment>
-            <BreadCrumb title='Lista de Empleados' pageTitle='Administración Empleados' />
+            <BreadCrumb title='Lista de Clientes' pageTitle='Administración Clientes' />
             <DeleteModal show={deleteModal} onHide={deleteToggle} onDelete={handleDelete} />
             <ToastContainer closeButton={false} limit={1} />
-            <div className="card" id="employeeTable">
+            <div className="card" id="Table">
                 <div className="card-body">
                     <div className="flex items-center gap-3 mb-4">
-                        <h6 className="text-15 grow">Empleados (<b className="total-Employs">{data.length}</b>)</h6>
+                        <h6 className="text-15 grow">Clientes (<b className="total-Employs">{data.length}</b>)</h6>
                         <div className="shrink-0">
                             <Link to="#!" data-modal-target="addEmployeeModal" type="button" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20 add-employee" onClick={toggle}>
-                                <Plus className="inline-block size-4" /> <span className="align-middle">Añadir empleado</span>
+                                <Plus className="inline-block size-4" /> <span className="align-middle">Añadir cliente</span>
                             </Link>
                         </div>
                     </div>
-                    { 
+                    {
                         loading ? (
                             // Spinner de carga
                             <div className="flex justify-center py-6">
@@ -269,7 +268,7 @@ const EmployeeList = () => {
                                 isPagination={true}
                                 columns={(columns || [])}
                                 data={(data || [])}
-                                customPageSize={data.length > 7 ? 7 : data.length}
+                                customPageSize={10}
                                 divclassName="-mx-5 overflow-x-auto"
                                 tableclassName="w-full whitespace-nowrap"
                                 theadclassName="ltr:text-left rtl:text-right bg-slate-100 dark:bg-zink-600"
@@ -287,6 +286,7 @@ const EmployeeList = () => {
                             </div>)
                         )
                     }
+                        
                 </div>
             </div>
 
@@ -296,7 +296,7 @@ const EmployeeList = () => {
                 dialogClassName="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600">
                 <Modal.Header className="flex items-center justify-between p-4 border-b dark:border-zink-500"
                     closeButtonClass="transition-all duration-200 ease-linear text-slate-400 hover:text-red-500">
-                    <Modal.Title className="text-16">{!!isEdit ? "Edit Employee" : "Add Employee"}</Modal.Title>
+                    <Modal.Title className="text-16">{!!isEdit ? "Editar Cliente" : "Añadir Cliente"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
                     <form className="create-form" id="create-form"
@@ -332,19 +332,30 @@ const EmployeeList = () => {
                                 ) : null}
                             </div>
                             <div className="xl:col-span-12">
-                                <label htmlFor="employeeId" className="inline-block mb-2 text-base font-medium">Employee ID</label>
-                                <input type="text" id="employeeId" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                    value={validation.values.employeeId || "#TWE1001557"} disabled />
+                                <label htmlFor="customerId" className="inline-block mb-2 text-base font-medium">Cliente ID</label>
+                                <input type="text" id="customerId" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                    value={validation.values.customer_id || "#IRON-1001557"} disabled />
                             </div>
                             <div className="xl:col-span-12">
-                                <label htmlFor="employeeInput" className="inline-block mb-2 text-base font-medium">Name</label>
-                                <input type="text" id="employeeInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Employee name"
+                                <label htmlFor="customerInput" className="inline-block mb-2 text-base font-medium">Nombre/s</label>
+                                <input type="text" id="customerInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Employee name"
                                     name="name"
                                     onChange={validation.handleChange}
                                     value={validation.values.name || ""}
                                 />
                                 {validation.touched.name && validation.errors.name ? (
                                     <p className="text-red-400">{validation.errors.name}</p>
+                                ) : null}
+                            </div>
+                            <div className="xl:col-span-6">
+                                <label htmlFor="lastNameInput" className="inline-block mb-2 text-base font-medium">Apellidos</label>
+                                <input type="text" id="lastNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Enter location"
+                                    name="last_name"
+                                    onChange={validation.handleChange}
+                                    value={validation.values.last_name || ""}
+                                />
+                                {validation.touched.last_name && validation.errors.last_name ? (
+                                    <p className="text-red-400">{validation.errors.last_name}</p>
                                 ) : null}
                             </div>
                             <div className="xl:col-span-12">
@@ -359,7 +370,7 @@ const EmployeeList = () => {
                                 ) : null}
                             </div>
                             <div className="xl:col-span-6">
-                                <label htmlFor="phoneNumberInput" className="inline-block mb-2 text-base font-medium">Phone Number</label>
+                                <label htmlFor="phoneNumberInput" className="inline-block mb-2 text-base font-medium">Número de Telefono</label>
                                 <input type="text" id="phoneNumberInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Enter phone number"
                                     name="phone"
                                     onChange={validation.handleChange}
@@ -370,65 +381,29 @@ const EmployeeList = () => {
                                 ) : null}
                             </div>
                             <div className="xl:col-span-6">
-                                <label htmlFor="locationInput" className="inline-block mb-2 text-base font-medium">Location</label>
-                                <input type="text" id="locationInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Enter location"
-                                    name="location"
+                                <label htmlFor="addressInput" className="inline-block mb-2 text-base font-medium">Dirección</label>
+                                <input type="text" id="addressInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Ingrese su domicilio"
+                                    name="address"
                                     onChange={validation.handleChange}
-                                    value={validation.values.location || ""}
+                                    value={validation.values.address || ""}
                                 />
-                                {validation.touched.location && validation.errors.location ? (
-                                    <p className="text-red-400">{validation.errors.location}</p>
+                                {validation.touched.address && validation.errors.address ? (
+                                    <p className="text-red-400">{validation.errors.address}</p>
                                 ) : null}
                             </div>
                             <div className="xl:col-span-6">
-                                <label htmlFor="joiningDateInput" className="inline-block mb-2 text-base font-medium">Joining Date</label>
-                                <Flatpickr
-                                    id="joiningDateInput"
-                                    className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                    options={{
-                                        dateFormat: "Y-m-d"
-                                    }}
-                                    placeholder='Select date'
-                                    name='joinDate'
-                                    onChange={(date: any) => validation.setFieldValue("joinDate", moment(date[0]).format("YYYY-MM-DD"))}
-                                    value={validation.values.joinDate || ''}
-                                />
-                                {validation.touched.joinDate && validation.errors.joinDate ? (
-                                    <p className="text-red-400">{validation.errors.joinDate}</p>
-                                ) : null}
-                            </div>
-                            <div className="xl:col-span-6">
-                                <label htmlFor="experienceInput" className="inline-block mb-2 text-base font-medium">Experience</label>
-                                <input type="number" id="experienceInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="0.0"
-                                    name="experience"
+                                <label htmlFor="rfcInput" className="inline-block mb-2 text-base font-medium">RFC</label>
+                                <input type="text" id="rfcInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Ingrese su RFC"
+                                    name="rfc"
                                     onChange={validation.handleChange}
-                                    value={validation.values.experience || ""}
+                                    value={validation.values.rfc || ""}
                                 />
-                                {validation.touched.experience && validation.errors.experience ? (
-                                    <p className="text-red-400">{validation.errors.experience}</p>
+                                {validation.touched.rfc && validation.errors.rfc ? (
+                                    <p className="text-red-400">{validation.errors.rfc}</p>
                                 ) : null}
                             </div>
-                            <div className="xl:col-span-12">
-                                <label htmlFor="designationSelect" className="inline-block mb-2 text-base font-medium">Designation</label>
-                                <select className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" data-choices data-choices-search-false id="typeSelect"
-                                    name="designation"
-                                    onChange={validation.handleChange}
-                                    value={validation.values.designation || ""}
-                                >
-                                    <option value="Angular Developer">Angular Developer</option>
-                                    <option value="React Developer">React Developer</option>
-                                    <option value="Project Manager">Project Manager</option>
-                                    <option value="Web Designer">Web Designer</option>
-                                    <option value="Team Leader">Team Leader</option>
-                                    <option value="VueJs Developer">VueJs Developer</option>
-                                    <option value="NodeJS Developer">NodeJS Developer</option>
-                                    <option value="ASP.Net Developer">ASP.Net Developer</option>
-                                    <option value="UI / UX Designer">UI / UX Designer</option>
-                                </select>
-                                {validation.touched.designation && validation.errors.designation ? (
-                                    <p className="text-red-400">{validation.errors.designation}</p>
-                                ) : null}
-                            </div>
+                            
+                            
                         </div>
                         <div className="flex justify-end gap-2 mt-4">
                             <button type="reset" id="close-modal" data-modal-close="addEmployeeModal" className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-600 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10" onClick={toggle}>Cancel</button>
@@ -444,4 +419,4 @@ const EmployeeList = () => {
     );
 };
 
-export default EmployeeList;
+export default CustomerList;

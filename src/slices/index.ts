@@ -30,6 +30,9 @@ import HRManagmentReducer from "./hrManagement/reducer";
 // TICKET Managment
 import TICKETManagmentReducer from "./ticketManagement/reducer";
 
+// TICKET Managment
+import CUSTOMERManagmentReducer from "./customerManagement/reducer";
+
 // Notes
 import NotesReducer from "./notes/reducer";
 
@@ -53,6 +56,7 @@ const rootReducer = combineReducers({
     Ecommerce: EcommerceReducer,
     HRManagment: HRManagmentReducer,
     TICKETManagment: TICKETManagmentReducer,
+    CUSTOMERManagement: CUSTOMERManagmentReducer,
     Notes: NotesReducer,
     Social: SocialReducer,
     Invoice: InvoiceReducer,
