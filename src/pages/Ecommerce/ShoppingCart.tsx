@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 // import DeleteModal from "Common/DeleteModal";
 import scale from "assets/images/scale.png";
 
+const ws_ip = "ws://192.168.1.86:3001"
+
 const materials = [
   { value: 10, label: "Iron" },
   { value: 15, label: "Copper" },
@@ -24,10 +26,19 @@ const ShoppingCart = () => {
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080");
+    const ws = new WebSocket(ws_ip);
+
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      setWeights((prev) => ({ ...prev, [data.id]: data.weight }));
+      console.log("📦 Mensaje recibido del WebSocket:", data);
+      if(Array.isArray(data)) {
+        data.forEach(item => {
+          setWeights(prev => ({ ...prev, [item.id]: item.weight }));
+        });
+      } else {
+        setWeights((prev) => ({ ...prev, [data.id]: data.weight }));
+      }
+
     };
     return () => ws.close();
   }, []);
