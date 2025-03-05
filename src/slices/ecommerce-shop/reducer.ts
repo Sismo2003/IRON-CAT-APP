@@ -8,10 +8,10 @@ import {
     addSellers,
     updateSellers,
     deleteSellers,
-    getProductList,
-    addProductList,
-    updateProductList,
-    deleteProductList,
+    getShopProductList,
+    addShopProductList,
+    updateShopProductList,
+    deleteShopProductList,
     getProductGrid,
     addProductGrid,
     updateProductGrid,
@@ -32,8 +32,8 @@ export const initialState = {
     loading: false
 };
 
-const EcommerceSlice = createSlice({
-    name: 'Ecommerce',
+const EcommerceShopSlice = createSlice({
+    name: 'EcommerceShop',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
@@ -103,40 +103,40 @@ const EcommerceSlice = createSlice({
 
         // Products
         // List View
-        builder.addCase(getProductList.fulfilled, (state: any, action: any) => {
+        builder.addCase(getShopProductList.fulfilled, (state: any, action: any) => {
             state.loading = false;
             state.productList = action.payload;
         });
-        builder.addCase(getProductList.pending, (state: any, action: any) => {
+        builder.addCase(getShopProductList.pending, (state: any, action: any) => {
             state.loading = true;
         });
-        builder.addCase(getProductList.rejected, (state: any, action: any) => {
+        builder.addCase(getShopProductList.rejected, (state: any, action: any) => {
             state.loading = false;
             state.error = action.payload.error || null;
         });
-        builder.addCase(addProductList.fulfilled, (state: any, action: any) => {
+        builder.addCase(addShopProductList.fulfilled, (state: any, action: any) => {
             // console.log(action.payload);
             state.productList.unshift(action.payload);
         });
-        builder.addCase(addProductList.rejected, (state: any, action: any) => {
+        builder.addCase(addShopProductList.rejected, (state: any, action: any) => {
             state.error = action.payload.error || null;
         });
-        builder.addCase(updateProductList.fulfilled, (state: any, action: any) => {
+        builder.addCase(updateShopProductList.fulfilled, (state: any, action: any) => {
             state.productList = state.productList.map((productList: any) =>
                 productList.id === action.payload.id
                     ? { ...productList, ...action.payload }
                     : productList
             );
         });
-        builder.addCase(updateProductList.rejected, (state: any, action: any) => {
+        builder.addCase(updateShopProductList.rejected, (state: any, action: any) => {
             state.error = action.payload.error || null;
         });
-        builder.addCase(deleteProductList.fulfilled, (state: any, action: any) => {
+        builder.addCase(deleteShopProductList.fulfilled, (state: any, action: any) => {
             state.productList = state.productList.filter(
                 (productList: any) => productList.id.toString() !== action.payload.toString()
             );
         });
-        builder.addCase(deleteProductList.rejected, (state: any, action: any) => {
+        builder.addCase(deleteShopProductList.rejected, (state: any, action: any) => {
             state.error = action.payload.error || null;
         });
 
@@ -206,4 +206,4 @@ const EcommerceSlice = createSlice({
     }
 });
 
-export default EcommerceSlice.reducer;
+export default EcommerceShopSlice.reducer;

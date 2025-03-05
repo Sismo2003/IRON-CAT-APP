@@ -24,7 +24,9 @@ export * from "./mailbox/thunk";
 
 export * from "./calendar/thunk";
 
-export * from "./ecommerce/thunk";
+export * from "./ecommerce-shop/thunk";
+
+export * from "./ecommerce-sale/thunk";
 
 export * from "./hrManagement/thunk";
 

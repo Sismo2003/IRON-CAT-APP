@@ -123,7 +123,9 @@ const CustomerList = () => {
             last_name: Yup.string().required("Porfavor ingrese el apellido"),
             img: Yup.string().required("Es necesario agregar una imagen"),
             address: Yup.string().required("Porfavor ingrese la dirección"),
-            email: Yup.string().required("Porfavor ingrese el email"),
+            email: Yup.string()
+            .email("El formato de correo electrónico no es válido")
+            .required("Porfavor ingrese el email"),
             phone: Yup.string().required("Porfavor ingrese el número de telefono"),
             rfc: Yup.string().required("Porfavor ingrese el RFC")
         }),
@@ -268,7 +270,7 @@ const CustomerList = () => {
                                 isPagination={true}
                                 columns={(columns || [])}
                                 data={(data || [])}
-                                customPageSize={10}
+                                customPageSize={data.length > 10 ? 10 : data.length}
                                 divclassName="-mx-5 overflow-x-auto"
                                 tableclassName="w-full whitespace-nowrap"
                                 theadclassName="ltr:text-left rtl:text-right bg-slate-100 dark:bg-zink-600"
@@ -290,7 +292,7 @@ const CustomerList = () => {
                 </div>
             </div>
 
-            {/* Employee Modal */}
+            {/* Client Modal */}
             <Modal show={show} onHide={toggle} modal-center="true"
                 className="fixed flex flex-col transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4"
                 dialogClassName="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600">
@@ -338,7 +340,7 @@ const CustomerList = () => {
                             </div>
                             <div className="xl:col-span-12">
                                 <label htmlFor="customerInput" className="inline-block mb-2 text-base font-medium">Nombre/s</label>
-                                <input type="text" id="customerInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Employee name"
+                                <input type="text" id="customerInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Ingrese su nombre/s"
                                     name="name"
                                     onChange={validation.handleChange}
                                     value={validation.values.name || ""}
@@ -347,9 +349,9 @@ const CustomerList = () => {
                                     <p className="text-red-400">{validation.errors.name}</p>
                                 ) : null}
                             </div>
-                            <div className="xl:col-span-6">
+                            <div className="xl:col-span-12">
                                 <label htmlFor="lastNameInput" className="inline-block mb-2 text-base font-medium">Apellidos</label>
-                                <input type="text" id="lastNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Enter location"
+                                <input type="text" id="lastNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Ingrese sus apellidos"
                                     name="last_name"
                                     onChange={validation.handleChange}
                                     value={validation.values.last_name || ""}
@@ -360,7 +362,7 @@ const CustomerList = () => {
                             </div>
                             <div className="xl:col-span-12">
                                 <label htmlFor="emailInput" className="inline-block mb-2 text-base font-medium">Email</label>
-                                <input type="text" id="emailInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="example@tailwick.com"
+                                <input type="email" id="emailInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="ejemplo@ironcat.com"
                                     name="email"
                                     onChange={validation.handleChange}
                                     value={validation.values.email || ""}
@@ -371,7 +373,7 @@ const CustomerList = () => {
                             </div>
                             <div className="xl:col-span-6">
                                 <label htmlFor="phoneNumberInput" className="inline-block mb-2 text-base font-medium">Número de Telefono</label>
-                                <input type="text" id="phoneNumberInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Enter phone number"
+                                <input type="text" id="phoneNumberInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="XX-XXXX-XXXX"
                                     name="phone"
                                     onChange={validation.handleChange}
                                     value={validation.values.phone || ""}
@@ -391,7 +393,7 @@ const CustomerList = () => {
                                     <p className="text-red-400">{validation.errors.address}</p>
                                 ) : null}
                             </div>
-                            <div className="xl:col-span-6">
+                            <div className="xl:col-span-12">
                                 <label htmlFor="rfcInput" className="inline-block mb-2 text-base font-medium">RFC</label>
                                 <input type="text" id="rfcInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Ingrese su RFC"
                                     name="rfc"

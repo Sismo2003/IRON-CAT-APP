@@ -57,7 +57,7 @@ const menuData: any = [
     },
     {
         id: "ecommerce",
-        label: 'Sales',
+        label: 'Shopping',
         link: "/#",
         icon: <ShoppingBag />,
         subItems: [
@@ -94,8 +94,77 @@ const menuData: any = [
             },
             {
                 id: 'shoppingcart',
-                label: 'Shopping Cart',
+                label: 'Sales Cart',
                 link: '/apps-ecommerce-cart',
+                parentId: 'ecommerce'
+            },
+            // {
+            //     id: 'checkout',
+            //     label: 'Checkout',
+            //     link: '/apps-ecommerce-checkout',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'order',
+            //     label: 'Orders',
+            //     link: '/apps-ecommerce-orders',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'orderoverview',
+            //     label: 'Order Overview',
+            //     link: '/apps-ecommerce-order-overview',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'sellers',
+            //     label: 'Sellers',
+            //     link: '/apps-ecommerce-sellers',
+            //     parentId: 'ecommerce'
+            // },
+        ]
+    },
+    {
+        id: "ecommerce",
+        label: 'Sales',
+        link: "/#",
+        icon: <ShoppingBag />,
+        subItems: [
+            {
+                id: 'product',
+                label: 'Products',
+                parentId: 'ecommerce',
+                subItems: [
+                    {
+                        id: 'listview',
+                        label: 'List of Products',
+                        link: '/apps-ecommerce-sales-product-list',
+                        parentId: 'product'
+                    },
+                    // {
+                    //     id: 'gridview',
+                    //     label: 'Grid View',
+                    //     link: '/apps-ecommerce-product-grid',
+                    //     parentId: 'product'
+                    // },
+                    // {
+                    //     id: 'overview',
+                    //     label: 'Overview',
+                    //     link: '/apps-ecommerce-product-overview',
+                    //     parentId: 'product'
+                    // },
+                    {
+                        id: 'addnew',
+                        label: 'New Product',
+                        link: '/apps-ecommerce-sales-product-create',
+                        parentId: 'product'
+                    },
+                ]
+            },
+            {
+                id: 'shoppingcart',
+                label: 'Shopping Cart',
+                link: '/apps-ecommerce-sales-cart',
                 parentId: 'ecommerce'
             },
             // {
@@ -135,7 +204,7 @@ const menuData: any = [
                 id: 'employeelist',
                 label: 'Employee List',
                 link: '/apps-hr-employee',
-                parentId: 'hrmanagement'
+                parentId: 'hr-management'
             }
             // {
             //     id: 'holiday',
@@ -262,7 +331,7 @@ const menuData: any = [
                 id: 'employeelist',
                 label: 'Ticket List',
                 link: '/apps-tk-ticket',
-                parentId: 'tkmanagement'
+                parentId: 'ticket-management'
             }
         ],
     },
@@ -274,10 +343,10 @@ const menuData: any = [
         link: "/#",
         subItems: [
             {
-                id: 'employeelist',
+                id: 'ticketlist',
                 label: 'Customer List',
                 link: '/apps-customer-list',
-                parentId: 'ctmanagement'
+                parentId: 'customer-management'
             }
         ],
     },

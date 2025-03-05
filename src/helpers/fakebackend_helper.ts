@@ -101,12 +101,12 @@ export const addSellers = (data: any) => api.create(url.ADD_SELLERS, data);
 export const updateSellers = (data: any) => api.update(url.UPDATE_SELLERS, data);
 export const deleteSellers = (data: any) => api.delete(url.DELETE_SELLERS, { headers: { data } });
 
-// Products
+// Shop Products
 // List View
-export const getProductList = () => api.get(url.GET_PRODUCT_LIST, null);
-export const addProductList = (data: any) => api.create(url.ADD_PRODUCT_LIST, data);
-export const updateProductList = (data: any) => api.update(url.UPDATE_PRODUCT_LIST + '/' + data.id, data);
-export const deleteProductList = (data: any) => api.delete(url.DELETE_PRODUCT_LIST + '/' + data, { headers: { data } });
+export const getShopProductList = () => api.get(url.GET_SHOP_PRODUCT_LIST, null);
+export const addShopProductList = (data: any) => api.create(url.ADD_SHOP_PRODUCT_LIST, data);
+export const updateShopProductList = (data: any) => api.update(url.UPDATE_SHOP_PRODUCT_LIST + '/' + data.id, data);
+export const deleteShopProductList = (data: any) => api.delete(url.DELETE_SHOP_PRODUCT_LIST + '/' + data, { headers: { data } });
 
 // Grid View
 export const getProductGrid = () => api.get(url.GET_PRODUCT_GRID, null);
@@ -119,6 +119,13 @@ export const getReview = () => api.get(url.GET_REVIEW, null);
 export const addReview = (data: any) => api.create(url.ADD_REVIEW, data);
 export const updateReview = (data: any) => api.update(url.UPDATE_REVIEW, data);
 export const deleteReview = (data: any) => api.delete(url.DELETE_REVIEW, { headers: { data } });
+
+// Sale Products
+// List View
+export const getSaleProductList = () => api.get(url.GET_SALE_PRODUCT_LIST, null);
+export const addSaleProductList = (data: any) => api.create(url.ADD_SALE_PRODUCT_LIST, data);
+export const updateSaleProductList = (data: any) => api.update(url.UPDATE_SALE_PRODUCT_LIST + '/' + data.id, data);
+export const deleteSaleProductList = (data: any) => api.delete(url.DELETE_SALE_PRODUCT_LIST + '/' + data, { headers: { data } });
 
 // TICKET Management
 // Ticket List

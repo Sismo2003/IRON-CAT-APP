@@ -20,8 +20,8 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 
 import {
-    addShopProductList as onAddProductList,
-    updateShopProductList as onUpdateProductList
+    addSaleProductList as onAddProductList,
+    updateSaleProductList as onUpdateProductList
 } from 'slices/thunk';
 
 // const codigo_producto : string = "CODIGO_AQUI_DB";
@@ -138,12 +138,12 @@ const AddNew = () => {
             if (mode === "edit") {
                 console.log("Actualizando producto:", newData);
                 dispatch(onUpdateProductList({ id: data.id, ...newData })).then(() => {
-                    navigate("/apps-ecommerce-product-list");
+                    navigate("/apps-ecommerce-sales-product-list");
                 });
             } else {
                 console.log("Creando nuevo producto:", newData);
                 dispatch(onAddProductList(newData)).then(() => {
-                    navigate("/apps-ecommerce-product-list");
+                    navigate("/apps-ecommerce-sales-product-list");
                 });
             }
         },

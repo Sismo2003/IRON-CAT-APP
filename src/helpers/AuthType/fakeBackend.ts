@@ -20,7 +20,7 @@ import {
   EventData,
   UserListViewData,
   GridViewData,
-  ListViewData,
+  // ListViewData,
   ProductGridViewData,
   LeaveManageHRData,
   EmployeeSalaryData,
@@ -573,18 +573,18 @@ const fakeBackend = () => {
   //   });
   // });
 
-  mock.onDelete(url.DELETE_PRODUCT_LIST).reply((config: any) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (config && config.headers) {
-          // Passing fake JSON data as response
-          resolve([200, config.headers.data]);
-        } else {
-          reject([400, "cannot delete data"]);
-        }
-      });
-    });
-  });
+  // mock.onDelete(url.DELETE_PRODUCT_LIST).reply((config: any) => {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       if (config && config.headers) {
+  //         // Passing fake JSON data as response
+  //         resolve([200, config.headers.data]);
+  //       } else {
+  //         reject([400, "cannot delete data"]);
+  //       }
+  //     });
+  //   });
+  // });
 
   // Grid View
   mock.onGet(url.GET_PRODUCT_GRID).reply(() => {

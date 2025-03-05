@@ -21,8 +21,11 @@ import MailboxReducer from "./mailbox/reducer";
 // Calendar
 import CalendarReducer from "./calendar/reducer";
 
-// Ecommerce
-import EcommerceReducer from "./ecommerce/reducer";
+// Ecommerce SHOP
+import EcommerceShopReducer from "./ecommerce-shop/reducer";
+
+// Ecommerce SALE
+import EcommerceSaleReducer from "./ecommerce-sale/reducer";
 
 // HR Managment
 import HRManagmentReducer from "./hrManagement/reducer";
@@ -53,7 +56,8 @@ const rootReducer = combineReducers({
     Chat: ChatReducer,
     Mailbox: MailboxReducer,
     Calendar: CalendarReducer,
-    Ecommerce: EcommerceReducer,
+    EcommerceShop: EcommerceShopReducer,
+    EcommerceSale: EcommerceSaleReducer,
     HRManagment: HRManagmentReducer,
     TICKETManagment: TICKETManagmentReducer,
     CUSTOMERManagement: CUSTOMERManagmentReducer,

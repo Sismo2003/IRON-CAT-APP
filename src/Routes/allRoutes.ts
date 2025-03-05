@@ -23,12 +23,17 @@ import Overview from "pages/Ecommerce/Products/Overview";
 import AddNew from "pages/Ecommerce/Products/AddNew";
 import ShoppingCart from "pages/Ecommerce/ShoppingCart";
 import Checkout from "pages/Ecommerce/Checkout";
-import Orders from "pages/Ecommerce/Orders";
+import Orders from "pages/Ecommerce/Orders"; // REMPLAZAR POR LOS TICKETS
 import OrderOverview from "pages/Ecommerce/OrderOverview";
-import Sellers from "pages/Ecommerce/Sellers";
+
+// Ecommerce Sales
+import AddNewSales from "pages/Ecommerce-Sales/Products/AddNew";
+import Sellers from "pages/Ecommerce-Sales/Sellers";
+import ShoppingCartSales from "pages/Ecommerce-Sales/ShoppingCart";
+import ListViewSales from "pages/Ecommerce-Sales/Products/ListView";
 
 //TICKET Management
-import TicketList from "pages/Tickets/TicketList";
+// import TicketList from "pages/Tickets/TicketList";
 
 //CUSTOMER Management
 import CustomerList from "pages/Customers/CustomerList";
@@ -320,10 +325,15 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/apps-ecommerce-checkout", component: Checkout },
   { path: "/apps-ecommerce-orders", component: Orders },
   { path: "/apps-ecommerce-order-overview", component: OrderOverview },
-  { path: "/apps-ecommerce-sellers", component: Sellers },
+
+  // Ecommerce Sales
+  { path: "/apps-ecommerce-sales-product-list", component: ListViewSales },
+  { path: "/apps-ecommerce-sales-product-create", component: AddNewSales },
+  { path: "/apps-ecommerce-sales-cart", component: ShoppingCartSales },
+  { path: "/apps-ecommerce-sales-sellers", component: Sellers },
 
   // TICKET Management
-  { path: "/apps-tk-ticket", component: TicketList },
+  { path: "/apps-tk-ticket", component: Orders },
 
   // CUSTOMER Management
   { path: "/apps-customer-list", component: CustomerList },

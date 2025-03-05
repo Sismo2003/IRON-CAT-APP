@@ -9,10 +9,10 @@ import {
     addSellers as addSellersApi,
     updateSellers as updateSellersApi,
     deleteSellers as deleteSellersApi,
-    getProductList as getProductListApi,
-    addProductList as addProductListApi,
-    updateProductList as updateProductListApi,
-    deleteProductList as deleteProductListApi,
+    getShopProductList as getProductListApi,
+    addShopProductList as addProductListApi,
+    updateShopProductList as updateProductListApi,
+    deleteShopProductList as deleteProductListApi,
     getProductGrid as getProductGridApi,
     addProductGrid as addProductGridApi,
     updateProductGrid as updateProductGridApi,
@@ -25,7 +25,7 @@ import {
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-export const getOrders = createAsyncThunk("ecommerce/getOrders", async () => {
+export const getOrders = createAsyncThunk("ecommerce-shop/getOrders", async () => {
     try {
         const response = getOrdersApi();
         return response;
@@ -33,7 +33,7 @@ export const getOrders = createAsyncThunk("ecommerce/getOrders", async () => {
         return error;
     }
 });
-export const addOrders = createAsyncThunk("ecommerce/addOrders", async (event: any) => {
+export const addOrders = createAsyncThunk("ecommerce-shop/addOrders", async (event: any) => {
     try {
         const response = addOrdersApi(event);
         const data = await response;
@@ -44,7 +44,7 @@ export const addOrders = createAsyncThunk("ecommerce/addOrders", async (event: a
         return error;
     }
 });
-export const updateOrders = createAsyncThunk("ecommerce/updateOrders", async (event: any) => {
+export const updateOrders = createAsyncThunk("ecommerce-shop/updateOrders", async (event: any) => {
     try {
         const response = updateOrdersApi(event);
         const data = await response;
@@ -55,7 +55,7 @@ export const updateOrders = createAsyncThunk("ecommerce/updateOrders", async (ev
         return error;
     }
 });
-export const deleteOrders = createAsyncThunk("ecommerce/deleteOrders", async (event: any) => {
+export const deleteOrders = createAsyncThunk("ecommerce-shop/deleteOrders", async (event: any) => {
     try {
         const response = deleteOrdersApi(event);
         toast.success("Order deleted Successfully", { autoClose: 2000 });
@@ -66,7 +66,7 @@ export const deleteOrders = createAsyncThunk("ecommerce/deleteOrders", async (ev
     }
 });
 
-export const getSellers = createAsyncThunk("ecommerce/getSellers", async () => {
+export const getSellers = createAsyncThunk("ecommerce-shop/getSellers", async () => {
     try {
         const response = getSellersApi();
         return response;
@@ -74,7 +74,7 @@ export const getSellers = createAsyncThunk("ecommerce/getSellers", async () => {
         return error;
     }
 });
-export const addSellers = createAsyncThunk("ecommerce/addSellers", async (event: any) => {
+export const addSellers = createAsyncThunk("ecommerce-shop/addSellers", async (event: any) => {
     try {
         const response = addSellersApi(event);
         const data = await response;
@@ -85,7 +85,7 @@ export const addSellers = createAsyncThunk("ecommerce/addSellers", async (event:
         return error;
     }
 });
-export const updateSellers = createAsyncThunk("ecommerce/updateSellers", async (event: any) => {
+export const updateSellers = createAsyncThunk("ecommerce-shop/updateSellers", async (event: any) => {
     try {
         const response = updateSellersApi(event);
         const data = await response;
@@ -96,7 +96,7 @@ export const updateSellers = createAsyncThunk("ecommerce/updateSellers", async (
         return error;
     }
 });
-export const deleteSellers = createAsyncThunk("ecommerce/deleteSellers", async (event: any) => {
+export const deleteSellers = createAsyncThunk("ecommerce-shop/deleteSellers", async (event: any) => {
     try {
         const response = deleteSellersApi(event);
         toast.success("Seller deleted Successfully", { autoClose: 2000 });
@@ -107,7 +107,7 @@ export const deleteSellers = createAsyncThunk("ecommerce/deleteSellers", async (
     }
 });
 
-export const getProductList = createAsyncThunk("ecommerce/getProductList", async () => {
+export const getShopProductList = createAsyncThunk("ecommerce-shop/getProductList", async () => {
     try {
         const response = getProductListApi();
         return (await response).data;
@@ -115,7 +115,7 @@ export const getProductList = createAsyncThunk("ecommerce/getProductList", async
         return error;
     }
 });
-export const addProductList = createAsyncThunk("ecommerce/addProductList", async (event: any) => {
+export const addShopProductList = createAsyncThunk("ecommerce-shop/addProductList", async (event: any) => {
     try {
         console.log("Event: ", event);
         const response = await addProductListApi(event); // Usa await aquí
@@ -128,7 +128,7 @@ export const addProductList = createAsyncThunk("ecommerce/addProductList", async
         return error;
     }
 });
-export const updateProductList = createAsyncThunk("ecommerce/updateProductList", async (event: any) => {
+export const updateShopProductList = createAsyncThunk("ecommerce-shop/updateProductList", async (event: any) => {
     console.log("Event update: ", event);
     try {
         const response = updateProductListApi(event);
@@ -141,7 +141,7 @@ export const updateProductList = createAsyncThunk("ecommerce/updateProductList",
         return error;
     }
 });
-export const deleteProductList = createAsyncThunk("ecommerce/deleteProductList", async (event: any) => {
+export const deleteShopProductList = createAsyncThunk("ecommerce-shop/deleteProductList", async (event: any) => {
     try {
         const response = deleteProductListApi(event);
         console.log("data delete: ", response);
@@ -153,7 +153,7 @@ export const deleteProductList = createAsyncThunk("ecommerce/deleteProductList",
     }
 });
 
-export const getProductGrid = createAsyncThunk("ecommerce/getProductGrid", async () => {
+export const getProductGrid = createAsyncThunk("ecommerce-shop/getProductGrid", async () => {
     try {
         const response = getProductGridApi();
         return response;
@@ -161,7 +161,7 @@ export const getProductGrid = createAsyncThunk("ecommerce/getProductGrid", async
         return error;
     }
 });
-export const addProductGrid = createAsyncThunk("ecommerce/addProductGrid", async (event: any) => {
+export const addProductGrid = createAsyncThunk("ecommerce-shop/addProductGrid", async (event: any) => {
     try {
         const response = addProductGridApi(event);
         const data = await response;
@@ -172,7 +172,7 @@ export const addProductGrid = createAsyncThunk("ecommerce/addProductGrid", async
         return error;
     }
 });
-export const updateProductGrid = createAsyncThunk("ecommerce/updateProductGrid", async (event: any) => {
+export const updateProductGrid = createAsyncThunk("ecommerce-shop/updateProductGrid", async (event: any) => {
     try {
         const response = updateProductGridApi(event);
         const data = await response;
@@ -183,7 +183,7 @@ export const updateProductGrid = createAsyncThunk("ecommerce/updateProductGrid",
         return error;
     }
 });
-export const deleteProductGrid = createAsyncThunk("ecommerce/deleteProductGrid", async (event: any) => {
+export const deleteProductGrid = createAsyncThunk("ecommerce-shop/deleteProductGrid", async (event: any) => {
     try {
         const response = deleteProductGridApi(event);
         toast.success("Data deleted Successfully", { autoClose: 2000 });
@@ -194,7 +194,7 @@ export const deleteProductGrid = createAsyncThunk("ecommerce/deleteProductGrid",
     }
 });
 
-export const getReview = createAsyncThunk("ecommerce/getReview", async () => {
+export const getReview = createAsyncThunk("ecommerce-shop/getReview", async () => {
     try {
         const response = getReviewApi();
         return response;
@@ -202,7 +202,7 @@ export const getReview = createAsyncThunk("ecommerce/getReview", async () => {
         return error;
     }
 });
-export const addReview = createAsyncThunk("ecommerce/addReview", async (event: any) => {
+export const addReview = createAsyncThunk("ecommerce-shop/addReview", async (event: any) => {
     try {
         const response = addReviewApi(event);
         const data = await response;
@@ -213,7 +213,7 @@ export const addReview = createAsyncThunk("ecommerce/addReview", async (event: a
         return error;
     }
 });
-export const updateReview = createAsyncThunk("ecommerce/updateReview", async (event: any) => {
+export const updateReview = createAsyncThunk("ecommerce-shop/updateReview", async (event: any) => {
     try {
         const response = updateReviewApi(event);
         const data = await response;
@@ -224,7 +224,7 @@ export const updateReview = createAsyncThunk("ecommerce/updateReview", async (ev
         return error;
     }
 });
-export const deleteReview = createAsyncThunk("ecommerce/deleteReview", async (event: any) => {
+export const deleteReview = createAsyncThunk("ecommerce-shop/deleteReview", async (event: any) => {
     try {
         const response = deleteReviewApi(event);
         toast.success("Data deleted Successfully", { autoClose: 2000 });
