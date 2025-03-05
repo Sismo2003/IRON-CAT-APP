@@ -6,13 +6,22 @@ import { Link } from "react-router-dom";
 // import DeleteModal from "Common/DeleteModal";
 import scale from "assets/images/scale.png";
 
+// pull materials
+import {
+  getShopProductList as onGetProductList
+} from 'slices/thunk';
+
+// react-redux
+import { useDispatch, useSelector } from 'react-redux';
+import { createSelector } from 'reselect';
+
 const ws_ip = "ws://187.139.95.141:3001"
 
-const materials = [
-  { value: 10, label: "Iron" },
-  { value: 15, label: "Copper" },
-  { value: 8, label: "Aluminum" },
-];
+// const materials = [
+//   { value: 10, label: "Iron" },
+//   { value: 15, label: "Copper" },
+//   { value: 8, label: "Aluminum" },
+// ];
 
 const scales = [
   { id: 1, name: "Bascula 1", img: scale },
@@ -21,11 +30,51 @@ const scales = [
 ];
 
 const ShoppingCart = () => {
+
+  interface MaterialOption {
+    value: number;
+    label: string;
+    wholesale_price: number;
+    retail_price: number;
+  }
+
+  const dispatch = useDispatch<any>();
+
+  const selectDataList = createSelector(
+      (state: any) => state.EcommerceShop,
+      (state) => ({
+          materialList: state.productList,
+          loading: state.loading
+      })
+  );
+
+  const { materialList } = useSelector(selectDataList);
+
+  const [materials, setMaterials] = useState<MaterialOption[]>([]);
+
   const [cart, setCart] = useState<any>([]);
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
 
+  // Get Data
   useEffect(() => {
+      dispatch(onGetProductList());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (materialList && materialList.length > 0) {
+      const formattedMaterials = materialList.map((product: any) => ({
+        value: product.id, // Usamos el ID como valor
+        label: product.material, // El nombre del material como etiqueta
+        wholesale_price: product.wholesale_price, // Precio de mayoreo
+        retail_price: product.retail_price, // Precio de menudeo
+      }));
+      setMaterials(formattedMaterials);
+    }
+  }, [materialList]);
+
+  useEffect(() => {
+    // setWeights((prev) => ({ ...prev, [1]: 80 })) // Peso de Prueba de la Bascula 1 (80kg)
     const ws = new WebSocket(ws_ip);
 
     ws.onmessage = (event) => {
@@ -46,9 +95,17 @@ const ShoppingCart = () => {
   const handleAddToCart = (scaleId: number) => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
     if (!material) return;
+    console.log("🛒 Agregando al carrito:", material, scaleId);
     const weight = weights[scaleId] || 0;
-    const total = weight * material.value;
-    setCart([...cart, { id: scaleId, material: material.label, weight, price: material.value, total }]);
+    const total = weight * material.wholesale_price; // Usamos el precio de mayoreo
+  
+    setCart([...cart, {
+      id: scaleId,
+      material: material.label,
+      weight,
+      price: material.wholesale_price, // Precio de mayoreo
+      total,
+    }]);
   };
 
   return (
@@ -63,11 +120,11 @@ const ShoppingCart = () => {
                 <img src={scale.img} alt={scale.name} className="w-full max-w-[100px] h-auto rounded-lg mx-auto" />
                 <div>
                   <h5>{scale.name}</h5>
-                  <p className="text-slate-500">Weight: {weights[scale.id] || 0} kg</p>
+                  <p className="text-slate-500">Weight: {weights[scale.id] || 10} kg</p>
                   <Select
                     className="border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                     options={materials}
-                    isSearchable={false} // To disable search
+                    isSearchable={true} // Permitir búsqueda
                     name="materialTypeSelect"
                     id="materialTypeSelect"
                     onChange={(selectedOption) =>
@@ -91,7 +148,7 @@ const ShoppingCart = () => {
             {cart.length === 0 ? (
               <p className="text-slate-500">Carrito está vacío</p>
             ) : (
-              cart.map((item : any, index : any) => (
+              cart.map((item: any, index: any) => (
                 <div key={index} className="flex justify-between p-2 border-b">
                   <span>{item.material} ({item.weight}kg)</span>
                   <span>${item.total.toFixed(2)}</span>
