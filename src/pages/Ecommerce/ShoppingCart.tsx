@@ -73,25 +73,6 @@ const ShoppingCart = () => {
     }
   }, [materialList]);
 
-  useEffect(() => {
-    // setWeights((prev) => ({ ...prev, [1]: 80 })) // Peso de Prueba de la Bascula 1 (80kg)
-    const ws = new WebSocket(ws_ip);
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("📦 Mensaje recibido del WebSocket:", data);
-      if(Array.isArray(data)) {
-        data.forEach(item => {
-          setWeights(prev => ({ ...prev, [item.id]: item.weight }));
-        });
-      } else {
-        setWeights((prev) => ({ ...prev, [data.id]: data.weight }));
-      }
-
-    };
-    return () => ws.close();
-  }, []);
-
   const handleAddToCart = (scaleId: number) => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
     if (!material) return;

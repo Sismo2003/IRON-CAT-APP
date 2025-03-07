@@ -15,76 +15,88 @@ import {
     // Share2, 
     // Table, 
     // Trophy, 
-    UserRound,
+    // UserRound,
     Users, 
     Ticket, 
-    ScrollText,
-    ShoppingBag,
-    House,
-    ShoppingCart,
-
+    ScrollText, 
+    CircuitBoard, 
+    MonitorDot, 
+    ShoppingBag
 } from "lucide-react";
 
 const menuData: any = [
     {
-        label: 'Administación',
+        label: 'menu',
         isTitle: true,
     },
     {
         id: "dashboard",
-        label: 'Inicio',
-        icon: <House />,
+        label: 'Dashboard',
+        icon: <MonitorDot />,
         link: "/dashboard",
         parentId: "1"
+        // subItems: [
+        //     {
+        //         id: 'analyticsdashboard',
+        //         label: 'Analytics',
+        //         link: '/dashboards-analytics',
+        //         parentId: "dashboard"
+        //     },
+        //     {
+        //         id: 'ecommercedashboard',
+        //         label: 'Ecommerce',
+        //         link: '/dashboard',
+        //         parentId: "dashboard"
+        //     }
+        // ]
     },
+
     {
-        label: 'Modulos',
+        label: 'Apps',
         isTitle: true,
     },
-    // Punto de venta
     {
-        id: "salePoint",
-        label: 'Punto de venta',
-        icon: <ShoppingCart />,
-        link: "/#",
-        subItems: [
-            {
-                id: 'listview',
-                label: 'Productos registrados',
-                link: '/apps-ecommerce-product-list',
-                parentId: 'salePoint'
-            },
-            {
-                id: 'addnew',
-                label: 'Nuevo producto',
-                link: '/apps-ecommerce-product-create',
-                parentId: 'salePoint'
-            }
-            // {
-            //     id: 'gridview',
-            //     label: 'Grid View',
-            //     link: '/apps-ecommerce-product-grid',
-            //     parentId: 'product'
-            // },
-            // {
-            //     id: 'overview',
-            //     label: 'Overview',
-            //     link: '/apps-ecommerce-product-overview',
-            //     parentId: 'product'
-            // },
-        ]
-    },
-    {
-        id: "sales",
-        label: 'Ventas',
+        id: "ecommerce",
+        label: 'Shopping',
         link: "/#",
         icon: <ShoppingBag />,
         subItems: [
             {
-                id: 'valves',
-                label: 'Basculas',
-                link: '/apps-ecommerce-sales-cart',
-                parentId: 'sales'
+                id: 'product',
+                label: 'Products',
+                parentId: 'ecommerce',
+                subItems: [
+                    {
+                        id: 'listview',
+                        label: 'List of Products',
+                        link: '/apps-ecommerce-product-list',
+                        parentId: 'product'
+                    },
+                    // {
+                    //     id: 'gridview',
+                    //     label: 'Grid View',
+                    //     link: '/apps-ecommerce-product-grid',
+                    //     parentId: 'product'
+                    // },
+                    // {
+                    //     id: 'overview',
+                    //     label: 'Overview',
+                    //     link: '/apps-ecommerce-product-overview',
+                    //     parentId: 'product'
+                    // },
+                    {
+                        id: 'addnew',
+                        label: 'New Product',
+                        link: '/apps-ecommerce-product-create',
+                        parentId: 'product'
+                    },
+                ]
+            },
+            {
+                id: 'shoppingcart',
+                label: 'Sales Cart',
+                link: '/apps-ecommerce-cart',
+                parentId: 'ecommerce'
             },
             // {
             //     id: 'checkout',
@@ -113,16 +125,86 @@ const menuData: any = [
         ]
     },
     {
-        id: "employees",
-        label: 'Empleados',
-        icon: <Users />,
+        id: "ecommerce",
+        label: 'Sales',
+        link: "/#",
+        icon: <ShoppingBag />,
+        subItems: [
+            {
+                id: 'product',
+                label: 'Products',
+                parentId: 'ecommerce',
+                subItems: [
+                    {
+                        id: 'listview',
+                        label: 'List of Products',
+                        link: '/apps-ecommerce-sales-product-list',
+                        parentId: 'product'
+                    },
+                    // {
+                    //     id: 'gridview',
+                    //     label: 'Grid View',
+                    //     link: '/apps-ecommerce-product-grid',
+                    //     parentId: 'product'
+                    // },
+                    // {
+                    //     id: 'overview',
+                    //     label: 'Overview',
+                    //     link: '/apps-ecommerce-product-overview',
+                    //     parentId: 'product'
+                    // },
+                    {
+                        id: 'addnew',
+                        label: 'New Product',
+                        link: '/apps-ecommerce-sales-product-create',
+                        parentId: 'product'
+                    },
+                ]
+            },
+            {
+                id: 'shoppingcart',
+                label: 'Shopping Cart',
+                link: '/apps-ecommerce-sales-cart',
+                parentId: 'ecommerce'
+            },
+            // {
+            //     id: 'checkout',
+            //     label: 'Checkout',
+            //     link: '/apps-ecommerce-checkout',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'order',
+            //     label: 'Orders',
+            //     link: '/apps-ecommerce-orders',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'orderoverview',
+            //     label: 'Order Overview',
+            //     link: '/apps-ecommerce-order-overview',
+            //     parentId: 'ecommerce'
+            // },
+            // {
+            //     id: 'sellers',
+            //     label: 'Sellers',
+            //     link: '/apps-ecommerce-sellers',
+            //     parentId: 'ecommerce'
+            // },
+        ]
+    },
+    {
+        id: "hr-management",
+        label: 'HR Management',
+        icon: <CircuitBoard />,
+        parentId: "hrmanagement",
         link: "/#",
         subItems: [
             {
-                id: 'employee_list',
+                id: 'employeelist',
                 label: 'Employee List',
                 link: '/apps-hr-employee',
-                parentId: 'employees'
+                parentId: 'hr-management'
             }
             // {
             //     id: 'holiday',
@@ -240,7 +322,7 @@ const menuData: any = [
     },
     {
         id: "ticket-management",
-        label: 'Tickets',
+        label: 'Ticket Management',
         icon: <Ticket />,
         parentId: "tkmanagement",
         link: "/#",
@@ -256,7 +338,7 @@ const menuData: any = [
     {
         id: "customer-management",
         label: 'Customer Management',
-        icon: <UserRound />,
+        icon: <Users />,
         parentId: "ctmanagement",
         link: "/#",
         subItems: [
