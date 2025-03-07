@@ -5,10 +5,10 @@ import useChartColors from "Common/useChartColors";
 const OrdersOverviewChart = ({ chartId }: any) => {
 
     const chartColors = useChartColors(chartId);
-    //  Total Employee
+    //  Total tickets
     const series = [{
-        name: 'Orders',
-        data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 3.4, 5.5, 8.8]
+        name: 'Tickets',
+        data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     }];
 
     var options: any = {
@@ -42,8 +42,8 @@ const OrdersOverviewChart = ({ chartId }: any) => {
             }
         },
         xaxis: {
-            categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            position: 'top',
+            categories: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dec"],
+            position: 'bottom   ',
             axisBorder: {
                 show: false
             },

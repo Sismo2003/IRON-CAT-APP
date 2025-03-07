@@ -23,11 +23,11 @@ const DeleteModal: React.FC<props> = ({ show, onHide, onDelete }) => {
                     </div>
                     <img src={deleteImg} alt="" className="block h-12 mx-auto" />
                     <div className="mt-5 text-center">
-                        <h5 className="mb-1">Are you sure?</h5>
-                        <p className="text-slate-500 dark:text-zink-200">Are you certain you want to delete this record?</p>
+                        <h5 className="mb-1">Estas seguro?</h5>
+                        <p className="text-slate-500 dark:text-zink-200">Seguro que deseas borrar este registro?</p>
                         <div className="flex justify-center gap-2 mt-6">
-                            <button type="reset" className="bg-white text-slate-500 btn hover:text-slate-500 hover:bg-slate-100 focus:text-slate-500 focus:bg-slate-100 active:text-slate-500 active:bg-slate-100 dark:bg-zink-600 dark:hover:bg-slate-500/10 dark:focus:bg-slate-500/10 dark:active:bg-slate-500/10" onClick={onHide}>Cancel</button>
-                            <button type="submit" id="deleteRecord" data-modal-close="deleteModal" className="text-white bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100 dark:ring-custom-400/20" onClick={onDelete}>Yes, Delete It!</button>
+                            <button type="reset" className="bg-white text-slate-500 btn hover:text-slate-500 hover:bg-slate-100 focus:text-slate-500 focus:bg-slate-100 active:text-slate-500 active:bg-slate-100 dark:bg-zink-600 dark:hover:bg-slate-500/10 dark:focus:bg-slate-500/10 dark:active:bg-slate-500/10" onClick={onHide}>Cancelar</button>
+                            <button type="submit" id="deleteRecord" data-modal-close="deleteModal" className="text-white bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100 dark:ring-custom-400/20" onClick={onDelete}>Si, Borralo!</button>
                         </div>
                     </div>
                 </Modal.Body>

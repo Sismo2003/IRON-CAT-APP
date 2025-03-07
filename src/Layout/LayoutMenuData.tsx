@@ -50,17 +50,39 @@ const menuData: any = [
         link: "/#",
         subItems: [
             {
-                id: 'listview',
-                label: 'Productos registrados',
-                link: '/apps-ecommerce-product-list',
+                id: 'products',
+                label: 'Control de productos',
+                parentId: 'salePoint',
+                subItems: [
+                    {
+                        id: 'listview',
+                        label: 'Productos registrados',
+                        link: '/apps-ecommerce-product-list',
+                        parentId: 'products'
+                    },
+                    {
+                        id: 'addnew',
+                        label: 'Nuevo producto',
+                        link: '/apps-ecommerce-product-create',
+                        parentId: 'products'
+                    },
+                ]
+            },
+            {
+                id: 'All-tickets',
+                label: 'Histórico Tickets',
+                link: '/apps-tk-ticket',
                 parentId: 'salePoint'
             },
             {
-                id: 'addnew',
-                label: 'Nuevo producto',
-                link: '/apps-ecommerce-product-create',
+                id: 'All-tickets',
+                label: 'Caja',
+                link: '/apps-tk-authorization',
                 parentId: 'salePoint'
             }
+
+
+
             // {
             //     id: 'gridview',
             //     label: 'Grid View',
@@ -243,21 +265,6 @@ const menuData: any = [
             //         },
             //     ]
             // },
-        ],
-    },
-    {
-        id: "ticket-management",
-        label: 'Tickets',
-        icon: <Ticket />,
-        parentId: "tkmanagement",
-        link: "/#",
-        subItems: [
-            {
-                id: 'employeelist',
-                label: 'Ticket List',
-                link: '/apps-tk-ticket',
-                parentId: 'ticket-management'
-            }
         ],
     },
     {

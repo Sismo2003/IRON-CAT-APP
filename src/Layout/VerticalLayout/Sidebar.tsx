@@ -6,7 +6,7 @@ import React from 'react';
 import icon_bk from "assets/images/iron-cat-logo-3/logo-bk.png";
 import icon_wh from "assets/images/iron-cat-logo-3/Icon_wh.png";
 
-import logo_bk from "assets/images/iron-cat-logo-3/logo-black-h.png";
+import logo_bk from "assets/images/iron-cat-logo-gio/ironcat2.jpeg";
 import logo_wh from "assets/images/iron-cat-logo-3/logo-white-H.png";
 
 

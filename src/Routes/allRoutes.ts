@@ -23,7 +23,7 @@ import Overview from "pages/Ecommerce/Products/Overview";
 import AddNew from "pages/Ecommerce/Products/AddNew";
 import ShoppingCart from "pages/Ecommerce/ShoppingCart";
 import Checkout from "pages/Ecommerce/Checkout";
-import Orders from "pages/Ecommerce/Orders"; // REMPLAZAR POR LOS TICKETS
+import Orders from "pages/Ecommerce-Sales/Orders"; // REMPLAZAR POR LOS TICKETS
 import OrderOverview from "pages/Ecommerce/OrderOverview";
 
 // Ecommerce Sales
@@ -323,8 +323,7 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/apps-ecommerce-product-create", component: AddNew },
   { path: "/apps-ecommerce-cart", component: ShoppingCart },
   { path: "/apps-ecommerce-checkout", component: Checkout },
-  { path: "/apps-ecommerce-orders", component: Orders },
-  { path: "/apps-ecommerce-order-overview", component: OrderOverview },
+
 
   // Ecommerce Sales
   { path: "/apps-ecommerce-sales-product-list", component: ListViewSales },
@@ -334,6 +333,7 @@ const authProtectedRoutes: Array<RouteObject> = [
 
   // TICKET Management
   { path: "/apps-tk-ticket", component: Orders },
+  { path: "/apps-tk-authorization", component: OrderOverview },
 
   // CUSTOMER Management
   { path: "/apps-customer-list", component: CustomerList },
