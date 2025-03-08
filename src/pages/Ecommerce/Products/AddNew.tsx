@@ -96,10 +96,10 @@ const AddNew = () => {
         enableReinitialize: true,
         initialValues: {
             material: (eventData && eventData.material) || '',
-            wholesale_price_buy: (eventData && eventData.wholesale_price) || '',
-            wholesale_price_sell: (eventData && eventData.wholesale_price) || '',
-            retail_price_buy: (eventData && eventData.retail_price) || '',
-            retail_price_sell: (eventData && eventData.retail_price) || '',
+            wholesale_price_buy: (eventData && eventData.wholesale_price_buy) || '',
+            wholesale_price_sell: (eventData && eventData.wholesale_price_sell) || '',
+            retail_price_buy: (eventData && eventData.retail_price_buy) || '',
+            retail_price_sell: (eventData && eventData.retail_price_sell) || '',
             client_id: (eventData && eventData.client_id) || '',
             img: (eventData && eventData.img) || null, // Incluir la imagen en los valores iniciales
         },
@@ -363,7 +363,7 @@ const AddNew = () => {
                                 
                                 </div>
                                 <div className="flex justify-end gap-2 mt-4">
-                                    <button type="reset" className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-700 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10">Cancelar</button>
+                                    <button type="reset" onClick={ () => navigate("/apps-ecommerce-product-list")} className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-700 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10">Cancelar</button>
                                     <button type="submit" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">{ mode === "edit" ? "Editar Producto" : "Crear Producto" }</button>
                                     {/* <button type="button" className="text-white bg-green-500 border-green-500 btn hover:text-white hover:bg-green-600 hover:border-green-600 focus:text-white focus:bg-green-600 focus:border-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:border-green-600 active:ring active:ring-green-100 dark:ring-green-400/10">Draft & Preview</button> */}
                                 </div>
