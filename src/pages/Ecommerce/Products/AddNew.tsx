@@ -96,14 +96,19 @@ const AddNew = () => {
         enableReinitialize: true,
         initialValues: {
             material: (eventData && eventData.material) || '',
-            wholesale_price: (eventData && eventData.wholesale_price) || '',
-            retail_price: (eventData && eventData.retail_price) || '',
+            wholesale_price_buy: (eventData && eventData.wholesale_price) || '',
+            wholesale_price_sell: (eventData && eventData.wholesale_price) || '',
+            retail_price_buy: (eventData && eventData.retail_price) || '',
+            retail_price_sell: (eventData && eventData.retail_price) || '',
+            client_id: (eventData && eventData.client_id) || '',
             img: (eventData && eventData.img) || null, // Incluir la imagen en los valores iniciales
         },
         validationSchema: Yup.object({
             material: Yup.string().required("Por favor ingresa el nombre del material"),
-            wholesale_price: Yup.number().required("Por favor ingresa el precio de mayoreo"),
-            retail_price: Yup.number().required("Por favor ingresa el precio de menudeo"),
+            wholesale_price_buy: Yup.number(),
+            wholesale_price_sell: Yup.number(),
+            retail_price_buy: Yup.number(),
+            retail_price_sell: Yup.number(),
             img: Yup.mixed()
                 .required("Por favor selecciona una imagen")
                 .test("fileSize", "La imagen es demasiado grande", (value) => {
@@ -131,8 +136,10 @@ const AddNew = () => {
         onSubmit: (values) => {
             const newData = {
                 ...values,
-                wholesale_price: parseFloat(values.wholesale_price),
-                retail_price: parseFloat(values.retail_price),
+                wholesale_price_buy: parseFloat(values.wholesale_price_buy),
+                retail_price_buy: parseFloat(values.retail_price_buy),
+                wholesale_price_sell: parseFloat(values.wholesale_price_sell),
+                retail_price_sell: parseFloat(values.retail_price_sell),
             };
 
             if (mode === "edit") {
@@ -199,27 +206,86 @@ const AddNew = () => {
                                     </div>
                                 
                                     
-                                    <div className="xl:col-span-4">
-                                        <label htmlFor="wholesale_price" className="inline-block mb-2 text-base font-medium">Precio Mayoreo por Kg*</label>
-                                        <input type="number" id="wholesale_price" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="$ 10.2"
-                                            name="wholesale_price"
-                                            onChange={validation.handleChange}
-                                            value={validation.values.wholesale_price || ""}
-                                        />
-                                        {validation.touched.wholesale_price && validation.errors.wholesale_price ? (
-                                            <p className="text-red-400">{validation.errors.wholesale_price}</p>
-                                        ) : null}
+                                    {/* Sección de Precios en Compra */}
+                                    <div className="xl:col-span-12 p-4 bg-slate-50 dark:bg-zink-600 rounded-md">
+                                        <h4 className="mb-4 text-15">Precios en Compra</h4>
+                                        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                                            <div>
+                                                <label htmlFor="wholesale_price_buy" className="inline-block mb-2 text-base font-medium">
+                                                    Precio Mayoreo por Kg*
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    id="wholesale_price_buy"
+                                                    className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                    placeholder="$ 10.2"
+                                                    name="wholesale_price_buy"
+                                                    onChange={validation.handleChange}
+                                                    value={validation.values.wholesale_price_buy || ""}
+                                                />
+                                                {validation.touched.wholesale_price_buy && validation.errors.wholesale_price_buy ? (
+                                                    <p className="text-red-400">{validation.errors.wholesale_price_buy}</p>
+                                                ) : null}
+                                            </div>
+                                            <div>
+                                                <label htmlFor="retail_price_buy" className="inline-block mb-2 text-base font-medium">
+                                                    Precio Menudeo por Kg*
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    id="retail_price_buy"
+                                                    placeholder="$ 13.2"
+                                                    className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                    name="retail_price_buy"
+                                                    onChange={validation.handleChange}
+                                                    value={validation.values.retail_price_buy || ""}
+                                                />
+                                                {validation.touched.retail_price_buy && validation.errors.retail_price_buy ? (
+                                                    <p className="text-red-400">{validation.errors.retail_price_buy}</p>
+                                                ) : null}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="xl:col-span-4">
-                                        <label htmlFor="retail_price" className="inline-block mb-2 text-base font-medium">Precio Menudeo por Kg*</label>
-                                        <input type="number" id="retail_price"  placeholder="$ 13.2"  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" 
-                                            name="retail_price"
-                                            onChange={validation.handleChange}
-                                            value={validation.values.retail_price || ""}
-                                        />
-                                        {validation.touched.retail_price && validation.errors.retail_price ? (
-                                            <p className="text-red-400">{validation.errors.retail_price}</p>
-                                        ) : null}
+
+                                    {/* Sección de Precios en Venta */}
+                                    <div className="xl:col-span-12 p-4 bg-slate-50 dark:bg-zink-600 rounded-md">
+                                        <h4 className="mb-4 text-15">Precios en Venta</h4>
+                                        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                                            <div>
+                                                <label htmlFor="retail_price_sell" className="inline-block mb-2 text-base font-medium">
+                                                    Precio Mayoreo por Kg*
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    id="retail_price_sell"
+                                                    placeholder="$ 13.2"
+                                                    className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                    name="retail_price_sell"
+                                                    onChange={validation.handleChange}
+                                                    value={validation.values.retail_price_sell || ""}
+                                                />
+                                                {validation.touched.retail_price_sell && validation.errors.retail_price_sell ? (
+                                                    <p className="text-red-400">{validation.errors.retail_price_sell}</p>
+                                                ) : null}
+                                            </div>
+                                            <div>
+                                                <label htmlFor="retail_price_sell" className="inline-block mb-2 text-base font-medium">
+                                                    Precio Menudeo por Kg*
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    id="retail_price_sell"
+                                                    placeholder="$ 13.2"
+                                                    className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                    name="retail_price_sell"
+                                                    onChange={validation.handleChange}
+                                                    value={validation.values.retail_price_sell || ""}
+                                                />
+                                                {validation.touched.retail_price_sell && validation.errors.retail_price_sell ? (
+                                                    <p className="text-red-400">{validation.errors.retail_price_sell}</p>
+                                                ) : null}
+                                            </div>
+                                        </div>
                                     </div>
 
 

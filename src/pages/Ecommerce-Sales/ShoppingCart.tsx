@@ -110,7 +110,7 @@ const ShoppingCart = () => {
 
   return (
     <>
-      <BreadCrumb title="Carrito de Compra" pageTitle="Punto de Venta" />
+      <BreadCrumb title="Carrito de Ventas" pageTitle="Ventas" />
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
         <div className="xl:col-span-9">
           <h5 className="underline text-16 mb-5">Basculas</h5>
@@ -120,7 +120,7 @@ const ShoppingCart = () => {
                 <img src={scale.img} alt={scale.name} className="w-full max-w-[100px] h-auto rounded-lg mx-auto" />
                 <div>
                   <h5>{scale.name}</h5>
-                  <p className="text-slate-500">Weight: {weights[scale.id] || 10} kg</p>
+                  <p className="text-slate-500">Weight: {weights[scale.id] || 0} kg</p>
                   <Select
                     className="border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                     options={materials}
@@ -144,7 +144,7 @@ const ShoppingCart = () => {
         </div>
         <div className="xl:col-span-3">
           <div className="card p-4 bg-white shadow rounded-lg">
-            <h6 className="mb-4 text-15">Shopping Cart <span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{ cart.length ? cart.length : 0 }</span></h6>
+            <h6 className="mb-4 text-15">Carrito de Ventas <span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{ cart.length ? cart.length : 0 }</span></h6>
             {cart.length === 0 ? (
               <p className="text-slate-500">Carrito está vacío</p>
             ) : (

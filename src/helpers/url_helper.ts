@@ -1,5 +1,5 @@
-const servidor_ip : string = "http://187.139.27.163:3000";
-//const servidor_ip : string = "http://localhost:3000"; // TEST
+// const servidor_ip : string = "http://thegrid.myddns.me:3000";
+const servidor_ip : string = "http://localhost:3000"; // TEST
 
 // REGISTER
 export const POST_FAKE_REGISTER = "/auth/signup";
@@ -53,10 +53,10 @@ export const DELETE_SELLERS = "/delete-sellers";
 
 // Products
 // List View
-export const GET_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce-shop/get-product-list";
-export const ADD_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce-shop/add-product-list";
-export const UPDATE_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce-shop/edit-product-list";
-export const DELETE_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce-shop/delete-product-list";
+export const GET_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce/get-product-list";
+export const ADD_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce/add-product-list";
+export const UPDATE_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce/edit-product-list";
+export const DELETE_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce/delete-product-list";
 
 // Grid View
 export const GET_PRODUCT_GRID = "/get-product-grid";
@@ -72,10 +72,10 @@ export const DELETE_REVIEW = "/delete-review";
 
 // Products
 // List View
-export const GET_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce-sale/get-product-list";
-export const ADD_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce-sale/add-product-list";
-export const UPDATE_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce-sale/edit-product-list";
-export const DELETE_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce-sale/delete-product-list";
+export const GET_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce/get-product-list";
+export const ADD_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce/add-product-list";
+export const UPDATE_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce/edit-product-list";
+export const DELETE_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce/delete-product-list";
 
 // HR Management
 // Employee List
@@ -93,10 +93,10 @@ export const DELETE_TICKET =  servidor_ip + "/hr/delete-ticket";
 
 // CUSTOMER Management
 // CUSTOMER List
-export const GET_CUSTOMER =  servidor_ip + "/customer-shop/get-customer";
-export const ADD_CUSTOMER =  servidor_ip + "/customer-shop/add-customer";
-export const UPDATE_CUSTOMER =  servidor_ip + "/customer-shop/edit-customer";
-export const DELETE_CUSTOMER =  servidor_ip + "/customer-shop/delete-customer";
+export const GET_CUSTOMER =  servidor_ip + "/customer/get-customer";
+export const ADD_CUSTOMER =  servidor_ip + "/customer/add-customer";
+export const UPDATE_CUSTOMER =  servidor_ip + "/customer/edit-customer";
+export const DELETE_CUSTOMER =  servidor_ip + "/customer/delete-customer";
 
 // Holidays
 export const GET_HOLIDAYS = "/get-holidays";

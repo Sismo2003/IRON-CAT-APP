@@ -100,16 +100,32 @@ const ListView = () => {
             ),
         },
         {
-            header: "Precio Mayoreo",
-            accessorKey: "wholesale_price",
+            header: "Precio Mayoreo en Compra",
+            accessorKey: "wholesale_price_buy",
             enableColumnFilter: false,
             cell: (cell: any) => (
                 <span className="category px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-slate-100 border-slate-200 text-slate-500 dark:bg-slate-500/20 dark:border-slate-500/20 dark:text-zink-200">{cell.getValue()}</span>
             ),
         },
         {
-            header: "Precio Menudeo",
-            accessorKey: "retail_price",
+            header: "Precio Menudeo en Compra",
+            accessorKey: "retail_price_buy",
+            enableColumnFilter: false,
+            cell: (cell: any) => (
+                <span className="category px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-slate-100 border-slate-200 text-slate-500 dark:bg-slate-500/20 dark:border-slate-500/20 dark:text-zink-200">{cell.getValue()}</span>
+            ),
+        },
+        {
+            header: "Precio Mayoreo en Venta",
+            accessorKey: "wholesale_price_sell",
+            enableColumnFilter: false,
+            cell: (cell: any) => (
+                <span className="category px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-slate-100 border-slate-200 text-slate-500 dark:bg-slate-500/20 dark:border-slate-500/20 dark:text-zink-200">{cell.getValue()}</span>
+            ),
+        },
+        {
+            header: "Precio Menudeo en Venta",
+            accessorKey: "retail_price_sell",
             enableColumnFilter: false,
             cell: (cell: any) => (
                 <span className="category px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-slate-100 border-slate-200 text-slate-500 dark:bg-slate-500/20 dark:border-slate-500/20 dark:text-zink-200">{cell.getValue()}</span>
