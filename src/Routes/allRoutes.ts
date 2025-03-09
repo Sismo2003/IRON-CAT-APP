@@ -1,6 +1,42 @@
+//****** IRON CAT IMPORTS *****
+//--------- dashboard ---------//
+import Ecommerce from "pages/Dashboards/Ecommerce"; // Inicio
+// ---------Point Sale----------//
+  // -- Products
+    //Original folder
+import ListView from "pages/Ecommerce/Products/ListView"; // Productos Registrados
+import AddNew from "pages/Ecommerce/Products/AddNew"; // Nuevo Producto
+    //New folder!
+import AllProducts from "pages/PointSales/ProductsControl/AllProducts/ListView"; // Productos Registrados
+import NewProduct from "pages/PointSales/ProductsControl/NewProduct/AddNew"; // Nuevo Registrados
+  //-- Tickets
+    //Original folder
+import Orders from "pages/Ecommerce-Sales/Orders"; // Historicos de tickets
+import OrderOverview from "pages/Ecommerce/OrderOverview"; //Caja
+    //New folder!
+import AllTickets from "pages/Tickets/TicketList/AllTickets";
+import CashRegister from "pages/Tickets/CashRegister/caja"; //Caja
+
+//--------Valves - these are new folders! --------//
+  // Sales
+import SalesCart from "pages/Valves/Sales/SalesCart"; // Venta
+  // Buys
+import BuysCart from "pages/Valves/Buys/BuysCart"; // Compra
+
+//--------- Employees -----------//
+import EmployeeList from "pages/HRManagement/EmployeeList"; // Lista de empleados
+
+//----------- Customer Management -----------//
+import CustomerList from "pages/Customers/CustomerList"; // Clientes registrados
+
+//-----------Notes-----------//
+import Notes from "pages/Notes"; // Notas
+
+//----------------------------//
+// *** TAILWICK IMPORTS ***
 // dashboard
+// import Ecommerce from "pages/Dashboards/Ecommerce";
 import Analytics from "pages/Dashboards/Analytics";
-import Ecommerce from "pages/Dashboards/Ecommerce";
 import Email from "pages/Dashboards/Email";
 import HRDashboard from "pages/Dashboards/HR";
 import SocialMediaDashboard from "pages/Dashboards/SocialMedia";
@@ -17,14 +53,14 @@ import MonthGrid from "pages/Calendar/MonthGrid";
 import MultiMonthStack from "pages/Calendar/MultiMonthStack";
 
 // Ecommerce
-import ListView from "pages/Ecommerce/Products/ListView";
+// import ListView from "pages/Ecommerce/Products/ListView";
 import GridView from "pages/Ecommerce/Products/GridView";
 import Overview from "pages/Ecommerce/Products/Overview";
-import AddNew from "pages/Ecommerce/Products/AddNew";
+// import AddNew from "pages/Ecommerce/Products/AddNew";
 import ShoppingCart from "pages/Ecommerce/ShoppingCart";
 import Checkout from "pages/Ecommerce/Checkout";
-import Orders from "pages/Ecommerce-Sales/Orders"; // REMPLAZAR POR LOS TICKETS
-import OrderOverview from "pages/Ecommerce/OrderOverview";
+// import Orders from "pages/Ecommerce-Sales/Orders";
+// import OrderOverview from "pages/Ecommerce/OrderOverview";
 
 // Ecommerce Sales
 import AddNewSales from "pages/Ecommerce-Sales/Products/AddNew";
@@ -32,14 +68,11 @@ import Sellers from "pages/Ecommerce-Sales/Sellers";
 import ShoppingCartSales from "pages/Ecommerce-Sales/ShoppingCart";
 import ListViewSales from "pages/Ecommerce-Sales/Products/ListView";
 
-//TICKET Management
-// import TicketList from "pages/Tickets/TicketList";
 
-//CUSTOMER Management
-import CustomerList from "pages/Customers/CustomerList";
+
 
 // HR Management
-import EmployeeList from "pages/HRManagement/EmployeeList";
+// import EmployeeList from "pages/HRManagement/EmployeeList";
 import Holidays from "pages/HRManagement/Holidays";
 import LeaveManageEmployee from "pages/HRManagement/Leaves Manage/LeaveManageEmployee";
 import AddLeaveEmployee from "pages/HRManagement/Leaves Manage/AddLeaveEmployee";
@@ -55,8 +88,6 @@ import EmployeeSalary from "pages/HRManagement/Payroll/EmployeeSalary";
 import Payslip from "pages/HRManagement/Payroll/Payslip";
 import CreatePayslip from "pages/HRManagement/Payroll/CreatePayslip";
 
-// Notes
-import Notes from "pages/Notes";
 
 // Social Media
 import Friends from "pages/SocialMedia/Friends";
@@ -207,6 +238,7 @@ import Pricing from "pages/Pages/Pricing";
 import Faqs from "pages/Pages/Faqs";
 import ContactUs from "pages/Pages/ContactUs";
 
+
 interface RouteObject {
   path: string;
   component: React.ComponentType<any>; // Use React.ComponentType to specify the type of the component
@@ -214,9 +246,53 @@ interface RouteObject {
 }
 
 const authProtectedRoutes: Array<RouteObject> = [
-  // Dashboard
+  // *** IRON CAT ROUTES ***
+//---------------authentication-----------------//
+
+  { path: "/login", component: Login }, // this will need to edit
+  { path: "/logout", component: Logout },
+  { path: "/register", component: Register },
+
+//---------------Dashboard------------------//
   { path: "/", component: Ecommerce },
   { path: "/dashboard", component: Ecommerce },
+
+//--------------Sale Point------------------//
+  // Products
+    // * Original routes *
+  { path: "/apps-ecommerce-product-list", component: ListView },
+  { path: "/apps-ecommerce-product-create", component: AddNew },
+    // * New route + new folder *
+  { path: "/product-list", component: AllProducts },
+  { path: "/create-product", component: NewProduct },
+
+  // Ticket Management
+    // * Original Route *
+  { path: "/apps-tk-ticket", component: Orders }, // 'Historicos Tickets' in sidebar
+  { path: "/apps-tk-authorization", component: OrderOverview }, // 'Caja' in sidebar
+    // * New route + new folder *
+  { path: "/ticket-list", component: AllTickets },// 'Historicos Tickets' in sidebar
+  { path: "/cash-register", component: CashRegister }, // caja in sidebar
+//--------------Valves-------------------//
+
+  { path: "/sales", component: SalesCart },
+  { path: "/buys", component: BuysCart },
+
+//-------------Employees-------------------//
+  { path: "/employee-list", component: EmployeeList },
+
+//-------------Customer Management-------------------//
+  { path: "/customer-list", component: CustomerList },
+
+//---------------Notes------------------//
+  { path: "/notes", component: Notes },
+//---------------------------------//
+
+
+
+
+  // **** TAILWICK ROUTES! *****
+  // Dashboard
   { path: "/dashboards-analytics", component: Analytics },
   { path: "/dashboards-email", component: Email },
   { path: "/dashboards-hr", component: HRDashboard },
@@ -317,10 +393,9 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/apps-calendar-multi-month-stack", component: MultiMonthStack },
 
   // Ecommerce
-  { path: "/apps-ecommerce-product-list", component: ListView },
+
   { path: "/apps-ecommerce-product-grid", component: GridView },
   { path: "/apps-ecommerce-product-overview", component: Overview },
-  { path: "/apps-ecommerce-product-create", component: AddNew },
   { path: "/apps-ecommerce-cart", component: ShoppingCart },
   { path: "/apps-ecommerce-checkout", component: Checkout },
 
@@ -331,15 +406,8 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/apps-ecommerce-sales-cart", component: ShoppingCartSales },
   { path: "/apps-ecommerce-sales-sellers", component: Sellers },
 
-  // TICKET Management
-  { path: "/apps-tk-ticket", component: Orders },
-  { path: "/apps-tk-authorization", component: OrderOverview },
-
-  // CUSTOMER Management
-  { path: "/apps-customer-list", component: CustomerList },
 
   // HR Management
-  { path: "/apps-hr-employee", component: EmployeeList },
   { path: "/apps-hr-holidays", component: Holidays },
   { path: "/apps-hr-leave-employee", component: LeaveManageEmployee },
   { path: "/apps-hr-create-leave-employee", component: AddLeaveEmployee },
@@ -355,8 +423,7 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/apps-hr-payroll-payslip", component: Payslip },
   { path: "/apps-hr-payroll-create-payslip", component: CreatePayslip },
 
-  // Notes
-  { path: "/apps-notes", component: Notes },
+
 
   // Social Media
   { path: "/apps-social-friends", component: Friends },
@@ -441,10 +508,8 @@ const publicRoutes = [
   { path: "/pages-maintenance", component: Maintenance },
 
 
-  // authentication
-  { path: "/login", component: Login },
-  { path: "/logout", component: Logout },
-  { path: "/register", component: Register },
+
+
 
 ]
 

@@ -57,29 +57,55 @@ const menuData: any = [
                     {
                         id: 'listview',
                         label: 'Productos registrados',
-                        link: '/apps-ecommerce-product-list',
+                        link: '/product-list',
                         parentId: 'products'
                     },
                     {
                         id: 'addnew',
                         label: 'Nuevo producto',
-                        link: '/apps-ecommerce-product-create',
+                        link: '/create-product',
                         parentId: 'products'
-                    },
+                    }
+                    // old routes !
+                    // {
+                    //     id: 'listview',
+                    //     label: 'Productos registrados',
+                    //     link: '/apps-ecommerce-product-list',
+                    //     parentId: 'products'
+                    // },
+                    // {
+                    //     id: 'addnew',
+                    //     label: 'Nuevo producto',
+                    //     link: '/apps-ecommerce-product-create',
+                    //     parentId: 'products'
+                    // },
                 ]
             },
             {
                 id: 'All-tickets',
                 label: 'Histórico Tickets',
-                link: '/apps-tk-ticket',
+                link: '/ticket-list',
                 parentId: 'salePoint'
             },
             {
                 id: 'All-tickets',
                 label: 'Caja',
-                link: '/apps-tk-authorization',
+                link: '/cash-register',
                 parentId: 'salePoint'
             }
+            // old routes !
+            // {
+            //     id: 'All-tickets',
+            //     label: 'Histórico Tickets',
+            //     link: '/apps-tk-ticket',
+            //     parentId: 'salePoint'
+            // },
+            // {
+            //     id: 'All-tickets',
+            //     label: 'Caja',
+            //     link: '/apps-tk-authorization',
+            //     parentId: 'salePoint'
+            // }
 
 
 
@@ -106,15 +132,28 @@ const menuData: any = [
             {
                 id: 'valves',
                 label: 'Venta',
-                link: '/apps-ecommerce-sales-cart',
+                link: '/sales',
                 parentId: 'valves'
             },
             {
                 id: 'valves',
                 label: 'Compra',
-                link: '/apps-ecommerce-sales-cart',
+                link: '/buys',
                 parentId: 'valves'
             },
+            // Old routes
+            // {
+            //     id: 'valves',
+            //     label: 'Venta',
+            //     link: '/apps-ecommerce-sales-cart',
+            //     parentId: 'valves'
+            // },
+            // {
+            //     id: 'valves',
+            //     label: 'Compra',
+            //     link: '/apps-ecommerce-sales-cart',
+            //     parentId: 'valves'
+            // },
             // {
             //     id: 'checkout',
             //     label: 'Checkout',
@@ -150,7 +189,7 @@ const menuData: any = [
             {
                 id: 'employee_list',
                 label: 'Employee List',
-                link: '/apps-hr-employee',
+                link: '/employee-list',
                 parentId: 'employees'
             }
             // {
@@ -271,13 +310,12 @@ const menuData: any = [
         id: "customer-management",
         label: 'Clientes',
         icon: <UserRound />,
-        parentId: "ctmanagement",
         link: "/#",
         subItems: [
             {
                 id: 'ticketlist',
                 label: 'Clientes registrados',
-                link: '/apps-customer-list',
+                link: '/customer-list',
                 parentId: 'customer-management'
             }
         ],
@@ -286,7 +324,7 @@ const menuData: any = [
         id: 'notes',
         label: 'Notes',
         icon: <ScrollText />,
-        link: '/apps-notes',
+        link: '/notes',
         parentId: 2
     },
     // // {

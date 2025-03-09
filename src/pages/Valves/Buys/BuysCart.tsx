@@ -35,7 +35,7 @@ const scales = [
   { id: 3, name: "Bascula 3", img: scale },
 ];
 
-const ShoppingCart = () => {
+const BuysCart = () => {
 
   interface MaterialOption {
     value: number;
@@ -172,5 +172,5 @@ const ShoppingCart = () => {
   );
 };
 
-export default ShoppingCart;
+export default BuysCart;
 

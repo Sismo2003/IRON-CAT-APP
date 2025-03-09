@@ -5,9 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0262388d-c0eb-44c8-b4c7-0bc111cbde00" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/pages/Employees/EmployeeList.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/PointSales/ProductsControl/AllProducts/ListView.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/PointSales/ProductsControl/NewProduct/AddNew.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/Tickets/CashRegister/caja.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/Tickets/TicketList/AllTickets.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/Tickets/TicketList/charts.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/Valves/Buys/BuysCart.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/Valves/Sales/SalesCart.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Layout/LayoutMenuData.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Layout/LayoutMenuData.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Routes/allRoutes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Routes/allRoutes.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/helpers/url_helper.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/helpers/url_helper.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Ecommerce/ShoppingCart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Ecommerce/ShoppingCart.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Ecommerce-Sales/ShoppingCart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Ecommerce-Sales/ShoppingCart.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,8 +54,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/views/app.js" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/views/load.php" root0="FORCE_HIGHLIGHTING" root1="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/pages/Tickets/AllTickets.tsx" root0="SKIP_INSPECTION" />
   </component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP 8.3">
     <include_path>
@@ -100,37 +109,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/sismo/Developer/iron-cat-web&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/opt/homebrew/lib/node_modules/prettier&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/sismo/Developer/iron-cat-web/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "orderRoutes",
+    "last_opened_file_path": "/Users/sismo/Developer/iron-cat-web/src/pages/Employees",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "prettierjs.PrettierConfiguration.Package": "/opt/homebrew/lib/node_modules/prettier",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "ts.external.directory.path": "/Users/sismo/Developer/iron-cat-web/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/pages/menu" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/views/pages/engine" />
-      <recent name="$PROJECT_DIR$/views/pages/menu" />
+      <recent name="$PROJECT_DIR$/src/pages/Employees" />
+      <recent name="$PROJECT_DIR$/src/pages/Tickets/CashRegister" />
+      <recent name="$PROJECT_DIR$/src/pages/Tickets/AllTickets" />
+      <recent name="$PROJECT_DIR$/src/pages/Tickets" />
+      <recent name="$PROJECT_DIR$/src/pages/PointSales/ProductsControl/AllProducts" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/pages/Tickets/AllTickets" />
       <recent name="$PROJECT_DIR$/src/pages/ui" />
       <recent name="$PROJECT_DIR$/src/pages/tables" />
       <recent name="$PROJECT_DIR$/src/pages/landing" />
       <recent name="$PROJECT_DIR$/src/pages/plugins" />
-      <recent name="$PROJECT_DIR$/src/pages/pages" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -163,10 +174,25 @@
       <workItem from="1741027627108" duration="10000" />
       <workItem from="1741232345476" duration="1321000" />
       <workItem from="1741297923939" duration="1421000" />
+      <workItem from="1741369161621" duration="14004000" />
+      <workItem from="1741464281525" duration="2642000" />
+      <workItem from="1741474757722" duration="3253000" />
+      <workItem from="1741482752042" duration="6044000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/Layout/LayoutMenuData.tsx</url>
+          <line>137</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
