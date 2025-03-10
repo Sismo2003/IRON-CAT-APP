@@ -16,24 +16,18 @@ import DefaultCalendar from "pages/Calendar/Default";
 import MonthGrid from "pages/Calendar/MonthGrid";
 import MultiMonthStack from "pages/Calendar/MultiMonthStack";
 
-// Ecommerce
-import ListView from "pages/Ecommerce/Products/ListView";
-import GridView from "pages/Ecommerce/Products/GridView";
-import Overview from "pages/Ecommerce/Products/Overview";
-import AddNew from "pages/Ecommerce/Products/AddNew";
-import ShoppingCart from "pages/Ecommerce/ShoppingCart";
-import Checkout from "pages/Ecommerce/Checkout";
-import Orders from "pages/Ecommerce-Sales/Orders"; // REMPLAZAR POR LOS TICKETS
-import OrderOverview from "pages/Ecommerce/OrderOverview";
+// MaterialsManagement
+import ListView from "pages/MaterialsManagement/Materials/ListView";
+import GridView from "pages/MaterialsManagement/Materials/GridView";
+import Overview from "pages/MaterialsManagement/Materials/Overview";
+import AddNew from "pages/MaterialsManagement/Materials/AddNew";
+import Checkout from "pages/MaterialsManagement/Checkout";
+import Orders from "pages/MaterialsManagement/Orders"; // REMPLAZAR POR LOS TICKETS
+import OrderOverview from "pages/MaterialsManagement/OrderOverview";
 
-// Ecommerce Sales
-import AddNewSales from "pages/Ecommerce-Sales/Products/AddNew";
-import Sellers from "pages/Ecommerce-Sales/Sellers";
-import ShoppingCartSales from "pages/Ecommerce-Sales/ShoppingCart";
-import ListViewSales from "pages/Ecommerce-Sales/Products/ListView";
-
-//TICKET Management
-// import TicketList from "pages/Tickets/TicketList";
+// Scales
+import ShoppingCart from "pages/MaterialsManagement/ShoppingCart";
+import SalesCart from "pages/Ecommerce-Sales/SalesCart";
 
 //CUSTOMER Management
 import CustomerList from "pages/Customers/CustomerList";
@@ -316,24 +310,20 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/apps-calendar-month-grid", component: MonthGrid },
   { path: "/apps-calendar-multi-month-stack", component: MultiMonthStack },
 
-  // Ecommerce
-  { path: "/apps-ecommerce-product-list", component: ListView },
-  { path: "/apps-ecommerce-product-grid", component: GridView },
-  { path: "/apps-ecommerce-product-overview", component: Overview },
-  { path: "/apps-ecommerce-product-create", component: AddNew },
-  { path: "/apps-ecommerce-cart", component: ShoppingCart },
-  { path: "/apps-ecommerce-checkout", component: Checkout },
+  // MaterialsManagement
+  { path: "/apps-materials-product-list", component: ListView },
+  { path: "/apps-materials-product-grid", component: GridView },
+  { path: "/apps-materials-product-overview", component: Overview },
+  { path: "/apps-materials-product-create", component: AddNew },
+  { path: "/apps-materials-checkout", component: Checkout },
 
-
-  // Ecommerce Sales
-  { path: "/apps-ecommerce-sales-product-list", component: ListViewSales },
-  { path: "/apps-ecommerce-sales-product-create", component: AddNewSales },
-  { path: "/apps-ecommerce-sales-cart", component: ShoppingCartSales },
-  { path: "/apps-ecommerce-sales-sellers", component: Sellers },
+  // Scales
+  { path: "/apps-scales-shopcart", component: ShoppingCart },
+  { path: "/apps-scales-salecart", component: SalesCart },
 
   // TICKET Management
   { path: "/apps-tk-ticket", component: Orders },
-  { path: "/apps-tk-authorization", component: OrderOverview },
+  { path: "/apps-tk-auth", component: OrderOverview },
 
   // CUSTOMER Management
   { path: "/apps-customer-list", component: CustomerList },

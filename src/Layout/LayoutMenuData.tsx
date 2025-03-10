@@ -17,9 +17,9 @@ import {
     // Trophy, 
     UserRound,
     Users, 
-    Ticket, 
+    // Ticket, 
     ScrollText,
-    ShoppingBag,
+    // ShoppingBag,
     House,
     ShoppingCart,
     Weight
@@ -44,27 +44,27 @@ const menuData: any = [
     },
     // Punto de venta
     {
-        id: "salePoint",
+        id: "sale-point",
         label: 'Punto de venta',
         icon: <ShoppingCart />,
         link: "/#",
         subItems: [
             {
-                id: 'products',
-                label: 'Control de productos',
-                parentId: 'salePoint',
+                id: 'materials',
+                label: 'Control de materiales',
+                parentId: 'sale-point',
                 subItems: [
                     {
                         id: 'listview',
                         label: 'Productos registrados',
-                        link: '/apps-ecommerce-product-list',
-                        parentId: 'products'
+                        link: '/apps-materials-product-list',
+                        parentId: 'materials'
                     },
                     {
                         id: 'addnew',
-                        label: 'Nuevo producto',
-                        link: '/apps-ecommerce-product-create',
-                        parentId: 'products'
+                        label: 'Nuevo material',
+                        link: '/apps-materials-product-create',
+                        parentId: 'materials'
                     },
                 ]
             },
@@ -77,7 +77,7 @@ const menuData: any = [
             {
                 id: 'All-tickets',
                 label: 'Caja',
-                link: '/apps-tk-authorization',
+                link: '/apps-tk-auth',
                 parentId: 'salePoint'
             }
 
@@ -98,21 +98,21 @@ const menuData: any = [
         ]
     },
     {
-        id: "valves",
+        id: "Scales",
         label: 'Basculas',
         link: "/#",
         icon: <Weight />,
         subItems: [
             {
-                id: 'valves',
+                id: 'sales-scale',
                 label: 'Venta',
-                link: '/apps-ecommerce-sales-cart',
+                link: '/apps-scales-salecart',
                 parentId: 'valves'
             },
             {
-                id: 'valves',
+                id: 'shopping-scale',
                 label: 'Compra',
-                link: '/apps-ecommerce-sales-cart',
+                link: '/apps-scales-shopcart',
                 parentId: 'valves'
             },
             // {

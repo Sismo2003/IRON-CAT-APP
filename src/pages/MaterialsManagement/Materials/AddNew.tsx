@@ -145,12 +145,12 @@ const AddNew = () => {
             if (mode === "edit") {
                 console.log("Actualizando producto:", newData);
                 dispatch(onUpdateProductList({ id: data.id, ...newData })).then(() => {
-                    navigate("/apps-ecommerce-product-list");
+                    navigate("/apps-materials-product-list");
                 });
             } else {
                 console.log("Creando nuevo producto:", newData);
                 dispatch(onAddProductList(newData)).then(() => {
-                    navigate("/apps-ecommerce-product-list");
+                    navigate("/apps-materials-product-list");
                 });
             }
         },
@@ -363,7 +363,7 @@ const AddNew = () => {
                                 
                                 </div>
                                 <div className="flex justify-end gap-2 mt-4">
-                                    <button type="reset" onClick={ () => navigate("/apps-ecommerce-product-list")} className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-700 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10">Cancelar</button>
+                                    <button type="reset" onClick={ () => navigate("/apps-materials-product-list")} className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-700 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10">Cancelar</button>
                                     <button type="submit" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">{ mode === "edit" ? "Editar Producto" : "Crear Producto" }</button>
                                     {/* <button type="button" className="text-white bg-green-500 border-green-500 btn hover:text-white hover:bg-green-600 hover:border-green-600 focus:text-white focus:bg-green-600 focus:border-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:border-green-600 active:ring active:ring-green-100 dark:ring-green-400/10">Draft & Preview</button> */}
                                 </div>
