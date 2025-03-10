@@ -15,7 +15,9 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-const ws_ip = "ws://thegrid.myddns.me:3001"
+const ws_ip: string = process.env.REACT_APP_WS_URL || 'ws://localhost:3001';
+
+
 
 // const materials = [
 //   { value: 10, label: "Iron" },
@@ -144,7 +146,7 @@ const ShoppingCart = () => {
         </div>
         <div className="xl:col-span-3">
           <div className="card p-4 bg-white shadow rounded-lg">
-            <h6 className="mb-4 text-15">Carrito de Ventas <span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{ cart.length ? cart.length : 0 }</span></h6>
+            <h6 className="mb-4 text-15">Venta De Material <span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{ cart.length ? cart.length : 0 }</span></h6>
             {cart.length === 0 ? (
               <p className="text-slate-500">Carrito está vacío</p>
             ) : (
@@ -157,7 +159,11 @@ const ShoppingCart = () => {
             )}
             <div className="mt-4">
               <h6 className="text-16">Total: ${cart.reduce((sum: any, item: any) => sum + item.total, 0).toFixed(2)}</h6>
-              <Link to="/apps-ecommerce-checkout" className="w-full text-white bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100 dark:ring-custom-400/20">Checkout</Link>
+              <Link to="/apps-ecommerce-checkout" className="w-full text-white bg-red-500 border-red-500 btn
+              hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600
+              focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600
+              active:border-red-600 active:ring active:ring-red-100 dark:ring-custom-400/20"
+              >Finalizar Compra</Link>
             </div>
           </div>
         </div>
