@@ -32,8 +32,8 @@ export const initialState = {
     loading: false
 };
 
-const EcommerceShopSlice = createSlice({
-    name: 'EcommerceShop',
+const MaterialManagementSlice = createSlice({
+    name: 'MaterialManagement',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
@@ -206,4 +206,4 @@ const EcommerceShopSlice = createSlice({
     }
 });
 
-export default EcommerceShopSlice.reducer;
+export default MaterialManagementSlice.reducer;

@@ -15,7 +15,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-const ws_ip = "ws://187.139.95.141:3001"
+const ws_ip = "ws://thegrid.myddns.me:3001"
 
 // const materials = [
 //   { value: 10, label: "Iron" },
@@ -73,6 +73,7 @@ const ShoppingCart = () => {
     }
   }, [materialList]);
 
+  // WebSocket para obtener pesos
   useEffect(() => {
     // setWeights((prev) => ({ ...prev, [1]: 80 })) // Peso de Prueba de la Bascula 1 (80kg)
     const ws = new WebSocket(ws_ip);
@@ -80,14 +81,13 @@ const ShoppingCart = () => {
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       console.log("📦 Mensaje recibido del WebSocket:", data);
-      if(Array.isArray(data)) {
+      if (Array.isArray(data)) {
         data.forEach(item => {
           setWeights(prev => ({ ...prev, [item.id]: item.weight }));
         });
       } else {
         setWeights((prev) => ({ ...prev, [data.id]: data.weight }));
       }
-
     };
     return () => ws.close();
   }, []);

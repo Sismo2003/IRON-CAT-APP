@@ -26,8 +26,8 @@ import Orders from "pages/MaterialsManagement/Orders"; // REMPLAZAR POR LOS TICK
 import OrderOverview from "pages/MaterialsManagement/OrderOverview";
 
 // Scales
-import ShoppingCart from "pages/MaterialsManagement/ShoppingCart";
-import SalesCart from "pages/Ecommerce-Sales/SalesCart";
+import ShoppingCart from "pages/Scales/ShoppingCart";
+import SalesCart from "pages/Scales/SalesCart";
 
 //CUSTOMER Management
 import CustomerList from "pages/Customers/CustomerList";

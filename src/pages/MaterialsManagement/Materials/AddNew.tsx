@@ -252,20 +252,20 @@ const AddNew = () => {
                                         <h4 className="mb-4 text-15">Precios en Venta</h4>
                                         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                                             <div>
-                                                <label htmlFor="retail_price_sell" className="inline-block mb-2 text-base font-medium">
+                                                <label htmlFor="wholesale_price_sell" className="inline-block mb-2 text-base font-medium">
                                                     Precio Mayoreo por Kg*
                                                 </label>
                                                 <input
                                                     type="number"
-                                                    id="retail_price_sell"
+                                                    id="wholesale_price_sell"
                                                     placeholder="$ 13.2"
                                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                                    name="retail_price_sell"
+                                                    name="wholesale_price_sell"
                                                     onChange={validation.handleChange}
-                                                    value={validation.values.retail_price_sell || ""}
+                                                    value={validation.values.wholesale_price_sell || ""}
                                                 />
-                                                {validation.touched.retail_price_sell && validation.errors.retail_price_sell ? (
-                                                    <p className="text-red-400">{validation.errors.retail_price_sell}</p>
+                                                {validation.touched.wholesale_price_sell && validation.errors.wholesale_price_sell ? (
+                                                    <p className="text-red-400">{validation.errors.wholesale_price_sell}</p>
                                                 ) : null}
                                             </div>
                                             <div>

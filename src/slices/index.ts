@@ -21,8 +21,8 @@ import MailboxReducer from "./mailbox/reducer";
 // Calendar
 import CalendarReducer from "./calendar/reducer";
 
-// Ecommerce SHOP
-import EcommerceShopReducer from "./ecommerce-shop/reducer";
+// Material Management
+import MaterialManagementReducer from "./materialManagement/reducer";
 
 // Ecommerce SALE
 import EcommerceSaleReducer from "./ecommerce-sale/reducer";
@@ -56,7 +56,7 @@ const rootReducer = combineReducers({
     Chat: ChatReducer,
     Mailbox: MailboxReducer,
     Calendar: CalendarReducer,
-    EcommerceShop: EcommerceShopReducer,
+    MATERIALManagement: MaterialManagementReducer,
     EcommerceSale: EcommerceSaleReducer,
     HRManagment: HRManagmentReducer,
     TICKETManagment: TICKETManagmentReducer,
