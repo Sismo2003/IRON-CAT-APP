@@ -3,13 +3,11 @@ import React from 'react';
 
 
 // Imagenes 
-import icon_bk from "assets/images/iron-cat-logo-3/logo-bk.png";
-import icon_wh from "assets/images/iron-cat-logo-3/Icon_wh.png";
+import icon_bk from "assets/images/IronCat_V1/logosolo1.png";
+import icon_wh from "assets/images/IronCat_V1/LogoBlancosolov2.png";
 
-import logo_bk from "assets/images/iron-cat-logo-gio/ironcat2.jpeg";
-import logo_wh from "assets/images/iron-cat-logo-3/logo-white-H.png";
-
-
+import logo_bk from "assets/images/IronCat_V1/LogoV3.png";
+import logo_wh from "assets/images/IronCat_V1/LogoOWV3.png";
 
 import { Link } from 'react-router-dom';
 
