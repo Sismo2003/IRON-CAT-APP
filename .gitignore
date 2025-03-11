@@ -139,3 +139,6 @@ scssphp/vendor/
 scssphp/composer.lock
 vendor/phpmailer/composer.lock
 vendor/phpmailer/vendor/
+
+
+build/
