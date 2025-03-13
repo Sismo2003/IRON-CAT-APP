@@ -59,15 +59,10 @@ const Index = () => {
 
     const [toggleDesctipton, setToggleDesctipton] = useState<any>([]);
 
-
-
-
     // Get Data
     useEffect(() => {
         dispatch(onGetNotes());
     }, [dispatch]);
-
-
 
 
     // Delete Modal
@@ -111,20 +106,16 @@ const Index = () => {
         initialValues: {
             category: (eventData && eventData.category) || '',
             title: (eventData && eventData.title) || '',
-            description: (eventData && eventData.description) || '',
-            img: (eventData && eventData.img) || '',
-            location: (eventData && eventData.location) || '',
-            name: (eventData && eventData.name) || '',
-            date: (eventData && eventData.date) || ''
+            comment: (eventData && eventData.comment) || '',
+            date: (eventData && eventData.date) || '',
+            fk_user : 1,
+            // id : (eventData && eventData.id) || '',
         },
         validationSchema: Yup.object({
-            category: Yup.string().required("Please Enter Category"),
-            title: Yup.string().required("Please Enter Title"),
-            description: Yup.string().required("Please Enter Description"),
-            //   img: Yup.string().required("Please Add Company Image"),
-            // location: Yup.string().required("Please Enter Location"),
-            // name: Yup.string().required("Please Enter Name"),
-            date: Yup.string().required("Please Enter Date"),
+            category: Yup.string().required("No se puede crear una nota sin categoria."),
+            title: Yup.string().required("No puedes crear una nota sin titulo!"),
+            comment: Yup.string().required("Es necesario la descripción"!),
+            date: Yup.string().required("La fecha es obligatoria!"),
         }),
 
         onSubmit: (values) => {
@@ -211,9 +202,15 @@ const Index = () => {
 
 
     // columns
-
     const Category = ({ item }: any) => {
         switch (item) {
+            case "Automoviles":
+                return (<Dropdown.Trigger
+                        className="size-4  border border-dashed rounded-full dropdown-toggle shrink-0 bg-sky-100 border-sky-500 dark:bg-sky-500/20 category-dropdown "
+                        id="notesAction1" data-bs-toggle="dropdown">
+                        <div></div>
+                    </Dropdown.Trigger>
+                );
             case "personal":
                 return (
                     <Dropdown.Trigger
@@ -287,32 +284,55 @@ const Index = () => {
                         <div className="xl:col-span-4">
                             <ul className="flex flex-wrap w-full gap-2 text-sm font-medium text-center filter-btns grow">
                                 <li>
-                                    <Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px] ${activeTab === 1 && "active"}`} onClick={() => toggleTab(1, "all")}>All</Link>
+                                    <Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
+                                     ${activeTab === 1 && "active"}`} onClick={() => toggleTab(1, "all")}>Todos</Link>
                                 </li>
                                 <li>
-                                    <Link to="#" data-filter="business" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px] ${activeTab === 2 && "active"}`} onClick={() => toggleTab(2, "business")}>Business</Link>
+                                    <Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
+                                     ${activeTab === 6 && "active"}`} onClick={() => toggleTab(6, "automovil")}>Autómoviles</Link>
                                 </li>
                                 <li>
-                                    <Link to="#" data-filter="social" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px] ${activeTab === 3 && "active"}`} onClick={() => toggleTab(3, "social")}>Social</Link>
+                                    <Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
+                                     ${activeTab === 7 && "active"}`} onClick={() => toggleTab(7, "urgentes")}>Urgentes</Link>
                                 </li>
                                 <li>
-                                    <Link to="#" data-filter="home" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px] ${activeTab === 4 && "active"}`} onClick={() => toggleTab(4, "home")}>Home</Link>
+                                    <Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
+                                     ${activeTab === 8 && "active"}`} onClick={() => toggleTab(8, "empleados")}>Empleados</Link>
                                 </li>
                                 <li>
-                                    <Link to="#" data-filter="personal" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px] ${activeTab === 5 && "active"}`} onClick={() => toggleTab(5, "personal")}>Personal</Link>
+                                    <Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
+                                     ${activeTab === 9 && "active"}`} onClick={() => toggleTab(9, "pendientes")}>Pendientes</Link>
                                 </li>
+
+                                {/*<li>*/}
+                                {/*    <Link to="#" data-filter="business" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]*/}
+                                {/*     ${activeTab === 2 && "active"}`} onClick={() => toggleTab(2, "business")}>Business</Link>*/}
+                                {/*</li>*/}
+                                {/*<li>*/}
+                                {/*    <Link to="#" data-filter="social" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]*/}
+                                {/*     ${activeTab === 3 && "active"}`} onClick={() => toggleTab(3, "social")}>Social</Link>*/}
+                                {/*</li>*/}
+                                {/*<li>*/}
+                                {/*    <Link to="#" data-filter="home" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]*/}
+                                {/*     ${activeTab === 4 && "active"}`} onClick={() => toggleTab(4, "home")}>Home</Link>*/}
+                                {/*</li>*/}
+                                {/*<li>*/}
+                                {/*    <Link to="#" data-filter="personal" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]*/}
+                                {/*     ${activeTab === 5 && "active"}`} onClick={() => toggleTab(5, "personal")}>Personal</Link>*/}
+                                {/*</li>*/}
                             </ul>
                         </div>
 
                         <div className="xl:col-start-10 xl:col-span-3">
                             <div className="flex gap-3">
                                 <div className="relative grow">
-                                    <input type="text" className="ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Search for ..." autoComplete="off" onChange={(e) => filterSearchData(e)} />
+                                    <input type="text" className="ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                           placeholder="Buscar ..." autoComplete="off" onChange={(e) => filterSearchData(e)} />
                                     <Search className="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600" />
                                 </div>
                                 <div className="shrink-0">
                                     <button data-modal-target="addNotesModal" type="button" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20" onClick={toggle}>
-                                        <Plus className="inline-block size-4" /> <span className="align-middle">Add Note</span>
+                                        <Plus className="inline-block size-4" /> <span className="align-middle">Agregar Nota</span>
                                     </button>
                                 </div>
                             </div>
@@ -321,7 +341,11 @@ const Index = () => {
                     </div>
                 </div>
             </div>
-
+            {(!dataList || dataList.length === 0) ? (
+                <div className="alert alert-info text-center p-5">
+                    No se encontraron notas. Por favor, agrega una nueva para comenzar.
+                </div>
+            ) : (
             <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 xl:grid-cols-4" id="notes-list">
                 {(data || []).map((item: any, key: number) => {
                     return (
@@ -330,7 +354,7 @@ const Index = () => {
                                 <div>
                                     <Dropdown className="relative ltr:float-right rtl:float-left">
                                         <Dropdown.Trigger className="flex items-center justify-center size-[30px] p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20"
-                                                          id="categoryNotes1" data-bs-toggle="dropdown">
+                                          id="categoryNotes1" data-bs-toggle="dropdown">
                                             <MoreHorizontal className="size-3" />
                                         </Dropdown.Trigger>
                                         <Dropdown.Content placement="right-end" className="absolute z-50 py-2 mt-1 text-left list-none bg-white rounded-md shadow-md min-w-[10rem] dark:bg-zink-600" aria-labelledby="categoryNotes1">
@@ -368,70 +392,59 @@ const Index = () => {
 
                                     <div className="flex items-center gap-2 mb-5">
                                         <Dropdown className="flex relative">
-                                            <Category item={item.category} />
+                                            <Category item={item.category ? item.category : ' '} />
                                             <Dropdown.Content
                                                 placement="start-end"
-                                                className="absolute z-50 py-2 mt-1 text-left list-none bg-white rounded-md shadow-md dropdown-menu min-w-[10rem] dark:bg-zink-600" aria-labelledby="notesAction1">
+                                                className="absolute z-50 py-2 mt-1 text-left list-none bg-white rounded-md shadow-md dropdown-menu min-w-[10rem] dark:bg-zink-600"
+                                                aria-labelledby="notesAction1">
                                                 <li>
                                                     <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-                                                          to="#!">Personal</Link>
+                                                          to="#!">Automóviles</Link>
                                                 </li>
                                                 <li>
                                                     <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-                                                          to="#!">Business</Link>
+                                                          to="#!">Urgentes</Link>
                                                 </li>
                                                 <li>
                                                     <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-                                                          to="#!">Social</Link>
+                                                          to="#!">Empleados</Link>
                                                 </li>
                                                 <li>
                                                     <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-                                                          to="#!">Home</Link>
+                                                          to="#!">Pendientes</Link>
                                                 </li>
                                             </Dropdown.Content>
                                         </Dropdown>
-                                        <h5 className="text-16">{item.title}</h5>
+                                        <h5 className="text-16">{item.title ? item.title : " " }</h5>
                                     </div>
                                 </div>
-
                                 {
-                                    item.comment.split(' ').length > 38
-                                        ? (
-                                            <React.Fragment>
-                                                <p className='text-slate-500 dark:text-zink-200'></p>
-                                                <p dangerouslySetInnerHTML={{ __html: toggleDesctipton[key]?.key ? item.comment : truncateText(item.comment, 38) }} />
-                                                <p style={{ cursor: "pointer" }} onClick={() => handleReadMore(key)}>{toggleDesctipton[key]?.key ? 'Leer menos' : 'Leer mas'}</p>
-                                            </React.Fragment>
-                                        )
-                                        : item.isList ?
-                                            <React.Fragment>
-                                                <div>
-                                                    <p className='text-slate-500 dark:text-zink-200'></p>
-                                                    <h6 className="text-muted">Steps to recruiting employees</h6>
-                                                    <ol className="flex flex-col gap-1">
-                                                        <li>Consider your actual needs</li>
-                                                        <li>Conduct interviews with top applicants</li>
-                                                        <li>Don’t take too long to hire</li>
-                                                        <li>Making the offer</li>
-                                                    </ol>
-                                                    <p></p>
-                                                </div>
-                                            </React.Fragment>
-                                            :
-                                            <React.Fragment>
-                                                <p className='text-slate-500 dark:text-zink-200'></p>
-                                                <p dangerouslySetInnerHTML={{ __html: item.comment }} />
-                                            </React.Fragment>
-
+                                  item.comment ? (
+                                    item.comment.split(' ').length > 38 ? (
+                                      <React.Fragment>
+                                         <p dangerouslySetInnerHTML={{ __html: toggleDesctipton[key]?.key ? item.comment : truncateText(item.comment, 38) }} />
+                                         <p style={{ cursor: "pointer" }} onClick={() => handleReadMore(key)}>
+                                             {toggleDesctipton[key]?.key ? 'Leer menos' : 'Leer mas'}
+                                         </p>
+                                      </React.Fragment>
+                                    ) : (
+                                      <React.Fragment>
+                                         <p dangerouslySetInnerHTML={{ __html: item.comment }} />
+                                      </React.Fragment>
+                                    )
+                                  ) : (
+                                    <React.Fragment>
+                                      <p>No hay comentario.</p>
+                                    </React.Fragment>
+                                  )
                                 }
-
                                 <div className="flex items-center justify-between gap-3 pt-4 mt-auto">
                                     <div className="shrink-0">
                                         <Link to="#!" className={`group/item toggle-button group/item toggle-button ${item.isActive && "active"}`}>
                                             <Star className={"size-5 text-slate-500 dark:text-zink-200 dark:fill-zink-600 fill-slate-200 transition-all duration-150 ease-linear group-[.active]/item:text-yellow-500 dark:group-[.active]/item:text-yellow-500 group-[.active]/item:fill-yellow-200 dark:group-[.active]/item:fill-yellow-500/50 group-hover/item:text-yellow-500 dark:group-hover/item:text-yellow-500 group-hover/item:fill-yellow-200 dark:group-hover/item:fill-yellow-500/50"} />
                                         </Link>
                                     </div>
-                                    <p className="text-slate-500 dark:text-zink-200 shrink-0">{item.create_date}</p>
+                                    <p className="text-slate-500 dark:text-zink-200 shrink-0">{item.create_date ? item.create_date : ' '}</p>
                                 </div>
                             </div>
                         </div>);
@@ -439,6 +452,7 @@ const Index = () => {
                 )}
 
             </div>
+            )}
 
             <Pagination
                 perPageData={perPageData}
@@ -489,7 +503,7 @@ const Index = () => {
                                 <label htmlFor="notesTitleInput" className="inline-block mb-2 text-base font-medium">Titulo</label>
                                 <input type="text" id="notesTitleInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                        placeholder="Titulo"
-                                    name="Encabezado de la nota"
+                                    name="title"
                                     onChange={validation.handleChange}
                                     value={validation.values.title || ""}
                                 />
@@ -507,20 +521,13 @@ const Index = () => {
                                         onChange={validation.handleChange}
                                         value={validation.values.category || ""}
                                     >
-
                                         <option disabled value="">Seleccione una categoría</option>
 
-                                        <option value="vehicles">Automóvil</option>
-                                        <option value="importants">Urgentes</option>
-                                        <option value="employees">Empleados</option>
-                                        <option value="pendings">Pendientes</option>
+                                        <option value="automovil">Automóvil</option>
+                                        <option value="urgentes">Urgentes</option>
+                                        <option value="empleados">Empleados</option>
+                                        <option value="pendientes">Pendientes</option>
 
-                                        <optgroup label={"VALORES POR DEFECTO"}>
-                                            <option value="business">Negocios</option>
-                                            <option value="social">Social</option>
-                                            <option value="home">Hogar</option>
-                                            <option value="personal">Personal</option>
-                                        </optgroup>
 
                                     </select>
                                     {validation.touched.category && validation.errors.category ? (
@@ -534,13 +541,13 @@ const Index = () => {
                                     <label htmlFor="textArea" className="inline-block mb-2 text-base font-medium">Descripción</label>
                                     <textarea className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                         id="textArea" rows={6}
-                                        name="description"
+                                        name="comment"
                                         onChange={validation.handleChange}
-                                        value={new DOMParser().parseFromString(validation.values.description, 'text/html').body.textContent || ""}
+                                        value={new DOMParser().parseFromString(validation.values.comment, 'text/html').body.textContent || ""}
                                     >
                                     </textarea>
-                                    {validation.touched.description && validation.errors.description ? (
-                                        <p className="text-red-400">{validation.errors.description}</p>
+                                    {validation.touched.comment && validation.errors.comment ? (
+                                        <p className="text-red-400">{validation.errors.comment}</p>
                                     ) : null}
                                 </div>
                             </div>
@@ -591,10 +598,10 @@ const Index = () => {
                 </Modal.Header>
                 <Modal.Body className="max-h-[calc(theme('height.screen')_-_180px)] overflow-y-auto p-5">
                     <div className="flex items-center gap-2 mb-4">
-                        <h6 className="text-sm font-normal grow">
+                            <h6 className="text-sm font-normal grow">
                             <User2 className="inline-block size-4 mr-1 align-middle text-slate-500 fill-slate-200 dark:text-zink-200 dark:fill-zink-500" />
-                            <span className="align-middle">Admin</span></h6>
-                        <h6 className="text-sm font-normal shrink-0"><Calendar className="inline-block size-4 mr-1 align-middle text-slate-500 fill-slate-200 dark:text-zink-200 dark:fill-zink-500"/>
+                            <span className="align-middle">{(eventData?.name && eventData?.last_name) ? eventData?.name + ' ' + eventData?.last_name : eventData?.username }</span></h6>
+                            <h6 className="text-sm font-normal shrink-0"><Calendar className="inline-block size-4 mr-1 align-middle text-slate-500 fill-slate-200 dark:text-zink-200 dark:fill-zink-500"/>
                             <span className="align-middle">{eventData?.create_date ? eventData?.create_date : "Sin fecha" }</span></h6>
                     </div>
                     <p className="mb-2 text-slate-500 dark:text-zink-200" dangerouslySetInnerHTML={{ __html: eventData?.comment }}></p>
@@ -619,4 +626,4 @@ const Index = () => {
     );
 };
 
-export default Index;;
+export default Index;

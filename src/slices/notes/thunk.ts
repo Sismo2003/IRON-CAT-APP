@@ -22,10 +22,15 @@ export const addNotes = createAsyncThunk("notes/addNotes", async (event: any) =>
     try {
         const response = addNotesApi(event);
         const data = await response;
-        toast.success("Notes Added Successfully", { autoClose: 2000 });
-        return data;
+        if(data){
+            toast.success("Nota actualizada con exito!", { autoClose: 2000 });
+            return event;
+        }else{
+            toast.error("Ocurrio un error al agregar la nota!", { autoClose: 2000 });
+            return data;
+        }
     } catch (error) {
-        toast.error("Notes Added Failed", { autoClose: 2000 });
+        toast.error("La nota no se agrego", { autoClose: 2000 });
         return error;
     }
 });
@@ -33,8 +38,13 @@ export const updateNotes = createAsyncThunk("notes/updateNotes", async (event: a
     try {
         const response = updateNotesApi(event);
         const data = await response;
-        toast.success("Notes updated Successfully", { autoClose: 2000 });
-        return data;
+        if(data){
+            toast.success("Nota actualizada con exito!", { autoClose: 2000 });
+            return event;
+        }else{
+            toast.error("La nota no se actualizo!", { autoClose: 2000 });
+            return data;
+        }
     } catch (error) {
         toast.error("Notes updated Failed", { autoClose: 2000 });
         return error;
@@ -43,10 +53,16 @@ export const updateNotes = createAsyncThunk("notes/updateNotes", async (event: a
 export const deleteNotes = createAsyncThunk("notes/deleteNotes", async (event: any) => {
     try {
         const response = deleteNotesApi(event);
-        toast.success("Notes deleted Successfully", { autoClose: 2000 });
-        return response;
+        const data = await response;
+        if(data){
+            toast.success("Nota borrada con exito!", { autoClose: 2000 });
+            return event;
+        }else{
+            toast.error("Hubo un error al eliminar la nota!", { autoClose: 2000 });
+            return response;
+        }
     } catch (error) {
-        toast.error("Notes deleted Failed", { autoClose: 2000 });
+        toast.error("Hubo un error al eliminar la nota!", { autoClose: 2000 });
         return error;
     }
 });

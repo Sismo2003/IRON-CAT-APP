@@ -209,8 +209,8 @@ export const deleteEmployeeSalary = (data: any) => api.delete(url.DELETE_EMPLOYE
 // Notes
 export const getNotes = () => api.get(url.GET_NOTES, null);
 export const addNotes = (data: any) => api.create(url.ADD_NOTES, data);
-export const updateNotes = (data: any) => api.update(url.UPDATE_NOTES, data);
-export const deleteNotes = (data: any) => api.delete(url.DELETE_NOTES, { headers: { data } });
+export const updateNotes = (data: any) => api.put(url.UPDATE_NOTES + '/' + data.id, data);
+export const deleteNotes = (data: any) => api.delete(url.DELETE_NOTES + '/' + data, { headers: { data } });
 
 // Social
 // Friends
