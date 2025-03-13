@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import BreadCrumb from 'Common/BreadCrumb';
 import Flatpickr from "react-flatpickr";
 import moment from "moment";
+import "moment/locale/es";
 import { Calendar } from "lucide-react";
 
 
@@ -29,6 +30,10 @@ import {
 import { ToastContainer } from 'react-toastify';
 import filterDataBySearch from 'Common/filterDataBySearch';
 import Pagination from 'Common/Pagination';
+
+//varible de la fecha en español
+moment.locale('es');
+
 
 const Index = () => {
 
@@ -177,7 +182,7 @@ const Index = () => {
     // Search Data
     const filterSearchData = (e: any) => {
         const search = e.target.value;
-        const keysToSearch = ['category', 'title', 'description', 'name', 'date'];
+        const keysToSearch = ['category', 'title', 'comment', 'create_date'];
         filterDataBySearch(dataList, search, keysToSearch, setData);
     };
 
@@ -368,7 +373,7 @@ const Index = () => {
                                                     }}
                                                 >
                                                     <Eye className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
-                                                    <span className="align-middle">Overview</span>
+                                                    <span className="align-middle">Detalles</span>
                                                 </Link>
                                             </li>
                                             <li>
@@ -377,14 +382,14 @@ const Index = () => {
                                                         handleUpdateDataClick(item);
                                                     }}>
                                                     <FileEdit className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
-                                                    <span className="align-middle">Edit</span>
+                                                    <span className="align-middle">Editar</span>
                                                 </Link>
                                             </li>
                                             <li>
                                                 <Link to="#" className="remove-item-btn block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
                                                     onClick={() => onClickDelete(item)}>
                                                     <Trash2 className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
-                                                    <span className="align-middle">Delete</span>
+                                                    <span className="align-middle">Borrar</span>
                                                 </Link>
                                             </li>
                                         </Dropdown.Content>
