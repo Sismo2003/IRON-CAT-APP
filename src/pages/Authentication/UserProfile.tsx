@@ -54,10 +54,22 @@ const UserProfile = () => {
 
     initialValues: {
       username: name || 'admin',
-      idx: idx || 1,
+      idx: idx || 1, 
+      email: name || '',
+      
+      password: name || '',
+      
+      confirmPassword: name || '',
+      
+
+
+
     },
     validationSchema: Yup.object({
       username: Yup.string().required("Ingresa tu Usuario"),
+      email: Yup.string().required("Ingresa tu correo"),
+      password: Yup.string().required("Ingresa tu contraseña"),
+      confirmPassword: Yup.string().required("Confirma tu contraseña"),
     }),
     onSubmit: (values) => {
       dispatch(editProfile(values));
@@ -101,7 +113,7 @@ const UserProfile = () => {
           </div>
         </div>
 
-        <h5 className="mb-4">Cambiar Usuario</h5>
+        <h5 className="mb-4">Datos generales</h5>
 
         <div className="card">
           <div className="card-body">
@@ -113,23 +125,91 @@ const UserProfile = () => {
                 return false;
               }}
             >
-              <label className="inline-block mb-2 text-base font-medium">Nombre de usuario</label>
-              <input
-                name="username"
-                className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                placeholder="Ingrese el nombre del usuario"
-                type="text"
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.username || ""}
-              />
-              {validation.touched.username && validation.errors.username ? (
-                <div className="mt-1 text-sm text-red-500">{validation.errors.username}</div>
-              ) : null}
+            {
+              //<div> class="flex flex-col-reverse..."
+              //<div>01</div>
+              //<div>02</div>
+              //<div>03</div>
+              //<div>04</div>
+              //</div>
+            }
+            
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Nombre de usuario */}
+              <div>
+                <label className="inline-block mb-2 text-base font-medium">Nombre de usuario</label>
+                <input
+                  name="username"
+                  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                  placeholder="Ingrese el nombre del usuario"
+                  type="text"
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.username || ""}
+                />
+                {validation.touched.username && validation.errors.username ? (
+                  <div className="mt-1 text-sm text-red-500">{validation.errors.username}</div>
+                ) : null}
+              </div>
+
+              {/* Correo */}
+              <div>
+                <label className="inline-block mb-2 text-base font-medium">Correo</label>
+                <input
+                  name="email"
+                  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                  placeholder="Ingresa tu correo, ejem: user@gmail.com"
+                  type="text"
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.email || ""}
+                />
+                {validation.touched.email && validation.errors.email ? (
+                  <div className="mt-1 text-sm text-red-500">{validation.errors.email}</div>
+                ) : null}
+              </div>
+
+              {/* Contraseña */}
+              <div>
+                <label className="inline-block mb-2 text-base font-medium">Contraseña</label>
+                <input
+                  name="password"
+                  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                  placeholder="Ingresa tu contraseña o Crea tu contraseña"
+                  type="password"
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.password || ""}
+                />
+                {validation.touched.password && validation.errors.password ? (
+                  <div className="mt-1 text-sm text-red-500">{validation.errors.password}</div>
+                ) : null}
+              </div>
+
+              {/* Confirmar contraseña */}
+              <div>
+                <label className="inline-block mb-2 text-base font-medium">Confirmar contraseña</label>
+                <input
+                  name="confirmPassword"
+                  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                  placeholder="Confirmar tu contraseña"
+                  type="password"
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.confirmPassword || ""}
+                />
+                {validation.touched.confirmPassword && validation.errors.confirmPassword ? (
+                  <div className="mt-1 text-sm text-red-500">{validation.errors.confirmPassword}</div>
+                ) : null}
+              </div>
+            </div>
+
+
               <div className="text-center mt-4">
                 <button type="submit" className="px-2 py-1.5 text-xs text-white btn bg-red-500 hover:text-white hover:bg-red-600 focus:text-white focus:bg-red-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:ring active:ring-custom-100 dark:bg-red-500/20 dark:text-red-500 dark:hover:bg-red-500 dark:hover:text-white dark:focus:bg-red-500 dark:focus:text-white dark:active:bg-red-500 dark:active:text-white dark:ring-red-400/20">
                   Actualizar usuario
                 </button>
+            
               </div>
             </form>
           </div>
