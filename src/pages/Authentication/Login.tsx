@@ -6,8 +6,8 @@ import * as Yup from "yup";
 import { useFormik as useFormic } from "formik";
 
 // Image
-import logoLight from "assets/images/logo-light.png";
-import logoDark from "assets/images/logo-dark.png";
+import logoLight from "assets/images/LOGOINICIOV1.png";
+import logoDark from "assets/images/LOGOINICIOV1.png";
 import { loginUser, socialLogin } from "slices/thunk";
 import { useDispatch, useSelector } from "react-redux";
 import withRouter from "Common/withRouter";
@@ -17,7 +17,7 @@ import { Link } from "react-router-dom";
 
 const Login = (props: any) => {
 
-    document.title = "Login | Tailwick - React Admin & Dashboard Template";
+    document.title = "INICIO DE SESION | IRON CAT RECYCLING";
 
     const dispatch = useDispatch<any>();
 
@@ -38,12 +38,12 @@ const Login = (props: any) => {
         enableReinitialize: true,
 
         initialValues: {
-            email: user.email || "admin@themesbrand.com" || '',
+            email: user.email || "admin@nimbuscloud.com" || '',
             password: user.password || "123456" || '',
         },
         validationSchema: Yup.object({
-            email: Yup.string().required("Please Enter Your email"),
-            password: Yup.string().required("Please Enter Your Password"),
+            email: Yup.string().required("Por favor Ingresa tu correo"),
+            password: Yup.string().required("Por favor Ingresa tu contraseña"),
         }),
         onSubmit: (values: any) => {
             dispatch(loginUser(values, props.router.navigate));
@@ -76,13 +76,24 @@ const Login = (props: any) => {
                 <div className="mb-0 w-screen lg:mx-auto lg:w-[500px] card shadow-lg border-none shadow-slate-100 relative">
                     <div className="!px-10 !py-12 card-body">
                         <Link to="/">
-                            <img src={logoLight} alt="" className="hidden h-6 mx-auto dark:block" />
-                            <img src={logoDark} alt="" className="block h-6 mx-auto dark:hidden" />
+                            <img 
+                                src={logoLight} 
+                                alt="" 
+                                className="hidden mx-auto dark:block" 
+                                style={{ height: "30%" }} 
+                            />
+                            <img 
+                                src={logoDark} 
+                                alt="" 
+                                className="block mx-auto dark:hidden" 
+                                style={{ height: "30%" }} 
+                            />
                         </Link>
 
+
                         <div className="mt-8 text-center">
-                            <h4 className="mb-1 text-custom-500 dark:text-custom-500">Welcome Back !</h4>
-                            <p className="text-slate-500 dark:text-zink-200">Sign in to continue to Tailwick.</p>
+                            <h4 className="mb-1 text-custom-500 dark:text-custom-500">Bienvenido de nuevo!</h4>
+                            <p className="text-slate-500 dark:text-zink-200">Inicia sesion para continuar</p>
                         </div>
 
                         <form className="mt-10" id="signInForm"
@@ -92,13 +103,13 @@ const Login = (props: any) => {
                                 return false;
                             }}>
                             {success && <div className="px-4 py-3 mb-3 text-sm text-green-500 border border-green-200 rounded-md bg-green-50 dark:bg-green-400/20 dark:border-green-500/50" id="successAlert">
-                                You have <b>successfully</b> signed in.
+                                Tu ingreso a sido<b>exitoso.</b>
                             </div>}
                             {error && <div className="px-4 py-3 mb-3 text-sm text-red-500 border border-red-200 rounded-md bg-red-50 dark:bg-red-400/20 dark:border-red-500/50" id="successAlert">
-                                You have <b>failed</b> signed in.
+                               Usuario o contraseña<b> incorrectos. </b>Intentalo de nuevo
                             </div>}
                             <div className="mb-3">
-                                <label htmlFor="email" className="inline-block mb-2 text-base font-medium">UserName/ Email ID</label>
+                                <label htmlFor="email" className="inline-block mb-2 text-base font-medium">Usuario/Correo</label>
                                 <input
                                     type="text"
                                     id="email"
@@ -115,11 +126,11 @@ const Login = (props: any) => {
 
                             </div>
                             <div className="mb-3">
-                                <label htmlFor="password" className="inline-block mb-2 text-base font-medium">Password</label>
+                                <label htmlFor="Contraseña" className="inline-block mb-2 text-base font-medium">Contraseña</label>
                                 <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
+                                    type="Contraseña"
+                                    id="Contraseña"
+                                    name="Contraseña"
                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                     placeholder="Enter password"
                                     onChange={validation.handleChange}
@@ -133,45 +144,47 @@ const Login = (props: any) => {
                             <div>
                                 <div className="flex items-center gap-2">
                                     <input id="checkboxDefault1" className="size-4 border rounded-sm appearance-none bg-slate-100 border-slate-200 dark:bg-zink-600 dark:border-zink-500 checked:bg-custom-500 checked:border-custom-500 dark:checked:bg-custom-500 dark:checked:border-custom-500 checked:disabled:bg-custom-400 checked:disabled:border-custom-400" type="checkbox" value="" />
-                                    <label htmlFor="checkboxDefault1" className="inline-block text-base font-medium align-middle cursor-pointer">Remember me</label>
+                                    <label htmlFor="checkboxDefault1" className="inline-block text-base font-medium align-middle cursor-pointer">Recuerdame</label>
                                 </div>
                                 {/* <div id="remember-error" className="hidden mt-1 text-sm text-red-500">Please check the "Remember me" before submitting the form.</div> */}
                             </div>
                             <div className="mt-10">
-                                <button type="submit" className="w-full text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Sign In</button>
+                                <button type="submit" className="w-full text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Iniciar sesion</button>
                             </div>
-
-                            <div className="relative text-center my-9 before:absolute before:top-3 before:left-0 before:right-0 before:border-t before:border-t-slate-200 dark:before:border-t-zink-500">
-                                <h5 className="inline-block px-2 py-0.5 text-sm bg-white text-slate-500 dark:bg-zink-600 dark:text-zink-200 rounded relative">Sign In with</h5>
-                            </div>
-
-                            <div className="flex flex-wrap justify-center gap-2">
-                                <button type="button" className="flex items-center justify-center size-[37.5px] transition-all duration-200 ease-linear p-0 text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 active:text-white active:bg-custom-600 active:border-custom-600"
-                                    onClick={(e: any) => {
-                                        e.preventDefault();
-                                        socialResponse("facebook")
-                                    }}
-                                >
-                                    <Facebook className="size-4"></Facebook>
-                                </button>
-                                <button type="button" className="flex items-center justify-center size-[37.5px] transition-all duration-200 ease-linear p-0 text-white btn bg-orange-500 border-orange-500 hover:text-white hover:bg-orange-600 hover:border-orange-600 focus:text-white focus:bg-orange-600 focus:border-orange-600 active:text-white active:bg-orange-600 active:border-orange-600"
-                                    onClick={(e: any) => {
-                                        e.preventDefault();
-                                        socialResponse("google")
-                                    }}>
-                                    <Mail className="size-4"></Mail>
-                                </button>
-                                <button type="button" className="flex items-center justify-center size-[37.5px] transition-all duration-200 ease-linear p-0 text-white btn bg-sky-500 border-sky-500 hover:text-white hover:bg-sky-600 hover:border-sky-600 focus:text-white focus:bg-sky-600 focus:border-sky-600 active:text-white active:bg-sky-600 active:border-sky-600">
-                                    <Twitter className="size-4"></Twitter>
-                                </button>
-                                <button type="button" className="flex items-center justify-center size-[37.5px] transition-all duration-200 ease-linear p-0 text-white btn bg-slate-500 border-slate-500 hover:text-white hover:bg-slate-600 hover:border-slate-600 focus:text-white focus:bg-slate-600 focus:border-slate-600 active:text-white active:bg-slate-600 active:border-slate-600">
-                                    <Github className="size-4"></Github>
-                                </button>
-                            </div>
-
-                            <div className="mt-10 text-center">
-                                <p className="mb-0 text-slate-500 dark:text-zink-200">Don't have an account ? <Link to="/register" className="font-semibold underline transition-all duration-150 ease-linear text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500"> SignUp</Link> </p>
-                            </div>
+                        {
+                            //<div className="relative text-center my-9 before:absolute before:top-3 before:left-0 before:right-0 before:border-t before:border-t-slate-200 dark:before:border-t-zink-500">
+                                //<h5 className="inline-block px-2 py-0.5 text-sm bg-white text-slate-500 dark:bg-zink-600 dark:text-zink-200 rounded relative">Iniciar sesion con </h5>
+                           // </div>
+                        
+                            //<div className="flex flex-wrap justify-center gap-2">
+                               // <button type="button" className="flex items-center justify-center size-[37.5px] transition-all duration-200 ease-linear p-0 text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 active:text-white active:bg-custom-600 active:border-custom-600"
+                                   // onClick={(e: any) => {
+                                     //   e.preventDefault();
+                                   //     socialResponse("facebook")
+                                 //   }}
+                               // >
+                                  //  <Facebook className="size-4"></Facebook>
+                                //</form></button>
+                                //</div></div><button type="button" className="flex items-center justify-center size-[37.5px] transition-all duration-200 ease-linear p-0 text-white btn bg-orange-500 border-orange-500 hover:text-white hover:bg-orange-600 hover:border-orange-600 focus:text-white focus:bg-orange-600 focus:border-orange-600 active:text-white active:bg-orange-600 active:border-orange-600"
+                                    //</div>onClick={(e: any) => {
+                                      //  e.preventDefault();
+                                    //    socialResponse("google")
+                                    //}}>
+                                  //  <Mail className="size-4"></Mail>
+                                //</button>
+                                //<button type="button" className="flex items-center justify-center size-[37.5px] transition-all duration-200 ease-linear p-0 text-white btn bg-sky-500 border-sky-500 hover:text-white hover:bg-sky-600 hover:border-sky-600 focus:text-white focus:bg-sky-600 focus:border-sky-600 active:text-white active:bg-sky-600 active:border-sky-600">
+                                  //  <Twitter className="size-4"></Twitter>
+                                //</button>
+                                //</div><button type="button" className="flex items-center justify-center size-[37.5px] transition-all duration-200 ease-linear p-0 text-white btn bg-slate-500 border-slate-500 hover:text-white hover:bg-slate-600 hover:border-slate-600 focus:text-white focus:bg-slate-600 focus:border-slate-600 active:text-white active:bg-slate-600 active:border-slate-600">
+                                //    <Github className="size-4"></Github>
+                              //  </button>
+                            //</div></div>
+                        
+                           
+                            //<div className="mt-10 text-center">
+                               // <p className="mb-0 text-slate-500 dark:text-zink-200">hola ? <Link to="/register" className="font-semibold underline transition-all duration-150 ease-linear text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500"> SignUp</Link> </p>
+                            //</div>
+                        }
                         </form>
                     </div>
                 </div>
