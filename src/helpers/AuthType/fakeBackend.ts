@@ -1159,57 +1159,57 @@ const fakeBackend = () => {
   });
 
   // Notes
-  mock.onGet(url.GET_NOTES).reply(() => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (NotesData) {
-          // Passing fake JSON data as response
-          resolve([200, NotesData]);
-        } else {
-          reject([400, "cannot get data"]);
-        }
-      });
-    });
-  });
-
-  mock.onPost(url.ADD_NOTES).reply((event: any) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (event && event.data) {
-          // Passing fake JSON data as response
-          resolve([200, event.data]);
-        } else {
-          reject([400, "cannot add data"]);
-        }
-      });
-    });
-  });
-
-  mock.onPatch(url.UPDATE_NOTES).reply((event: any) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (event && event.data) {
-          // Passing fake JSON data as response
-          resolve([200, event.data]);
-        } else {
-          reject([400, "cannot update data"]);
-        }
-      });
-    });
-  });
-
-  mock.onDelete(url.DELETE_NOTES).reply((config: any) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (config && config.headers) {
-          // Passing fake JSON data as response
-          resolve([200, config.headers.data]);
-        } else {
-          reject([400, "cannot delete data"]);
-        }
-      });
-    });
-  });
+  // mock.onGet(url.GET_NOTES).reply(() => {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       if (NotesData) {
+  //         // Passing fake JSON data as response
+  //         resolve([200, NotesData]);
+  //       } else {
+  //         reject([400, "cannot get data"]);
+  //       }
+  //     });
+  //   });
+  // });
+  //
+  // mock.onPost(url.ADD_NOTES).reply((event: any) => {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       if (event && event.data) {
+  //         // Passing fake JSON data as response
+  //         resolve([200, event.data]);
+  //       } else {
+  //         reject([400, "cannot add data"]);
+  //       }
+  //     });
+  //   });
+  // });
+  //
+  // mock.onPatch(url.UPDATE_NOTES).reply((event: any) => {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       if (event && event.data) {
+  //         // Passing fake JSON data as response
+  //         resolve([200, event.data]);
+  //       } else {
+  //         reject([400, "cannot update data"]);
+  //       }
+  //     });
+  //   });
+  // });
+  //
+  // mock.onDelete(url.DELETE_NOTES).reply((config: any) => {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       if (config && config.headers) {
+  //         // Passing fake JSON data as response
+  //         resolve([200, config.headers.data]);
+  //       } else {
+  //         reject([400, "cannot delete data"]);
+  //       }
+  //     });
+  //   });
+  // });
 
   // Social
   // Friends

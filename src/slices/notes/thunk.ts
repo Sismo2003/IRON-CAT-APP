@@ -6,13 +6,14 @@ import {
     updateNotes as updateNotesApi,
     deleteNotes as deleteNotesApi
 } from "../../helpers/fakebackend_helper";
+
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 export const getNotes = createAsyncThunk("notes/getNotes", async () => {
     try {
         const response = getNotesApi();
-        return response;
+        return (await response).data;
     } catch (error) {
         return error;
     }

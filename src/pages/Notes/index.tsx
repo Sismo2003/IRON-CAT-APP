@@ -42,6 +42,7 @@ const Index = () => {
     );
 
     const { dataList } = useSelector(selectDataList);
+
     const [eventData, setEventData] = useState<any>();
 
 
@@ -50,7 +51,10 @@ const Index = () => {
 
     const [Overviewshow, setOverview] = useState<boolean>(false);
 
-    const [data, setData] = useState([]);
+    // const [data, setData] = useState([]);
+    const [data, setData] = useState<any[]>([]);
+
+
     const [activeTab, setActiveTab] = useState<number>(1);
 
     const [toggleDesctipton, setToggleDesctipton] = useState<any>([]);
@@ -62,6 +66,9 @@ const Index = () => {
     useEffect(() => {
         dispatch(onGetNotes());
     }, [dispatch]);
+
+
+
 
     // Delete Modal
     const [deleteModal, setDeleteModal] = useState<boolean>(false);
@@ -189,7 +196,14 @@ const Index = () => {
     const perPageData = 8;
     const indexOfLast = currentPage * perPageData;
     const indexOfFirst = indexOfLast - perPageData;
-    const currentdata = useMemo(() => dataList?.slice(indexOfFirst, indexOfLast), [dataList, indexOfFirst, indexOfLast]);
+
+    // const currentdata = useMemo(() => dataList?.slice(indexOfFirst, indexOfLast), [dataList, indexOfFirst, indexOfLast]);
+
+
+    const currentdata = useMemo(() => {
+        console.log("Antes de slice, dataList:", dataList);
+        return Array.isArray(dataList) ? dataList.slice(indexOfFirst, indexOfLast) : [];
+    }, [dataList, indexOfFirst, indexOfLast]);
 
     useEffect(() => {
         setData(currentdata);
@@ -309,16 +323,14 @@ const Index = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 xl:grid-cols-4" id="notes-list">
-
-
                 {(data || []).map((item: any, key: number) => {
-
                     return (
                         <div className="card product-item personal" key={key}>
                             <div className="flex flex-col h-full card-body">
                                 <div>
                                     <Dropdown className="relative ltr:float-right rtl:float-left">
-                                        <Dropdown.Trigger className="flex items-center justify-center size-[30px] p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20" id="categoryNotes1" data-bs-toggle="dropdown">
+                                        <Dropdown.Trigger className="flex items-center justify-center size-[30px] p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20"
+                                                          id="categoryNotes1" data-bs-toggle="dropdown">
                                             <MoreHorizontal className="size-3" />
                                         </Dropdown.Trigger>
                                         <Dropdown.Content placement="right-end" className="absolute z-50 py-2 mt-1 text-left list-none bg-white rounded-md shadow-md min-w-[10rem] dark:bg-zink-600" aria-labelledby="categoryNotes1">
@@ -361,16 +373,20 @@ const Index = () => {
                                                 placement="start-end"
                                                 className="absolute z-50 py-2 mt-1 text-left list-none bg-white rounded-md shadow-md dropdown-menu min-w-[10rem] dark:bg-zink-600" aria-labelledby="notesAction1">
                                                 <li>
-                                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" to="#!">Personal</Link>
+                                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+                                                          to="#!">Personal</Link>
                                                 </li>
                                                 <li>
-                                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" to="#!">Business</Link>
+                                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+                                                          to="#!">Business</Link>
                                                 </li>
                                                 <li>
-                                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" to="#!">Social</Link>
+                                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+                                                          to="#!">Social</Link>
                                                 </li>
                                                 <li>
-                                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" to="#!">Home</Link>
+                                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+                                                          to="#!">Home</Link>
                                                 </li>
                                             </Dropdown.Content>
                                         </Dropdown>
@@ -379,12 +395,12 @@ const Index = () => {
                                 </div>
 
                                 {
-                                    item.description.split(' ').length > 38
+                                    item.comment.split(' ').length > 38
                                         ? (
                                             <React.Fragment>
                                                 <p className='text-slate-500 dark:text-zink-200'></p>
-                                                <p dangerouslySetInnerHTML={{ __html: toggleDesctipton[key]?.key ? item.description : truncateText(item.description, 38) }} />
-                                                <p style={{ cursor: "pointer" }} onClick={() => handleReadMore(key)}>{toggleDesctipton[key]?.key ? 'Read Less' : 'Read More'}</p>
+                                                <p dangerouslySetInnerHTML={{ __html: toggleDesctipton[key]?.key ? item.comment : truncateText(item.comment, 38) }} />
+                                                <p style={{ cursor: "pointer" }} onClick={() => handleReadMore(key)}>{toggleDesctipton[key]?.key ? 'Leer menos' : 'Leer mas'}</p>
                                             </React.Fragment>
                                         )
                                         : item.isList ?
@@ -404,7 +420,7 @@ const Index = () => {
                                             :
                                             <React.Fragment>
                                                 <p className='text-slate-500 dark:text-zink-200'></p>
-                                                <p dangerouslySetInnerHTML={{ __html: item.description }} />
+                                                <p dangerouslySetInnerHTML={{ __html: item.comment }} />
                                             </React.Fragment>
 
                                 }
@@ -415,7 +431,7 @@ const Index = () => {
                                             <Star className={"size-5 text-slate-500 dark:text-zink-200 dark:fill-zink-600 fill-slate-200 transition-all duration-150 ease-linear group-[.active]/item:text-yellow-500 dark:group-[.active]/item:text-yellow-500 group-[.active]/item:fill-yellow-200 dark:group-[.active]/item:fill-yellow-500/50 group-hover/item:text-yellow-500 dark:group-hover/item:text-yellow-500 group-hover/item:fill-yellow-200 dark:group-hover/item:fill-yellow-500/50"} />
                                         </Link>
                                     </div>
-                                    <p className="text-slate-500 dark:text-zink-200 shrink-0">{item.date}</p>
+                                    <p className="text-slate-500 dark:text-zink-200 shrink-0">{item.create_date}</p>
                                 </div>
                             </div>
                         </div>);
@@ -432,13 +448,13 @@ const Index = () => {
                 currentdata={currentdata}
             />
 
-            {/* Notes Modal */}
+            {/* Notes Modal edit/create */}
             <Modal show={show} onHide={toggle} id="defaultModal" modal-center="true"
                 className="fixed flex flex-col transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4"
                 dialogClassName="w-screen xl:w-[55rem] bg-white shadow rounded-md dark:bg-zink-600">
                 <Modal.Header className="flex items-center justify-between p-5 border-b dark:border-zink-500"
                     closeButtonClass="transition-all duration-200 ease-linear text-slate-400 hover:text-red-500">
-                    <Modal.Title className="text-16">{!!isEdit ? "Edit Notes" : "Create Notes"}</Modal.Title>
+                    <Modal.Title className="text-16">{!!isEdit ? "Editar Nota" : "Crear Nota"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="max-h-[calc(theme('height.screen')_-_180px)] overflow-y-auto p-5">
                     <form noValidate className="create-form" onSubmit={(e) => {
@@ -451,15 +467,16 @@ const Index = () => {
                         <input type="hidden" id="id-field" />
                         <div id="alert-error-msg" className="hidden px-4 py-3 text-sm text-red-500 border border-transparent rounded-md bg-red-50 dark:bg-red-400/20"></div>
                         <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+                            {/* Date for new note */}
                             <div className="xl:col-span-4">
-                                <label htmlFor="createDateInput" className="inline-block mb-2 text-base font-medium">Create Date</label>
+                                <label htmlFor="createDateInput" className="inline-block mb-2 text-base font-medium">Fecha</label>
                                 <Flatpickr
                                     id="createDateInput"
                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                     options={{
                                         dateFormat: "d M, Y"
                                     }}
-                                    placeholder='Select date'
+                                    placeholder='Selecciona Una Fecha'
                                     onChange={(date: any) => validation.setFieldValue("date", moment(date[0]).format("DD MMMM ,YYYY"))}
                                     value={validation.values.date || ''}
                                 />
@@ -467,10 +484,12 @@ const Index = () => {
                                     <p className="text-red-400">{validation.errors.date}</p>
                                 ) : null}
                             </div>
+                            {/* Title for new note */}
                             <div className="xl:col-span-4">
-                                <label htmlFor="notesTitleInput" className="inline-block mb-2 text-base font-medium">Note Title</label>
-                                <input type="text" id="notesTitleInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Title"
-                                    name="title"
+                                <label htmlFor="notesTitleInput" className="inline-block mb-2 text-base font-medium">Titulo</label>
+                                <input type="text" id="notesTitleInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                       placeholder="Titulo"
+                                    name="Encabezado de la nota"
                                     onChange={validation.handleChange}
                                     value={validation.values.title || ""}
                                 />
@@ -478,29 +497,43 @@ const Index = () => {
                                     <p className="text-red-400">{validation.errors.title}</p>
                                 ) : null}
                             </div>
+                            {/* Category for notes */}
                             <div className="xl:col-span-4">
                                 <div>
-                                    <label htmlFor="categorySelect" className="inline-block mb-2 text-base font-medium">Category</label>
-                                    <select className="form-select border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" data-choices data-choices-search-false id="statusSelect"
+                                    <label htmlFor="categorySelect" className="inline-block mb-2 text-base font-medium">Categoria</label>
+                                    <select className="form-select border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                            data-choices data-choices-search-false id="statusSelect"
                                         name="category"
                                         onChange={validation.handleChange}
                                         value={validation.values.category || ""}
                                     >
-                                        <option value="">Select Category</option>
-                                        <option value="business">Business</option>
-                                        <option value="personal">Personal</option>
-                                        <option value="home">Home</option>
-                                        <option value="social">Social</option>
+
+                                        <option disabled value="">Seleccione una categoría</option>
+
+                                        <option value="vehicles">Automóvil</option>
+                                        <option value="importants">Urgentes</option>
+                                        <option value="employees">Empleados</option>
+                                        <option value="pendings">Pendientes</option>
+
+                                        <optgroup label={"VALORES POR DEFECTO"}>
+                                            <option value="business">Negocios</option>
+                                            <option value="social">Social</option>
+                                            <option value="home">Hogar</option>
+                                            <option value="personal">Personal</option>
+                                        </optgroup>
+
                                     </select>
                                     {validation.touched.category && validation.errors.category ? (
                                         <p className="text-red-400">{validation.errors.category}</p>
                                     ) : null}
                                 </div>
                             </div>
+                            {/* Description for new note */}
                             <div className="xl:col-span-12">
                                 <div>
-                                    <label htmlFor="textArea" className="inline-block mb-2 text-base font-medium">Description</label>
-                                    <textarea className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" id="textArea" rows={6}
+                                    <label htmlFor="textArea" className="inline-block mb-2 text-base font-medium">Descripción</label>
+                                    <textarea className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                        id="textArea" rows={6}
                                         name="description"
                                         onChange={validation.handleChange}
                                         value={new DOMParser().parseFromString(validation.values.description, 'text/html').body.textContent || ""}
@@ -512,12 +545,12 @@ const Index = () => {
                                 </div>
                             </div>
                         </div>
-
+                        {/* Buttoms fot the modal */}
                         <div className="flex justify-end gap-2 mt-4">
                             <button type="reset" data-modal-close="addNotesModal" className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-600 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10"
-                                onClick={toggle}>Cancel</button>
+                                onClick={toggle}>Cancelar</button>
                             <button type="submit" id="addNew" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">
-                                {!!isEdit ? "Update" : "Add Note"}
+                                {!!isEdit ? "Actualizar" : "Crear nota"}
                             </button>
                         </div>
                     </form>
@@ -536,16 +569,20 @@ const Index = () => {
                             <Category item={'personal'} />
                             <Dropdown.Content placement="start-end" className="absolute z-50 hidden py-2 mt-1 text-left list-none bg-white rounded-md shadow-md dropdown-menu min-w-[10rem] dark:bg-zink-600" aria-labelledby="notesAction1">
                                 <li>
-                                    <a className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">Personal</a>
+                                    <a className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+                                       href="#!">Personal</a>
                                 </li>
                                 <li>
-                                    <a className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">Business</a>
+                                    <a className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+                                       href="#!">Business</a>
                                 </li>
                                 <li>
-                                    <a className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">Social</a>
+                                    <a className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+                                       href="#!">Social</a>
                                 </li>
                                 <li>
-                                    <a className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">Home</a>
+                                    <a className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+                                       href="#!">Home</a>
                                 </li>
                             </Dropdown.Content>
                         </Dropdown>
@@ -558,9 +595,9 @@ const Index = () => {
                             <User2 className="inline-block size-4 mr-1 align-middle text-slate-500 fill-slate-200 dark:text-zink-200 dark:fill-zink-500" />
                             <span className="align-middle">Admin</span></h6>
                         <h6 className="text-sm font-normal shrink-0"><Calendar className="inline-block size-4 mr-1 align-middle text-slate-500 fill-slate-200 dark:text-zink-200 dark:fill-zink-500"/>
-                            <span className="align-middle">{eventData?.date}</span></h6>
+                            <span className="align-middle">{eventData?.create_date ? eventData?.create_date : "Sin fecha" }</span></h6>
                     </div>
-                    <p className="mb-2 text-slate-500 dark:text-zink-200" dangerouslySetInnerHTML={{ __html: eventData?.description }}></p>
+                    <p className="mb-2 text-slate-500 dark:text-zink-200" dangerouslySetInnerHTML={{ __html: eventData?.comment }}></p>
                     <div className="flex justify-end gap-2 mt-4">
                         <button
                             className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 
@@ -573,7 +610,7 @@ const Index = () => {
                          focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white
                           active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"
                             onClick={() => { handleUpdateDataClick(eventData); setOverview(!Overviewshow); }}
-                        >Edit Note</button>
+                        >Editar Nota</button>
                     </div>
                 </Modal.Body>
             </Modal>

@@ -1,8 +1,19 @@
-// const servidor_ip : string = "http://thegrid.myddns.me:3000";
-const servidor_ip : string = "http://localhost:3000"; // TEST
+const servidor_ip : string = "http://thegrid.myddns.me:3000";
+// const servidor_ip : string = "http://localhost:3000"; // TEST
 
 // REGISTER
 export const POST_FAKE_REGISTER = "/auth/signup";
+
+
+
+// Notes
+export const GET_NOTES = servidor_ip + "/notes/get-all-notes";
+export const ADD_NOTES =  servidor_ip + "/notes/add-note";
+export const UPDATE_NOTES = servidor_ip + "/notes/edit-notes";
+export const DELETE_NOTES = servidor_ip + "/notes/delete-notes";
+export const NOTES_CATEGORY = servidor_ip + "/notes/notes-category";
+
+
 
 // LOGIN
 export const POST_FAKE_LOGIN = "/auth/signin";
