@@ -165,11 +165,6 @@ export const ADD_EMPLOYEE_SALARY = "/add-employee-salary";
 export const UPDATE_EMPLOYEE_SALARY = "/edit-employee-salary";
 export const DELETE_EMPLOYEE_SALARY = "/delete-employee-salary";
 
-// Notes
-export const GET_NOTES = "/get-notes";
-export const ADD_NOTES = "/add-notes";
-export const UPDATE_NOTES = "/edit-notes";
-export const DELETE_NOTES = "/delete-notes";
 
 // Social
 // Friends
