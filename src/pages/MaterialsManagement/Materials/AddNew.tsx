@@ -145,6 +145,7 @@ const AddNew = () => {
             if (mode === "edit") {
                 console.log("Actualizando producto:", newData);
                 dispatch(onUpdateProductList({ id: data.id, ...newData })).then(() => {
+                    console.log("data: ", newData);
                     navigate("/apps-materials-product-list");
                 });
             } else {

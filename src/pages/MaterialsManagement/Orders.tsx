@@ -41,7 +41,7 @@ const Orders = () => {
     const dispatch = useDispatch<any>();
 
     const selectDataList = createSelector(
-        (state: any) => state.EcommerceShop,
+        (state: any) => state.MATERIALManagement,
         (state) => ({
             dataList: state.orders
         })

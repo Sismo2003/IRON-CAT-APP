@@ -1,5 +1,5 @@
-const servidor_ip : string = "http://thegrid.myddns.me:3000";
-// const servidor_ip : string = "http://localhost:3000"; // TEST
+// const servidor_ip : string = "http://thegrid.myddns.me:3000";
+const servidor_ip : string = "http://localhost:3000"; // TEST
 
 // REGISTER
 export const POST_FAKE_REGISTER = "/auth/signup";
@@ -14,6 +14,11 @@ export const SOCIAL_LOGIN = "/social-login";
 // PROFILE
 export const POST_EDIT_JWT_PROFILE = "/post-jwt-profile";
 export const POST_EDIT_PROFILE = "/user";
+
+// ASSING MATERIAL
+export const ASSIGN_MATERIAL = servidor_ip + "/assign-material-to-client/add-material";
+export const UNASSIGN_MATERIAL = servidor_ip + "/assign-material-to-client/delete-material";
+export const GET_MATERIALS_BY_CLIENT = servidor_ip + "/assign-material-to-client/get-material";
 
 // Chat
 export const GET_CHAT = "/get-chat";

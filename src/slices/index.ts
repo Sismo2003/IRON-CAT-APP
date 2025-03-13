@@ -48,6 +48,9 @@ import InvoiceReducer from "./invoice/reducer"
 // Users
 import UsersReducer from "./users/reducer";
 
+// Assing Material
+import AssingMaterualReducer from "./assignCustomerMaterial/reducer";
+
 const rootReducer = combineReducers({
     Layout: LayoutReducer,
     Login: LoginReducer,
@@ -65,6 +68,7 @@ const rootReducer = combineReducers({
     Social: SocialReducer,
     Invoice: InvoiceReducer,
     Users: UsersReducer,
+    AssingMaterial: AssingMaterualReducer
 });
 
 

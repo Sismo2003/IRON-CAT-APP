@@ -41,3 +41,5 @@ export * from "./social/thunk";
 export * from "./invoice/thunk";
 
 export * from "./users/thunk";
+
+export * from "./assignCustomerMaterial/thunk";

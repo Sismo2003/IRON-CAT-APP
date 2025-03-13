@@ -28,7 +28,7 @@ import {
 
 const menuData: any = [
     {
-        label: 'Administación',
+        label: 'Administración',
         isTitle: true,
     },
     {

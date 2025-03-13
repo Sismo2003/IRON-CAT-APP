@@ -227,7 +227,7 @@ const CustomerList = () => {
             enableSorting: true,
             cell: (cell: any) => (
                 <div className="flex gap-3">
-                    <Link className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" to="/pages-account"><Eye className="inline-block size-3" /> </Link>
+                    <Link className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" to="/pages-account" state={{ data: cell.row.original }}><Eye className="inline-block size-3" /> </Link>
                     <Link to="#!" data-modal-target="viewTicketModal" className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md edit-item-btn bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" onClick={() => {
                         const data = cell.row.original;
                         handleUpdateDataClick(data);

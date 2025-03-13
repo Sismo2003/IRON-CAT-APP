@@ -88,7 +88,7 @@ const ListView = () => {
 
     const columns = useMemo(() => [
         {
-            header: "Product Name",
+            header: "Nombre del Material",
             accessorKey: "material",
             enableColumnFilter: false,
             enableSorting: true,
@@ -250,4 +250,4 @@ const ListView = () => {
     );
 };
 
-export default ListView;;
+export default ListView;
