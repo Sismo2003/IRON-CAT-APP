@@ -192,7 +192,7 @@ const Index = () => {
 
 
     const currentdata = useMemo(() => {
-        console.log("Antes de slice, dataList:", dataList);
+        // console.log("Antes de slice, dataList:", dataList);
         return Array.isArray(dataList) ? dataList.slice(indexOfFirst, indexOfLast) : [];
     }, [dataList, indexOfFirst, indexOfLast]);
 
