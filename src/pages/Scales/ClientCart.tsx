@@ -5,7 +5,10 @@ import { Link } from "react-router-dom";
 import scale from "assets/images/scale.png";
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { getShopProductList as onGetProductList } from 'slices/thunk';
+import { 
+  getMaterialsAssignedByClient as onGetMaterialsAssignedByClient,
+  getCustomer as onGetCustomer
+} from 'slices/thunk';
 
 const ws_ip = "ws://thegrid.myddns.me:3001";
 
@@ -18,8 +21,10 @@ const scales = [
 interface MaterialOption {
   value: number;
   label: string;
-  wholesale_price: number;
-  retail_price: number;
+  wholesale_price_buy: number;
+  retail_price_buy: number;
+  wholesale_price_sell: number;
+  retail_price_sell: number;
 }
 
 interface ClientOption {
@@ -27,64 +32,76 @@ interface ClientOption {
   label: string;
 }
 
+interface CartItem {
+  id: number;
+  material: string;
+  weight: number;
+  price: number;
+  total: number;
+}
+
 const ShoppingCart = () => {
   const dispatch = useDispatch<any>();
 
   const selectDataList = createSelector(
-    (state: any) => state.MATERIALManagement,
+    (state: any) => state.AssignedMaterials,
     (state) => ({
-      materialList: state.productList,
+      materialList: state.assignedMaterials,
       loading: state.loading,
     })
   );
 
-  const { materialList } = useSelector(selectDataList);
+  const clientDataList = createSelector(
+    (state: any) => state.CUSTOMERManagement,
+    (state) => ({
+      clientlList: state.customerlist,
+    })
+  );
 
-  const [clients, setClients] = useState<ClientOption[]>([]);
+  const { materialList } = useSelector(selectDataList);
+  const { clientlList } = useSelector(clientDataList);
+
+  const clients = clientlList.map((client: any) => ({
+    value: client.id,
+    label: client.name,
+  }));
+
+  const materials: MaterialOption[] = materialList.map((material: any) => ({ 
+    value: material.value,
+    label: material.label,
+    wholesale_price_buy: material.wholesale_price_buy,
+    retail_price_buy: material.retail_price_buy,
+    wholesale_price_sell: material.wholesale_price_sell,
+    retail_price_sell: material.retail_price_sell,
+  }));
+
   const [selectedClient, setSelectedClient] = useState<ClientOption | null>(null);
   const [transactionType, setTransactionType] = useState<'compra' | 'venta' | null>(null);
-  const [materials, setMaterials] = useState<MaterialOption[]>([]);
-  const [cart, setCart] = useState<any>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
-  const [selectedPriceTypes, setSelectedPriceTypes] = useState<{ [key: number]: 'wholesale' | 'retail' }>({});
+  const [selectedPriceTypes, setSelectedPriceTypes] = useState<{
+    [key: number]: { value: 'wholesale' | 'retail'; label: string };
+  }>(() => {
+    // Inicializar con "Precio de Mayoreo" para cada báscula
+    const defaultPriceTypes: { [key: number]: { value: 'wholesale' | 'retail'; label: string } } = {};
+    scales.forEach((scale) => {
+      defaultPriceTypes[scale.id] = { value: 'wholesale', label: 'Precio de Mayoreo' };
+    });
+    return defaultPriceTypes;
+  });
 
-  // Obtener datos de la base de datos
+  // Obtener clientes
   useEffect(() => {
-    dispatch(onGetProductList());
+    dispatch(onGetCustomer());
   }, [dispatch]);
-
-  // Simulación de clientes (deberías obtenerlos de un endpoint)
-  useEffect(() => {
-    const fetchClients = async () => {
-      // Aquí deberías hacer una llamada a tu API para obtener los clientes
-      const clientsData = [
-        { value: 1, label: "Cliente 1" },
-        { value: 2, label: "Cliente 2" },
-        { value: 3, label: "Cliente 3" },
-      ];
-      setClients(clientsData);
-    };
-    fetchClients();
-  }, []);
 
   // Obtener materiales ligados al cliente seleccionado
   useEffect(() => {
     if (selectedClient && transactionType) {
-      // Aquí deberías hacer una llamada a tu API para obtener los materiales ligados al cliente
-      const fetchMaterials = async () => {
-        const materialsData = [
-          { value: 1, label: "Material 1", wholesale_price: 10, retail_price: 15 },
-          { value: 2, label: "Material 2", wholesale_price: 20, retail_price: 25 },
-          { value: 3, label: "Material 3", wholesale_price: 30, retail_price: 35 },
-        ];
-        setMaterials(materialsData);
-      };
-      fetchMaterials();
-    } else {
-      setMaterials([]);
+      dispatch(onGetMaterialsAssignedByClient({ clientId: selectedClient.value }));
     }
-  }, [selectedClient, transactionType]);
+  }, [dispatch, selectedClient, transactionType]);
 
   // WebSocket para obtener pesos
   useEffect(() => {
@@ -106,12 +123,20 @@ const ShoppingCart = () => {
 
   // Función para agregar al carrito
   const handleAddToCart = (scaleId: number) => {
-    const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
+    const material = materials.find((m: MaterialOption) => m.label === selectedMaterials[scaleId]);
     if (!material) return;
 
     const weight = weights[scaleId] || 0;
-    const priceType = selectedPriceTypes[scaleId] || 'wholesale';
-    const price = priceType === 'wholesale' ? material.wholesale_price : material.retail_price;
+    const priceType = selectedPriceTypes[scaleId]?.value || 'wholesale';
+
+    // Seleccionar el precio correcto en función del tipo de transacción y el tipo de precio
+    let price = 0;
+    if (transactionType === 'compra') {
+      price = priceType === 'wholesale' ? material.wholesale_price_buy : material.retail_price_buy;
+    } else if (transactionType === 'venta') {
+      price = priceType === 'wholesale' ? material.wholesale_price_sell : material.retail_price_sell;
+    }
+
     const total = weight * price;
 
     setCart([...cart, {
@@ -163,7 +188,7 @@ const ShoppingCart = () => {
                     name="materialTypeSelect"
                     id="materialTypeSelect"
                     isDisabled={!selectedClient || !transactionType}
-                    onChange={(selectedOption) =>
+                    onChange={(selectedOption: { label: string } | null) =>
                       setSelectedMaterials({ ...selectedMaterials, [scale.id]: selectedOption?.label || "" })
                     }
                   />
@@ -173,14 +198,21 @@ const ShoppingCart = () => {
                       { value: 'wholesale', label: 'Precio de Mayoreo' },
                       { value: 'retail', label: 'Precio de Menudeo' },
                     ]}
-                    value={{
-                      value: selectedPriceTypes[scale.id] || 'wholesale',
-                      label: selectedPriceTypes[scale.id] === 'retail' ? 'Precio de Menudeo' : 'Precio de Mayoreo',
-                    }}
+                    value={selectedPriceTypes[scale.id] || { value: 'wholesale', label: 'Precio de Mayoreo' }} // Valor predeterminado
                     isDisabled={!selectedClient || !transactionType}
-                    onChange={(selectedOption) =>
-                      setSelectedPriceTypes({ ...selectedPriceTypes, [scale.id]: selectedOption?.value as 'wholesale' | 'retail' })
-                    }
+                    onChange={(selectedOption: { value: 'wholesale' | 'retail'; label: string } | null) => {
+                      if (selectedOption) {
+                        setSelectedPriceTypes({
+                          ...selectedPriceTypes,
+                          [scale.id]: selectedOption,
+                        });
+                      } else {
+                        // Si no hay opción seleccionada, elimina la entrada del estado
+                        const updatedSelectedPriceTypes = { ...selectedPriceTypes };
+                        delete updatedSelectedPriceTypes[scale.id];
+                        setSelectedPriceTypes(updatedSelectedPriceTypes);
+                      }
+                    }}
                     placeholder="Seleccionar tipo de precio"
                   />
                 </div>
@@ -201,7 +233,7 @@ const ShoppingCart = () => {
             {cart.length === 0 ? (
               <p className="text-slate-500">Carrito está vacío</p>
             ) : (
-              cart.map((item: any, index: any) => (
+              cart.map((item: CartItem, index: number) => (
                 <div key={index} className="flex justify-between p-2 border-b">
                   <span>{item.material} ({item.weight}kg)</span>
                   <span>${item.total.toFixed(2)}</span>
@@ -209,7 +241,7 @@ const ShoppingCart = () => {
               ))
             )}
             <div className="mt-4">
-              <h6 className="text-16">Total: ${cart.reduce((sum: any, item: any) => sum + item.total, 0).toFixed(2)}</h6>
+              <h6 className="text-16">Total: ${cart.reduce((sum: number, item: CartItem) => sum + item.total, 0).toFixed(2)}</h6>
               <Link to="/apps-ecommerce-checkout" className="w-full text-white bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100 dark:ring-custom-400/20">Checkout</Link>
             </div>
           </div>
@@ -220,4 +252,3 @@ const ShoppingCart = () => {
 };
 
 export default ShoppingCart;
-

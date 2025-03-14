@@ -4,6 +4,7 @@ import {
     assignMaterialToClient as assignMaterialToClientApi,
     unassignMaterialFromClient as unassignMaterialFromClientApi,
     getMaterialsByClient as onGetMaterialsByClientApi,
+    getAssignedMaterials as onGetAssignedMaterials,
 } from "../../helpers/fakebackend_helper";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';

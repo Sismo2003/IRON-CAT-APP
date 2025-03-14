@@ -1,5 +1,5 @@
 import React from "react";
-import { Facebook, Github, Mail, Twitter } from "lucide-react";
+// import { Facebook, Github, Mail, Twitter } from "lucide-react";
 
 // Formik validation
 import * as Yup from "yup";
@@ -8,7 +8,7 @@ import { useFormik as useFormic } from "formik";
 // Image
 import logoLight from "assets/images/LOGOINICIOV1.png";
 import logoDark from "assets/images/LOGOINICIOV1.png";
-import { loginUser, socialLogin } from "slices/thunk";
+import { loginUser/*, socialLogin*/ } from "slices/thunk";
 import { useDispatch, useSelector } from "react-redux";
 import withRouter from "Common/withRouter";
 import { createSelector } from 'reselect';
@@ -50,13 +50,13 @@ const Login = (props: any) => {
         }
     });
 
-    const signIn = (type: any) => {
-        dispatch(socialLogin(type, props.router.navigate))
-    }
+    // const signIn = (type: any) => {
+    //     dispatch(socialLogin(type, props.router.navigate))
+    // }
 
-    const socialResponse = (type: any) => {
-        signIn(type)
-    }
+    // const socialResponse = (type: any) => {
+    //     signIn(type)
+    // }
 
     React.useEffect(() => {
         const bodyElement = document.body;

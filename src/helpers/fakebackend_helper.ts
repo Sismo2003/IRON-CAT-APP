@@ -69,6 +69,7 @@ export const postSocialLogin = (data: any) => api.create(url.SOCIAL_LOGIN, data)
 export const assignMaterialToClient = (data: any) => api.create(url.ASSIGN_MATERIAL, data);
 export const unassignMaterialFromClient = (data: any) => api.delete(url.UNASSIGN_MATERIAL + "/" + data.clientId + "/" + data.material.id, { headers: { data } });
 export const getMaterialsByClient = (data: any) => api.get(url.GET_MATERIALS_BY_CLIENT,  { clientId: data });
+export const getAssignedMaterials = (data: any) => api.get(url.GET_ASSIGNED_MATERIALS, { clientId: data });
 
 // Chat
 export const getChat = (roomId: any) => api.get(`${url.GET_CHAT}/${roomId}`, { params: { roomId } });

@@ -107,13 +107,19 @@ const menuData: any = [
                 id: 'sales-scale',
                 label: 'Venta',
                 link: '/apps-scales-salecart',
-                parentId: 'valves'
+                parentId: 'Scales'
             },
             {
                 id: 'shopping-scale',
                 label: 'Compra',
                 link: '/apps-scales-shopcart',
-                parentId: 'valves'
+                parentId: 'Scales'
+            },
+            {
+                id: 'client-scale',
+                label: 'Clientes especiales',
+                link: '/apps-scales-clientcart',
+                parentId: 'Scales'
             },
             // {
             //     id: 'checkout',

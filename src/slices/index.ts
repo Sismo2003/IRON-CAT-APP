@@ -49,7 +49,10 @@ import InvoiceReducer from "./invoice/reducer"
 import UsersReducer from "./users/reducer";
 
 // Assing Material
-import AssingMaterualReducer from "./assignCustomerMaterial/reducer";
+import AssingMaterialReducer from "./assignCustomerMaterial/reducer";
+
+// Assigned Material
+import AssignedMaterialReducer from "./assignedMaterialsToClient/reducer";
 
 const rootReducer = combineReducers({
     Layout: LayoutReducer,
@@ -68,7 +71,8 @@ const rootReducer = combineReducers({
     Social: SocialReducer,
     Invoice: InvoiceReducer,
     Users: UsersReducer,
-    AssingMaterial: AssingMaterualReducer
+    AssingMaterial: AssingMaterialReducer,
+    AssignedMaterials: AssignedMaterialReducer
 });
 
 

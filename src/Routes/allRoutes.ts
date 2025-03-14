@@ -320,8 +320,8 @@ const authProtectedRoutes: Array<RouteObject> = [
 
   // Scales
   { path: "/apps-scales-shopcart", component: ShoppingCart },
-  // { path: "/apps-scales-salecart", component: SalesCart },
-  { path: "/apps-scales-salecart", component: ClientCart },
+  { path: "/apps-scales-salecart", component: SalesCart },
+  { path: "/apps-scales-clientcart", component: ClientCart },
 
   // TICKET Management
   { path: "/apps-tk-ticket", component: Orders },
