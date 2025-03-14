@@ -280,7 +280,7 @@ const Index = () => {
 
     return (
         <React.Fragment>
-            <BreadCrumb title='Notes' pageTitle='Apps' />
+            <BreadCrumb title='Notas' pageTitle='App' />
             <DeleteModal show={deleteModal} onHide={deleteToggle} onDelete={handleDelete} />
             <ToastContainer closeButton={false} limit={1} />
             <div className="card">
