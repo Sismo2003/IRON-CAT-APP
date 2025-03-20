@@ -5,7 +5,7 @@ import scale from "assets/images/scale.png";
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { getShopProductList as onGetProductList } from 'slices/thunk';
-
+import { Trash2,ShoppingBasket } from 'lucide-react';
 const ws_ip = "ws://thegrid.myddns.me:3001";
 
 const scales = [
@@ -40,6 +40,10 @@ const ShoppingCart = () => {
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
   const [selectedPriceTypes, setSelectedPriceTypes] = useState<{ [key: number]: 'wholesale' | 'retail' }>({}); // Estado para el tipo de precio por báscula
+
+  const [mermaDefault, setMermaDefault] = useState<{ [key: number]: boolean }>({});
+  const [mermaValues, setMermaValues] = useState<{ [key: number]: string }>({});
+
 
   // Obtener datos de la base de datos
   useEffect(() => {
@@ -162,6 +166,11 @@ const ShoppingCart = () => {
     }
   };
 
+
+  const handleDeleteItem = (index: number) => {
+    setCart((prevCart: any[]) => prevCart.filter((_, i) => i !== index));
+  };
+
   return (
     <>
       <BreadCrumb title="Carrito de Compras" pageTitle="Compras" />
@@ -206,7 +215,7 @@ const ShoppingCart = () => {
                   className="bg-blue-500 text-white p-2 rounded-lg mt-4"
                   onClick={() => handleAddToCart(scale.id)}
                 >
-                  Add to Cart
+                  Registrar al carrito
                 </button>
               </div>
             </div>
@@ -216,18 +225,90 @@ const ShoppingCart = () => {
           <div className="card p-4 bg-white shadow rounded-lg">
             <h6 className="mb-4 text-15">Carrito de compras<span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{cart.length ? cart.length : 0}</span></h6>
             {cart.length === 0 ? (
-              <p className="text-slate-500">Carrito está vacío</p>
+              <div className="flex flex-col items-center justify-center my-5">
+                <ShoppingBasket className="w-12 h-12 text-gray-500" />
+                <p className="mt-2 text-gray-600 text-sm">Carrito está vacío!</p>
+              </div>
             ) : (
               cart.map((item: any, index: any) => (
-                <div key={index} className="flex justify-between p-2 border-b">
-                  <span>{item.material} ({item.weight}kg)</span>
-                  <span>${item.total.toFixed(2)}</span>
-                </div>
+                  <div key={index} className="p-2 border-b">
+                    <div className="flex items-center justify-between">
+                      <span>{item.material} ({item.weight}kg)</span>
+                      <div className="flex items-center gap-2">
+                        <span>${item.total.toFixed(2)}</span>
+                        <a
+                            className="cursor-pointer p-2 inline-flex items-center justify-center hover:bg-gray-200 hover:rounded-md"
+                            onClick={() => handleDeleteItem(index)}
+                        >
+                          <Trash2 className="text-red-500 w-5" />
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                            id={'checkBox' +index}
+                            className="size-4 border rounded-full appearance-none cursor-pointer bg-slate-100 border-slate-200 dark:bg-zink-600 dark:border-zink-500 checked:bg-purple-500 checked:border-purple-500 dark:checked:bg-purple-500 dark:checked:border-purple-500 checked:disabled:bg-purple-400 checked:disabled:border-purple-400"
+                            type="checkbox"
+                            checked={mermaDefault[index] || false}
+                            onChange={(e) =>
+                                setMermaDefault({ ...mermaDefault, [index]: e.target.checked })
+                            }
+                        />
+                        <label htmlFor={'checkBox' +index} className="relative inline-block group">
+                          Fijar merma
+                        </label>
+                      </div>
+                      {mermaDefault[index] ? (
+                          <Select
+                              options={[
+                                { value: '10', label: '10kg' },
+                                { value: '20', label: '20kg' },
+                                { value: '30', label: '30kg' },
+                              ]}
+                              value={
+                                mermaValues[index]
+                                    ? { value: mermaValues[index], label: `${mermaValues[index]}kg` }
+                                    : null
+                              }
+                              onChange={(selectedOption: any) =>
+                                  setMermaValues({ ...mermaValues, [index]: selectedOption?.value })
+                              }
+                              className="w-1/2 h-10"
+
+                          />
+                      ) : (
+                          <input
+                              type="number"
+                              placeholder="50kg"
+                              className="border border-gray-400 rounded-md px-2 py-1 w-1/2 h-10"
+                              value={mermaValues[index] || ''}
+                              onChange={(e) =>
+                                  setMermaValues({ ...mermaValues, [index]: e.target.value })
+                              }
+                          />
+                      )}
+
+                    </div>
+                  </div>
               ))
             )}
             <div className="mt-4">
-              <h6 className="text-16">Total: ${cart.reduce((sum: any, item: any) => sum + item.total, 0).toFixed(2)}</h6>
-              <button onClick={handleCheckout} className="w-full text-white bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100 dark:ring-custom-400/20">Checkout</button>
+              <h6 className="text-10 text-gray-400 font-light mb-2">
+                Total Merma: {cart.reduce((sum: any, item: any) => sum + item.value, 0).toFixed(2)}/kg
+              </h6>
+              <h6 className="text-16">
+                Total: ${cart.reduce((sum: any, item: any) => sum + item.total, 0).toFixed(2)}
+              </h6>
+
+
+              <button
+                onClick={handleCheckout}
+                className="w-full mt-3 text-white bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100 dark:ring-custom-400/20"
+              >
+                Imprimir
+              </button>
             </div>
           </div>
         </div>
