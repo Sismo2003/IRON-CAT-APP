@@ -127,7 +127,7 @@ const CustomerList = () => {
             .email("El formato de correo electrónico no es válido")
             .required("Porfavor ingrese el email"),
             phone: Yup.string().required("Porfavor ingrese el número de telefono"),
-            rfc: Yup.string().required("Porfavor ingrese el RFC")
+            rfc: Yup.string()
         }),
 
         onSubmit: (values) => {
@@ -143,6 +143,7 @@ const CustomerList = () => {
                 const newData = {
                     ...values,
                     id: (Math.floor(Math.random() * (30 - 20)) + 20).toString(),
+                    fullname: values.name + " " + values.last_name,
                     customer_id: "#IRON-" + uuidv4().split("-")[0].toUpperCase()
                 };
                 // save new user
@@ -153,7 +154,6 @@ const CustomerList = () => {
         },
     });
 
-    // 
     const toggle = useCallback(() => {
         if (show) {
             setShow(false);

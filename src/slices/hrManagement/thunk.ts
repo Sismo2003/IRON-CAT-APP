@@ -39,7 +39,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export const getEmployee = createAsyncThunk("hrManagement/getEmployee", async () => {
     try {
         const response = getEmployeeApi();
-        console.log(response);
+        console.log((await response).data);
         return (await response).data;
     } catch (error) {
         return error;
@@ -47,21 +47,24 @@ export const getEmployee = createAsyncThunk("hrManagement/getEmployee", async ()
 });
 export const addEmployee = createAsyncThunk("hrManagement/addEmployee", async (event: any) => {
     try {
-        console.log("event", event);
-        const response = addEmployeeApi(event);
-        const data = await response;
-        console.log("data", data);
-        toast.success("Empleado creado con éxito", { autoClose: 2000 });
-        return event;
+        const response = await addEmployeeApi(event);
+        if (response.data) {
+            event.id = response.data.employeeId;
+            toast.success("Empleado creado con éxito", { autoClose: 2000 });
+            console.log("event", event);
+            return event;
+        } else {
+            toast.error("Empleado no creado", { autoClose: 2000 });
+            return response;
+        }
     } catch (error) {
-        toast.error("Employee Added Failed", { autoClose: 2000 });
+        toast.error("Empleado no creado", { autoClose: 2000 });
         return error;
     }
 });
 export const updateEmployee = createAsyncThunk("hrManagement/updateEmployee", async (event: any) => {
     try {
-        const response = updateEmployeeApi(event);
-        await response;
+        updateEmployeeApi(event);
         toast.success("Employee updated Successfully", { autoClose: 2000 });
         return event;
     } catch (error) {
@@ -71,12 +74,11 @@ export const updateEmployee = createAsyncThunk("hrManagement/updateEmployee", as
 });
 export const deleteEmployee = createAsyncThunk("hrManagement/deleteEmployee", async (event: any) => {
     try {
-        const response = deleteEmployeeApi(event);
-        console.log(response)
-        toast.success("Employee deleted Successfully", { autoClose: 2000 });
+        deleteEmployeeApi(event);
+        toast.success("Empleado eliminado con éxito", { autoClose: 2000 });
         return event;
     } catch (error) {
-        toast.error("Employee deleted Failed", { autoClose: 2000 });
+        toast.error("Fallo al eliminar empleado", { autoClose: 2000 });
         return error;
     }
 });
