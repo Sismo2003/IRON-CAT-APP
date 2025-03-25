@@ -226,6 +226,8 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/dashboards-hr", component: HRDashboard },
   { path: "/dashboards-social", component: SocialMediaDashboard },
 
+  { path: "/Order-test", component: Orders },
+
 
   // Cash Register - caja
   {path : "/CashRegister" , component: CashRegister },

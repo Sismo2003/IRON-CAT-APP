@@ -165,7 +165,7 @@ const TableContainer = ({
         {
           isSelect &&
           <div className="self-center col-span-12 lg:col-span-6">
-            <label>Show
+            <label>Mostrar
               <select name="basic_tables_length" aria-controls="basic_tables"
                 className="px-3 py-2 form-select border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200 inline-block w-auto"
                 onClick={(event: any) => setPageSize(event.target.value)}>
@@ -180,7 +180,7 @@ const TableContainer = ({
 
         <div className="self-center col-span-12 lg:col-span-6 lg:place-self-end">
           {isGlobalFilter &&
-            <label>Search: <DebouncedInput
+            <label>Buscar: <DebouncedInput
               value={globalFilter ?? ''}
               onChange={value => setGlobalFilter(String(value))}
               className="py-2 pr-4 text-sm text-topbar-item bg-topbar border border-topbar-border rounded pl-2 placeholder:text-slate-400 form-control focus-visible:outline-0 min-w-[200px] focus:border-blue-400 group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:border-topbar-border-dark group-data-[topbar=dark]:placeholder:text-slate-500 group-data-[topbar=dark]:text-topbar-item-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:border-topbar-border-brand group-data-[topbar=brand]:placeholder:text-blue-300 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:border-zink-500 group-data-[topbar=dark]:dark:text-zink-100"
@@ -272,14 +272,14 @@ const TableContainer = ({
         isPagination && (
           <div className={PaginationClassName}>
             <div className="mb-4 grow md:mb-0">
-              <div className="text-slate-500 dark:text-zink-200">Showing
-                <b> {getState().pagination.pageSize}</b> of
-                <b> {data.length}</b> Results</div>
+              <div className="text-slate-500 dark:text-zink-200">Mostrando
+                <b> {getState().pagination.pageSize}</b> de
+                <b> {data.length}</b> Resultados</div>
             </div>
             <ul className="flex flex-wrap items-center gap-2 shrink-0">
               <li>
                 <Link to="#!" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 h-8 px-3 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-50 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-custom-500 dark:[&.active]:text-custom-500 [&.active]:bg-custom-50 dark:[&.active]:bg-custom-500/10 [&.active]:border-custom-50 dark:[&.active]:border-custom-500/10 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${!getCanPreviousPage() && "disabled"}`} onClick={previousPage}>
-                  <ChevronLeft className="size-4 mr-1 rtl:rotate-180"></ChevronLeft> Prev</Link>
+                  <ChevronLeft className="size-4 mr-1 rtl:rotate-180"></ChevronLeft> Anterior</Link>
               </li>
               {getPageOptions().map((item: any, key: number) => (
                 <React.Fragment key={key}>
@@ -291,7 +291,7 @@ const TableContainer = ({
               <li>
                 <Link to="#!" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 h-8 px-3 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-50 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-custom-500 dark:[&.active]:text-custom-500 [&.active]:bg-custom-50 dark:[&.active]:bg-custom-500/10 [&.active]:border-custom-50 dark:[&.active]:border-custom-500/10 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto 
                 ${!getCanNextPage() && ""}`} onClick={() => getCanNextPage() && nextPage()}>
-                  Next <ChevronRight className="size-4 ml-1 rtl:rotate-180"></ChevronRight> </Link>
+                  Siguiente <ChevronRight className="size-4 ml-1 rtl:rotate-180"></ChevronRight> </Link>
               </li>
             </ul>
           </div>

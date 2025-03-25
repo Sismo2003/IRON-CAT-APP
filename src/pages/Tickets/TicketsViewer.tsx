@@ -6,7 +6,7 @@ import moment from "moment";
 
 // icons
 import {
-    Boxes, PackagePlus, Loader, Search,
+    Boxes, TicketX, Loader, Search,
     TicketCheck, /*PackageCheck,*/ PackageX, /*Plus,*/
     /*RefreshCcw,*/ MoreHorizontal, Trash2, Eye, FileEdit,
     Ticket
@@ -24,7 +24,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import {
-    getOrders as onGetOrders,
     addOrders as onAddOrders,
     updateOrders as onUpdateOrders,
     deleteOrders as onDeleteOrders,
@@ -67,7 +66,8 @@ const Orders = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        setData(dataList);
+        // setData(dataList);
+        setData(Object.values(dataList));
     }, [dataList]);
 
     // Delete Modal
@@ -164,30 +164,27 @@ const Orders = () => {
 
     const [activeTab, setActiveTab] = useState("1");
 
+
     const toggleTab = (tab: any, type: any) => {
         if (activeTab !== tab) {
             setActiveTab(tab);
-            let filteredOrders = dataList;
+            let ordersArray = Object.values(dataList);
+            let filteredOrders = ordersArray;
             if (type !== "all") {
-                filteredOrders = dataList.filter((order: any) => order.deliveryStatus === type);
+                filteredOrders = ordersArray.filter((order: any) => order.ticket_status === type);
             }
             setData(filteredOrders);
         }
     };
 
-    // columns
     const Status = ({ item }: any) => {
         switch (item) {
-            case "authorised":
-                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-green-100 border-green-200 text-green-500 dark:bg-green-500/20 dark:border-green-500/20">{item}</span>);
-            case "Shipping":
-                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-purple-100 border-purple-200 text-purple-500 dark:bg-purple-500/20 dark:border-purple-500/20">{item}</span>);
-            case "New":
-                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-sky-100 border-sky-200 text-sky-500 dark:bg-sky-500/20 dark:border-sky-500/20">{item}</span>);
-            case "Pending":
+            case "Por autorizar":
                 return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-yellow-100 border-yellow-200 text-yellow-500 dark:bg-yellow-500/20 dark:border-yellow-500/20">{item}</span>);
-            case "Cancelled":
+            case "Cancelados":
                 return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-red-100 border-red-200 text-red-500 dark:bg-red-500/20 dark:border-red-500/20">{item}</span>);
+            case "Autorizados":
+                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-sky-100 border-sky-200 text-sky-500 dark:bg-sky-500/20 dark:border-sky-500/20">{item}</span>);
             default:
                 return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-green-100 border-green-200 text-green-500 dark:bg-green-500/20 dark:border-green-500/20">{item}</span>);
         }
@@ -197,7 +194,8 @@ const Orders = () => {
         {
             header: (
                 <div className="flex items-center h-full">
-                    <input id="CheckboxAll" className="size-4 cursor-pointer bg-white border border-slate-200 checked:bg-none dark:bg-zink-700 dark:border-zink-500 rounded-sm appearance-none arrow-none relative after:absolute after:content-['\eb7b'] after:top-0 after:left-0 after:font-remix after:leading-none after:opacity-0 checked:after:opacity-100 after:text-custom-500 checked:border-custom-500 dark:after:text-custom-500 dark:checked:border-custom-800" type="checkbox" />
+                    <input id="CheckboxAll" className="size-4 cursor-pointer bg-white border border-slate-200 checked:bg-none dark:bg-zink-700 dark:border-zink-500 rounded-sm appearance-none arrow-none relative after:absolute after:content-['\eb7b'] after:top-0 after:left-0 after:font-remix after:leading-none after:opacity-0 checked:after:opacity-100 after:text-custom-500 checked:border-custom-500 dark:after:text-custom-500 dark:checked:border-custom-800"
+                   type="checkbox" />
                 </div>
             ),
             enableSorting: false,
@@ -205,14 +203,15 @@ const Orders = () => {
             cell: (cell: any) => {
                 return (
                     <div className="flex items-center h-full">
-                        <input id={"Checkbox" + cell.row.original.id} className="size-4 cursor-pointer bg-white border border-slate-200 checked:bg-none dark:bg-zink-700 dark:border-zink-500 rounded-sm appearance-none arrow-none relative after:absolute after:content-['\eb7b'] after:top-0 after:left-0 after:font-remix after:leading-none after:opacity-0 checked:after:opacity-100 after:text-custom-500 checked:border-custom-500 dark:after:text-custom-500 dark:checked:border-custom-800" type="checkbox" />
+                        <input id={"Checkbox" + cell.row.original.id} className="size-4 cursor-pointer bg-white border border-slate-200 checked:bg-none dark:bg-zink-700 dark:border-zink-500 rounded-sm appearance-none arrow-none relative after:absolute after:content-['\eb7b'] after:top-0 after:left-0 after:font-remix after:leading-none after:opacity-0 checked:after:opacity-100 after:text-custom-500 checked:border-custom-500 dark:after:text-custom-500 dark:checked:border-custom-800"
+                       type="checkbox" />
                     </div>
                 );
             }
         },
         {
-            header: "Order ID",
-            accessorKey: "orderId",
+            header: "Folio",
+            accessorKey: "ticket_id",
             enableColumnFilter: false,
             enableSorting: false,
             cell: (cell: any) => (
@@ -222,33 +221,35 @@ const Orders = () => {
             ),
         },
         {
-            header: "Order Date",
-            accessorKey: "orderDate",
+            header: "Cliente",
+            accessorFn: (row: any) => row.ticketCustomerName ? row.ticketCustomerName : row.client?.name,
             enableColumnFilter: false
         },
         {
-            header: "Delivery Date",
-            accessorKey: "deliveryDate",
+            header: "Total",
+            accessorKey: "ticket_total",
             enableColumnFilter: false,
+            cell: (cell: any) => (
+                <span>$ {cell.getValue()}</span>
+            ),
         },
         {
-            header: "Customer Name",
-            accessorKey: "customerName",
+            header: "Creado por",
+            accessorKey: "responsible.name",
             enableColumnFilter: false,
+
         },
         {
-            header: "Payment Method",
-            accessorKey: "paymentMethod",
+            header: "Fecha",
+            accessorKey: "ticket_date",
             enableColumnFilter: false,
+            cell: (cell: any) => (
+                <span>{moment(cell.getValue() ).format("DD/MM/YYYY HH:mm")}</span>
+            ),
         },
         {
-            header: "Amount",
-            accessorKey: "amount",
-            enableColumnFilter: false,
-        },
-        {
-            header: "Delivery Status",
-            accessorKey: "deliveryStatus",
+            header: "Estatus",
+            accessorKey: "ticket_status",
             enableColumnFilter: false,
             enableSorting: true,
             cell: (cell: any) => (
@@ -264,20 +265,25 @@ const Orders = () => {
                     <Dropdown.Trigger id="orderAction1" data-bs-toggle="dropdown" className="flex items-center justify-center size-[30px] p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20"><MoreHorizontal className="size-3" /></Dropdown.Trigger>
                     <Dropdown.Content placement={cell.row.index ? "top-end" : "right-end"} className="absolute z-50 py-2 mt-1 ltr:text-left rtl:text-right list-none bg-white rounded-md shadow-md min-w-[10rem] dark:bg-zink-600" aria-labelledby="orderAction1">
                         <li>
-                            <Link to="/apps-ecommerce-order-overview" className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"><Eye className="inline-block size-3 ltr:mr-1 rtl:ml-1" /> <span className="align-middle">Overview</span></Link>
-                        </li>
-                        <li>
-                            <Link to="#!" data-modal-target="addOrderModal" className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" onClick={() => {
+                            <Link to="#!" data-modal-target="addOrderModal"
+                                className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" onClick={() => {
                                 const data = cell.row.original;
                                 handleUpdateDataClick(data);
-                            }}>
-                                <FileEdit className="inline-block size-3 ltr:mr-1 rtl:ml-1" /> <span className="align-middle">Edit</span></Link>
+                            }}><FileEdit className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
+                                <span className="align-middle">Edit</span>
+                            </Link>
                         </li>
                         <li>
-                            <Link to="#!" className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" onClick={() => {
+                            <Link to="#!" className="block px-4 py-1.5 text-base transition-all duration-200
+                                ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500
+                                focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500
+                                 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" onClick={() => {
                                 const data = cell.row.original;
                                 onClickDelete(data);
-                            }}><Trash2 className="inline-block size-3 ltr:mr-1 rtl:ml-1" /> <span className="align-middle">Delete</span></Link>
+                            }}>
+                                <Trash2 className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
+                                <span className="align-middle">Delete</span>
+                            </Link>
                         </li>
                     </Dropdown.Content>
                 </Dropdown>
@@ -286,27 +292,52 @@ const Orders = () => {
     ], []
     );
 
-    const ticketTotal : number = 0;
-    const materialRecolected : number = 0;
-    const ticketsUnautorized : number = 0;
-    const ticketsautorized : number = 0;
 
+    // console.log(dataList);
 
-    console.log(dataList);
+    // contador de status para las cards!
+    const ticketTotals = useMemo(() => {
+        const totals = { Autorizados: 0, "Por autorizar": 0, Cancelados: 0 };
+        Object.values(dataList).forEach((ticket: any) => {
+            // Ajusta según el valor exacto que tenga ticket.ticket_status
+            switch (ticket.ticket_status) {
+                case "Autorizados":
+                case "authorized":
+                    totals.Autorizados++;
+                    break;
+                case "Por autorizar":
+                case "pending":
+                    totals["Por autorizar"]++;
+                    break;
+                case "Cancelados":
+                case "deleted":
+                    totals.Cancelados++;
+                    break;
+                default:
+                    break;
+            }
+        });
+        return totals;
+    }, [dataList]);
+
+    console.log(ticketTotals);
+
     return (
         <React.Fragment>
             <BreadCrumb title='Historial de Ticketes' pageTitle='Tickets' />
             <DeleteModal show={deleteModal} onHide={deleteToggle} onDelete={handleDelete} />
             <ToastContainer closeButton={false} limit={1} />
+            {/* cards && charts */}
             <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 2xl:grid-cols-12">
                 <div className="2xl:col-span-2 2xl:row-span-1">
                     <div className="card">
                         <div className="flex items-center gap-3 card-body">
                             <div className="flex items-center justify-center size-12 rounded-md text-15 bg-custom-50 text-custom-500 dark:bg-custom-500/20 shrink-0">
-                                <Ticket /></div>
+                                <Ticket />
+                            </div>
                             <div className="grow">
                                 <h5 className="mb-1 text-16">
-                                    <CountUp end={ticketTotal} separator="," className="counter-value" />
+                                    <CountUp end={Object.keys(dataList).length ?? "0"} separator="," className="counter-value" />
                                 </h5>
                                 <p className="text-slate-500 dark:text-zink-200">Total Tickets</p>
                             </div>
@@ -316,16 +347,19 @@ const Orders = () => {
                 <div className="2xl:col-span-2 2xl:row-span-1">
                     <div className="card">
                         <div className="flex items-center gap-3 card-body">
-                            <div className="flex items-center justify-center size-12 rounded-md text-15 bg-sky-50 text-sky-500 dark:bg-sky-500/20 shrink-0"><PackagePlus /></div>
+                            <div className="flex items-center justify-center size-12 rounded-md text-15 bg-red-50 text-red-500 dark:bg-red-500/20 shrink-0">
+                                <TicketX />
+                            </div>
                             <div className="grow">
                                 <h5 className="mb-1 text-16">
-                                    <CountUp end={materialRecolected} separator="," className="counter-value" />
+                                    <CountUp end={ticketTotals.Cancelados} separator="," className="counter-value" />
                                 </h5>
-                                <p className="text-slate-500 dark:text-zink-200">Material Recolectado</p>
+                                <p className="text-slate-500 dark:text-zink-200">Tickets Cancelados</p>
                             </div>
                         </div>
                     </div>
                 </div>
+                {/* Charts  */}
                 <div className="order-last md:col-span-2 2xl:col-span-8 2xl:row-span-3 card 2xl:order-none">
                     <div className="card-body">
                         <h6 className="mb-4 text-gray-800 text-15 dark:text-zink-50">Tickets Anuales</h6>
@@ -338,7 +372,7 @@ const Orders = () => {
                             <div className="flex items-center justify-center size-12 text-yellow-500 rounded-md text-15 bg-yellow-50 dark:bg-yellow-500/20 shrink-0"><Loader /></div>
                             <div className="grow">
                                 <h5 className="mb-1 text-16">
-                                    <CountUp end={ticketsUnautorized} separator="," className="counter-value" />
+                                    <CountUp end={ticketTotals["Por autorizar"]} separator="," className="counter-value" />
                                 </h5>
                                 <p className="text-slate-500 dark:text-zink-200">Tickets Pendientes</p>
                             </div>
@@ -348,11 +382,12 @@ const Orders = () => {
                 <div className="2xl:col-span-2 2xl:row-span-1">
                     <div className="card">
                         <div className="flex items-center gap-3 card-body">
-                            <div className="flex items-center justify-center size-12 text-purple-500 rounded-md text-15 bg-purple-50 dark:bg-purple-500/20 shrink-0">
-                                <TicketCheck /></div>
+                            <div className="flex items-center justify-center size-12 text-green-500 rounded-md text-15 bg-green-50 dark:bg-green-500/20 shrink-0">
+                                <TicketCheck />
+                            </div>
                             <div className="grow">
                                 <h5 className="mb-1 text-16">
-                                    <CountUp end={ticketsautorized} separator="," className="counter-value" />
+                                    <CountUp end={ticketTotals.Autorizados} separator="," className="counter-value" />
                                 </h5>
                                 <p className="text-slate-500 dark:text-zink-200">Tickets Autorizados</p>
                             </div>
@@ -361,7 +396,7 @@ const Orders = () => {
                 </div>
 
             </div>
-
+            {/* Table  */}
             <div className="card" id="ticketsTable">
                 <div className="card-body">
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
@@ -372,9 +407,8 @@ const Orders = () => {
                                 <Search className="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600" />
                             </div>
                         </div>
-
                     </div>
-
+                    {/* TAB'S FOR THE TABLE!*/}
                     <ul className="flex flex-wrap w-full mt-5 text-sm font-medium text-center text-gray-500 nav-tabs">
                         <li className={`group ${activeTab === "1" && "active"}`}>
                             <Link to="#" data-tab-toggle data-target="allOrders" className="inline-block px-4 py-1.5 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white dark:group-[.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]" onClick={() => { toggleTab("1", "all"); }}>
@@ -386,7 +420,7 @@ const Orders = () => {
                             text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border
                             border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white dark:group-[.active]:text-white
                             hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500
-                            -mb-[1px]" onClick={() => { toggleTab("2", "authorised"); }}>
+                            -mb-[1px]" onClick={() => { toggleTab("2", "Autorizados"); }}>
                                 <TicketCheck className="inline-block size-4 ltr:mr-1 rtl:ml-1" />
                                 <span className="align-middle">Autorizados </span>
                             </Link>
@@ -396,7 +430,7 @@ const Orders = () => {
                             duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent
                             group-[.active]:bg-custom-500 group-[.active]:text-white dark:group-[.active]:text-white
                             hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]"
-                                onClick={() => { toggleTab("3", "Pending"); }}>
+                                onClick={() => { toggleTab("3", "Por autorizar"); }}>
                                 <Loader className="inline-block size-4 ltr:mr-1 rtl:ml-1" /> <span className="align-middle">Por autorizar</span>
                             </Link>
                         </li>
@@ -406,13 +440,13 @@ const Orders = () => {
                                 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white
                                 dark:group-[.active]:text-white hover:text-custom-500 dark:hover:text-custom-500
                                 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]"
-                                onClick={() => { toggleTab("4", "Cancelled"); }}>
+                                onClick={() => { toggleTab("4", "Cancelados"); }}>
                                 <PackageX className="inline-block size-4 ltr:mr-1 rtl:ml-1 " /> <span className="align-middle">Cancelados</span>
                             </Link>
                         </li>
                     </ul>
 
-                    {data && data.length > 0 ?
+                    {dataList && Object.keys(dataList).length > 0 ?
                         <TableContainer
                             isPagination={true}
                             columns={(columns || [])}
@@ -426,19 +460,21 @@ const Orders = () => {
                             PaginationClassName="flex flex-col items-center mt-5 md:flex-row"
                         />
                         :
-                        (<div className="noresult">
-                            <div className="py-6 text-center">
-                                <Search className="size-6 mx-auto text-sky-500 fill-sky-100 dark:sky-500/20" />
-                                <h5 className="mt-2 mb-1">Sin registros!</h5>
-                                <p className="mb-0 text-slate-500 dark:text-zink-200">No se encontro ningun registro. Si crees que es un error contacta a tu soporte.</p>
+                        (
+                            <div className="noresult">
+                                <div className="py-6 text-center">
+                                    <Search className="size-6 mx-auto text-sky-500 fill-sky-100 dark:sky-500/20" />
+                                    <h5 className="mt-2 mb-1">Sin registros!</h5>
+                                    <p className="mb-0 text-slate-500 dark:text-zink-200">No se encontro ningun registro. Si crees que es un error contacta a tu soporte.</p>
+                                </div>
                             </div>
-                        </div>)}
+                        )
+                    }
                 </div>
             </div>
 
 
             {/* Order Modal */}
-
             <Modal show={show} onHide={toggle} modal-center="true"
                 className="fixed flex flex-col transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4"
                 dialogClassName="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600">
@@ -455,7 +491,8 @@ const Orders = () => {
                         <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
                             <div className="xl:col-span-12">
                                 <label htmlFor="orderId" className="inline-block mb-2 text-base font-medium">Order ID</label>
-                                <input type="text" id="orderId" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" disabled value={validation.values.orderId || "#TWT5015100365"} required />
+                                <input type="text" id="orderId" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                       disabled value={validation.values.orderId || "#TWT5015100365"} required />
                             </div>
                             <div className="xl:col-span-6">
                                 <label htmlFor="orderDateInput" className="inline-block mb-2 text-base font-medium">Order Date</label>
@@ -491,7 +528,8 @@ const Orders = () => {
                             </div>
                             <div className="xl:col-span-12">
                                 <label htmlFor="customerNameInput" className="inline-block mb-2 text-base font-medium">Customer Name</label>
-                                <input type="text" id="customerNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Customer name"
+                                <input type="text" id="customerNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                   placeholder="Customer name"
                                     name="customerName"
                                     onChange={validation.handleChange}
                                     value={validation.values.customerName || ""}
@@ -502,7 +540,8 @@ const Orders = () => {
                             </div>
                             <div className="xl:col-span-12">
                                 <label htmlFor="paymentMethodSelect" className="inline-block mb-2 text-base font-medium">Payment Method</label>
-                                <select className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" data-choices data-choices-search-false id="paymentMethodSelect"
+                                <select className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                    data-choices data-choices-search-false id="paymentMethodSelect"
                                     name="paymentMethod"
                                     onChange={validation.handleChange}
                                     value={validation.values.paymentMethod || ""}
@@ -519,7 +558,8 @@ const Orders = () => {
                             </div>
                             <div className="xl:col-span-12">
                                 <label htmlFor="amountInput" className="inline-block mb-2 text-base font-medium">Amount</label>
-                                <input type="text" id="amountInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="12345 67890"
+                                <input type="text" id="amountInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                   placeholder="12345 67890"
                                     name="amount"
                                     onChange={validation.handleChange}
                                     value={validation.values.amount || ""}
@@ -531,7 +571,8 @@ const Orders = () => {
                             <div className="xl:col-span-12">
                                 <label htmlFor="deliveryStatusSelect" className="inline-block mb-2 text-base font-medium">Delivery Status</label>
                                 <select className="form-input border-slate-200 dark:border-zink-500 focus:outline-none
-                                focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" data-choices data-choices-search-false id="deliveryStatusSelect"
+                                focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                    data-choices data-choices-search-false id="deliveryStatusSelect"
                                     name="deliveryStatus"
                                     onChange={validation.handleChange}
                                     value={validation.values.deliveryStatus || ""}
