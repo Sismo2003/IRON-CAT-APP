@@ -35,6 +35,7 @@ interface CartItem {
   price: number;
   total: number;
   waste: number; // Merma siempre presente, inicializada en 0
+  type: 'wholesale' | 'retail'; // Tipo de precio
   usePredefinedMerma: boolean; // Indica si se usa merma predefinida
 }
 
@@ -57,6 +58,7 @@ const ShoppingCart = () => {
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
   const [selectedPriceTypes, setSelectedPriceTypes] = useState<{ [key: number]: 'wholesale' | 'retail' }>({});
+  const [customerName, setCustomerName] = useState<string>(""); 
 
   // Opciones predefinidas para la merma
   const predefinedMermaOptions = [
@@ -156,6 +158,7 @@ const ShoppingCart = () => {
       price,
       total,
       waste,
+      type: priceType,
       usePredefinedMerma: false, // Por defecto no usa merma predefinida
     }]);
   };
@@ -212,22 +215,26 @@ const ShoppingCart = () => {
 
   // Función para realizar el checkout
   const handleCheckout = async () => {
-    console.log("fetch");
+    if (!customerName.trim()) {
+      showToast("Por favor ingrese el nombre del cliente");
+      return;
+    }
+
     const payload = {
       total: cart.reduce((sum, item) => sum + item.total, 0),
       user_id: 1, // ID del usuario actual SE VA A CAMBIAR
       type: "shop",
+      customer_name: customerName,
       cart: cart.map((item) => ({
         id: item.id,
         material: item.material,
+        type: item.type,
         weight: item.weight,
         price: item.price,
         total: item.total,
         waste: item.waste,
       }))
     };
-    
-    console.log("Payload:", payload);
     
     try {
       const response = await fetch('http://192.168.100.77:8000/src/printer.php', {
@@ -376,6 +383,25 @@ const ShoppingCart = () => {
               <h6 className="text-16">
                 Total: ${cart.reduce((sum, item) => sum + item.total, 0).toFixed(2)}
               </h6>
+
+              {/* Nuevo input para el cliente */}
+              <div className="my-3 border-t pt-3">
+                <label htmlFor="customerName" className="inline-block mb-2 text-base font-medium">
+                  Nombre del Cliente
+                </label>
+                <input
+                  type="text"
+                  id="customerName"
+                  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                  placeholder="Ingrese nombre del cliente"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  required
+                />
+                {!customerName.trim() && (
+                  <p className="mt-1 text-sm text-red-500">Este campo es requerido</p>
+                )}
+              </div>
 
               <button
                 onClick={handleCheckout}

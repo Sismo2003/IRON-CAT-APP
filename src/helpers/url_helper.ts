@@ -1,5 +1,5 @@
 
- const servidor_ip : string = "http://thegrid.myddns.me:3000";
+//  const servidor_ip : string = "http://thegrid.myddns.me:3000";
 //const servidor_ip : string = "http://localhost:3000"; // TEST
 
 // REGISTER
