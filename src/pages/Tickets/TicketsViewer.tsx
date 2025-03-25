@@ -58,7 +58,6 @@ const Orders = () => {
     const [eventData, setEventData] = useState<any>();
 
     const [show, setShow] = useState<boolean>(false);
-    const [isEdit, setIsEdit] = useState<boolean>(false);
 
     // Get Data
     useEffect(() => {
@@ -93,7 +92,6 @@ const Orders = () => {
     // Update Data
     const handleUpdateDataClick = (ele: any) => {
         setEventData({ ...ele });
-        setIsEdit(true);
         setShow(true);
     };
 
@@ -102,15 +100,17 @@ const Orders = () => {
         // enableReinitialize : use this flag when initial values needs to be changed
         enableReinitialize: true,
 
-        initialValues: {
-            orderId: (eventData && eventData.orderId) || '',
-            orderDate: (eventData && eventData.orderDate) || '',
-            deliveryDate: (eventData && eventData.deliveryDate) || '',
-            customerName: (eventData && eventData.customerName) || '',
-            paymentMethod: (eventData && eventData.paymentMethod) || '',
-            amount: (eventData && eventData.amount) || '',
-            deliveryStatus: (eventData && eventData.deliveryStatus) || ''
-        },
+       initialValues: {
+           ticket_id: (eventData && eventData.ticket_id) || null,
+           ticketCustomerName: (eventData && eventData.ticketCustomerName) || null,
+           ticket_total: (eventData && eventData.ticket_total) || null,
+           ticket_type: (eventData && eventData.ticket_type) || null,
+           ticket_status: (eventData && eventData.ticket_status) || null,
+           ticket_date: (eventData && eventData.ticket_date) ||  null,
+           productos: (eventData && eventData.productos) || [],
+           responsible: (eventData && eventData.responsible) || [] ,
+           client: (eventData && eventData.client) || []
+       },
         validationSchema: Yup.object({
             // orderId: Yup.string().required("Please Enter Id"),
             orderDate: Yup.string().required("Please Enter Date"),
@@ -122,22 +122,14 @@ const Orders = () => {
         }),
 
         onSubmit: (values) => {
-            if (isEdit) {
-                const updateData = {
-                    id: eventData ? eventData.id : 0,
-                    ...values,
-                };
-                // update user
-                dispatch(onUpdateOrders(updateData));
-            } else {
-                const newData = {
-                    ...values,
-                    id: (Math.floor(Math.random() * (30 - 20)) + 20).toString(),
-                    orderId: "#TWT50151003" + (Math.floor(Math.random() * (30 - 20)) + 20).toString(),
-                };
-                // save new user
-                dispatch(onAddOrders(newData));
-            }
+
+            const updateData = {
+                id: eventData ? eventData.id : 0,
+                ...values,
+            };
+            // update user
+            // dispatch(onUpdateOrders(updateData));
+
             toggle();
         },
     });
@@ -147,7 +139,6 @@ const Orders = () => {
         if (show) {
             setShow(false);
             setEventData("");
-            setIsEdit(false);
         } else {
             setShow(true);
             setEventData("");
@@ -262,15 +253,20 @@ const Orders = () => {
             enableSorting: true,
             cell: (cell: any) => (
                 <Dropdown className="relative">
-                    <Dropdown.Trigger id="orderAction1" data-bs-toggle="dropdown" className="flex items-center justify-center size-[30px] p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20"><MoreHorizontal className="size-3" /></Dropdown.Trigger>
-                    <Dropdown.Content placement={cell.row.index ? "top-end" : "right-end"} className="absolute z-50 py-2 mt-1 ltr:text-left rtl:text-right list-none bg-white rounded-md shadow-md min-w-[10rem] dark:bg-zink-600" aria-labelledby="orderAction1">
+                    <Dropdown.Trigger id="orderAction1" data-bs-toggle="dropdown" className="flex items-center justify-center size-[30px] p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20">
+                    <MoreHorizontal className="size-3" /></Dropdown.Trigger>
+                    <Dropdown.Content placement={cell.row.index ? "top-end" : "right-end"} className="absolute z-50 py-2 mt-1 ltr:text-left rtl:text-right list-none bg-white rounded-md shadow-md min-w-[10rem] dark:bg-zink-600"
+                    aria-labelledby="orderAction1">
                         <li>
                             <Link to="#!" data-modal-target="addOrderModal"
-                                className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" onClick={() => {
+                                className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+                              onClick={() => {
                                 const data = cell.row.original;
+                                console.log("Datos para modal:" , data);
                                 handleUpdateDataClick(data);
-                            }}><FileEdit className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
-                                <span className="align-middle">Edit</span>
+                            }}>
+                                <FileEdit className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
+                                <span className="align-middle">Detalles</span>
                             </Link>
                         </li>
                         <li>
@@ -282,7 +278,7 @@ const Orders = () => {
                                 onClickDelete(data);
                             }}>
                                 <Trash2 className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
-                                <span className="align-middle">Delete</span>
+                                <span className="align-middle">Eliminar</span>
                             </Link>
                         </li>
                     </Dropdown.Content>
@@ -480,7 +476,7 @@ const Orders = () => {
                 dialogClassName="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600">
                 <Modal.Header className="flex items-center justify-between p-4 border-b dark:border-zink-500"
                     closeButtonClass="transition-all duration-200 ease-linear text-slate-400 hover:text-red-500">
-                    <Modal.Title className="text-16">{!!isEdit ? "Edit Order" : "Add Order"}</Modal.Title>
+                    <Modal.Title className="text-16">Detalles del Ticket</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
                     <form action="#!" onSubmit={(e) => {
@@ -489,11 +485,82 @@ const Orders = () => {
                         return false;
                     }}>
                         <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
+                            {/* FOLIO */}
                             <div className="xl:col-span-12">
-                                <label htmlFor="orderId" className="inline-block mb-2 text-base font-medium">Order ID</label>
+                                <label htmlFor="orderId" className="inline-block mb-2 text-base font-medium">Folio Ticket</label>
                                 <input type="text" id="orderId" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                       disabled value={validation.values.orderId || "#TWT5015100365"} required />
+                                       disabled value={validation.values.ticket_id || "SIN REGISTRO"} required />
                             </div>
+                            {/* FOLIO */}
+                            <div className="xl:col-span-6">
+                                <label htmlFor="customerNameInput" className="inline-block mb-2 text-base font-medium">Nombre de Cliente</label>
+                                <input type="text" id="customerNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                       placeholder="Cliente"
+                                       name="customerName"
+                                       disabled
+                                       value={validation.values.ticketCustomerName ?? validation.values.client.name + validation.values.client.last_name}
+                                />
+                            </div>
+                            {/* Ternaria para saber si la ticket esta asociado a un cliente registrado*/}
+                            { validation.values.client && Object.keys(validation.values.client).length > 0 ?
+                                <>
+                                    <div className="xl:col-span-6">
+                                        <label htmlFor="customerIdInput" className="inline-block mb-2 text-base font-medium">Identificador del Cliente</label>
+                                        <input type="text" id="customerIdInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                               placeholder="Cliente id"
+                                               name="idClient"
+                                               disabled
+                                               value={validation.values.client.id ?? 'SIN REGISTRO'}
+                                        />
+                                    </div>
+                                    <div className="xl:col-span-6">
+                                        <label htmlFor="customerEmailInput" className="inline-block mb-2 text-base font-medium">Correo Electrónico del Cliente</label>
+                                        <input type="text" id="customerEmailInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                               placeholder="Correo Elctronico Cliente"
+                                               name="clientEmail"
+                                               disabled
+                                               value={validation.values.client.email ?? 'SIN REGISTRO'}
+                                        />
+                                    </div>
+                                    <div className="xl:col-span-6">
+                                        <label htmlFor="customerPhoneInput" className="inline-block mb-2 text-base font-medium">Telefono del Cliente</label>
+                                        <input type="text" id="customerPhoneInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                               placeholder="Telefono Cliente"
+                                               name="clientPhone"
+                                               disabled
+                                               value={validation.values.client.phone ?? 'SIN REGISTRO'}
+                                        />
+                                    </div>
+                                </>
+                            : null
+                            }
+
+                            <div className="xl:col-span-6">
+                                <label htmlFor="TicketStatus" className="inline-block mb-2 text-base font-medium">
+                                    Estado del Ticket
+                                </label>
+                                <select
+                                    name="ticket_status"
+                                    id="TicketStatus"
+                                    value={validation.values.ticket_status}
+                                    onChange={validation.handleChange}
+                                    className="form-select border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-700 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                >
+                                    <option value="Por autorizar">Por Autorizar</option>
+                                    <option value="Cancelados">Cancelado</option>
+                                    <option value="Autorizados">Autorizado</option>
+                                </select>
+                            </div>
+                            <div className="xl:col-span-6">
+                                <label htmlFor="ticketType" className="inline-block mb-2 text-base font-medium">Tipo de Ticket</label>
+                                <input type="text" id="ticketType" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                       placeholder="Tipo de ticket"
+                                       name="ticketType"
+                                       disabled
+                                       value={validation.values.ticket_type == 'sale' ? 'VENTA' : 'COMPRA'}
+                                />
+                            </div>
+
                             <div className="xl:col-span-6">
                                 <label htmlFor="orderDateInput" className="inline-block mb-2 text-base font-medium">Order Date</label>
                                 <Flatpickr
@@ -526,6 +593,7 @@ const Orders = () => {
                                     <p className="text-red-400">{validation.errors.deliveryDate}</p>
                                 ) : null}
                             </div>
+
                             <div className="xl:col-span-12">
                                 <label htmlFor="customerNameInput" className="inline-block mb-2 text-base font-medium">Customer Name</label>
                                 <input type="text" id="customerNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
@@ -591,7 +659,7 @@ const Orders = () => {
                         <div className="flex justify-end gap-2 mt-4">
                             <button type="reset" className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-600 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10" onClick={toggle}>Cancel</button>
                             <button type="submit" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">
-                                {!!isEdit ? "Update" : "Add Order"}
+                                Actualizar
                             </button>
                         </div>
                     </form>
