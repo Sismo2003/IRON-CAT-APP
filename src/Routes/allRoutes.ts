@@ -202,6 +202,9 @@ import Pricing from "pages/Pages/Pricing";
 import Faqs from "pages/Pages/Faqs";
 import ContactUs from "pages/Pages/ContactUs";
 
+
+import CashRegister from "pages/CashRegister/main";
+
 interface RouteObject {
   path: string;
   component: React.ComponentType<any>; // Use React.ComponentType to specify the type of the component
@@ -216,6 +219,10 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/dashboards-email", component: Email },
   { path: "/dashboards-hr", component: HRDashboard },
   { path: "/dashboards-social", component: SocialMediaDashboard },
+
+
+  // Cash Register - caja
+  {path : "/CashRegister" , component: CashRegister },
 
   // Ui Element
   { path: "/ui-alerts", component: UiAlert },
