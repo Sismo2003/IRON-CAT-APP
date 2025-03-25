@@ -316,7 +316,7 @@ const Orders = () => {
         return totals;
     }, [dataList]);
 
-    console.log(ticketTotals);
+    // console.log(ticketTotals);
 
     return (
         <React.Fragment>
@@ -491,7 +491,7 @@ const Orders = () => {
                                 <input type="text" id="orderId" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                        disabled value={validation.values.ticket_id || "SIN REGISTRO"} required />
                             </div>
-                            {/* FOLIO */}
+                            {/* Client Name */}
                             <div className="xl:col-span-6">
                                 <label htmlFor="customerNameInput" className="inline-block mb-2 text-base font-medium">Nombre de Cliente</label>
                                 <input type="text" id="customerNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
@@ -534,7 +534,7 @@ const Orders = () => {
                                 </>
                             : null
                             }
-
+                            {/* Ticket Status */}
                             <div className="xl:col-span-6">
                                 <label htmlFor="TicketStatus" className="inline-block mb-2 text-base font-medium">
                                     Estado del Ticket
@@ -551,6 +551,7 @@ const Orders = () => {
                                     <option value="Autorizados">Autorizado</option>
                                 </select>
                             </div>
+                            {/* Ticket Type */}
                             <div className="xl:col-span-6">
                                 <label htmlFor="ticketType" className="inline-block mb-2 text-base font-medium">Tipo de Ticket</label>
                                 <input type="text" id="ticketType" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
@@ -560,101 +561,93 @@ const Orders = () => {
                                        value={validation.values.ticket_type == 'sale' ? 'VENTA' : 'COMPRA'}
                                 />
                             </div>
-
+                            {/* Ticket Creation Date */}
                             <div className="xl:col-span-6">
-                                <label htmlFor="orderDateInput" className="inline-block mb-2 text-base font-medium">Order Date</label>
+                                <label htmlFor="orderDateInput" className="inline-block mb-2 text-base font-medium">Fecha de Creación</label>
                                 <Flatpickr
                                     id="orderDateInput"
+                                    disabled
                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                     options={{
                                         dateFormat: "d M, Y"
                                     }}
-                                    placeholder='Select date' name='orderDate'
+                                    placeholder='Selecciona un fecha' name='orderDate'
                                     onChange={(date: any) => validation.setFieldValue("orderDate", moment(date[0]).format("DD MMMM ,YYYY"))}
-                                    value={validation.values.orderDate || ''}
+                                value={validation.values.ticket_date ? moment(validation.values.ticket_date).toDate() : ''}
                                 />
                                 {validation.touched.orderDate && validation.errors.orderDate ? (
                                     <p className="text-red-400">{validation.errors.orderDate}</p>
                                 ) : null}
                             </div>
+
+                            {/* Responsable */}
                             <div className="xl:col-span-6">
-                                <label htmlFor="deliveryDateInput" className="inline-block mb-2 text-base font-medium">Delivery Date</label>
-                                <Flatpickr
-                                    id="deliveryDateInput"
-                                    className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                    options={{
-                                        dateFormat: "d M, Y"
-                                    }}
-                                    placeholder='Select date' name='deliveryDate'
-                                    onChange={(date: any) => validation.setFieldValue("deliveryDate", moment(date[0]).format("DD MMMM ,YYYY"))}
-                                    value={validation.values.deliveryDate || ''}
-                                />
-                                {validation.touched.deliveryDate && validation.errors.deliveryDate ? (
-                                    <p className="text-red-400">{validation.errors.deliveryDate}</p>
-                                ) : null}
+                                <label htmlFor="responsableName" className="inline-block mb-2 text-base font-medium">Ticket Creador por</label>
+                                <input type="text" id="responsableName" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                       disabled value={validation.values.responsible.name || "SIN REGISTRO"} required />
+                            </div>
+                            {/* Total del Ticket */}
+                            <div className="xl:col-span-6">
+                                <label htmlFor="responsableName" className="inline-block mb-2 text-base font-medium">Total del Ticket</label>
+                                <input type="text" id="responsableName" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                       disabled value={"$ " + validation.values.ticket_total || "SIN REGISTRO"} required />
                             </div>
 
-                            <div className="xl:col-span-12">
-                                <label htmlFor="customerNameInput" className="inline-block mb-2 text-base font-medium">Customer Name</label>
-                                <input type="text" id="customerNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                   placeholder="Customer name"
-                                    name="customerName"
-                                    onChange={validation.handleChange}
-                                    value={validation.values.customerName || ""}
-                                />
-                                {validation.touched.customerName && validation.errors.customerName ? (
-                                    <p className="text-red-400">{validation.errors.customerName}</p>
-                                ) : null}
+                            <div className="card xl:col-span-12">
+                                <div className="card-body">
+                                    <h6 className="mb-4 text-15">Productos asociados al Ticket</h6>
+
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full">
+                                            <thead className="ltr:text-left rtl:text-right ">
+                                            <tr>
+                                                <th className="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Producto</th>
+                                                <th className="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">
+                                                    Peso<span className="text-xs text-gray-500">(kg)</span>
+                                                </th>
+                                                <th className="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">
+                                                    Merma<span className="text-xs text-gray-500">(kg)</span>
+                                                </th>
+                                                <th className="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Tipo</th>
+                                                <th className="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">
+                                                    Precio<span className="text-xs text-gray-500">(1/kg)</span>
+                                                </th>
+                                                <th className="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Total</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                              {validation.values.productos && validation.values.productos.length > 0 ? (
+                                              validation.values.productos.map((product: any, index: number) => (
+                                                  <tr key={index} className="even:bg-slate-50 hover:bg-slate-50 even:hover:bg-slate-100 dark:even:bg-zink-600/50 dark:hover:bg-zink-600 dark:even:hover:bg-zink-600">
+                                                    <td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{product.product_name}</td>
+                                                    <td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
+                                                        {(Number(product.weight) + Number(product.waste)).toFixed(2)}
+                                                        <span className="text-xs text-gray-500"> kg</span>
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
+                                                        {product.waste || '0.00'}
+                                                        <span className="text-xs text-gray-500"> kg</span>
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{product.type || "N/A"}</td>
+                                                    <td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
+                                                        <span className="text-xs text-gray-500"> $</span>{product.unit_price}
+                                                    </td>
+                                                    <td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
+                                                        <span className="text-xs text-gray-500"> $</span>{product.total}
+                                                    </td>
+                                                  </tr>
+                                                ))
+                                              ) : (
+                                                <tr>
+                                                  <td colSpan={6} className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">No hay productos</td>
+                                                </tr>
+                                              )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="xl:col-span-12">
-                                <label htmlFor="paymentMethodSelect" className="inline-block mb-2 text-base font-medium">Payment Method</label>
-                                <select className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                    data-choices data-choices-search-false id="paymentMethodSelect"
-                                    name="paymentMethod"
-                                    onChange={validation.handleChange}
-                                    value={validation.values.paymentMethod || ""}
-                                >
-                                    <option value="Credit Card">Credit Card</option>
-                                    <option value="Paypal">Paypal</option>
-                                    <option value="Visa Card">Visa Card</option>
-                                    <option value="COD">COD</option>
-                                    <option value="American Express">American Express</option>
-                                </select>
-                                {validation.touched.paymentMethod && validation.errors.paymentMethod ? (
-                                    <p className="text-red-400">{validation.errors.paymentMethod}</p>
-                                ) : null}
-                            </div>
-                            <div className="xl:col-span-12">
-                                <label htmlFor="amountInput" className="inline-block mb-2 text-base font-medium">Amount</label>
-                                <input type="text" id="amountInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                   placeholder="12345 67890"
-                                    name="amount"
-                                    onChange={validation.handleChange}
-                                    value={validation.values.amount || ""}
-                                />
-                                {validation.touched.amount && validation.errors.amount ? (
-                                    <p className="text-red-400">{validation.errors.amount}</p>
-                                ) : null}
-                            </div>
-                            <div className="xl:col-span-12">
-                                <label htmlFor="deliveryStatusSelect" className="inline-block mb-2 text-base font-medium">Delivery Status</label>
-                                <select className="form-input border-slate-200 dark:border-zink-500 focus:outline-none
-                                focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                    data-choices data-choices-search-false id="deliveryStatusSelect"
-                                    name="deliveryStatus"
-                                    onChange={validation.handleChange}
-                                    value={validation.values.deliveryStatus || ""}
-                                >
-                                    <option value="Delivered">Delivered</option>
-                                    <option value="Shipping">Shipping</option>
-                                    <option value="Pending">Por autorizar</option>
-                                    <option value="authorised">Autorizar</option>
-                                    <option value="Cancelled">Cancelados</option>
-                                </select>
-                                {validation.touched.deliveryStatus && validation.errors.deliveryStatus ? (
-                                    <p className="text-red-400">{validation.errors.deliveryStatus}</p>
-                                ) : null}
-                            </div>
+
                         </div>
                         <div className="flex justify-end gap-2 mt-4">
                             <button type="reset" className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-600 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10" onClick={toggle}>Cancel</button>
