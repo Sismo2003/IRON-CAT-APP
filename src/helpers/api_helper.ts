@@ -1,11 +1,8 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // o usa jwt.decode si usas jsonwebtoken
-// import { api } from "../config";
+import { jwtDecode } from "jwt-decode";
 
 axios.defaults.baseURL = "http://thegrid.myddns.me:3000";
-// content type
 axios.defaults.headers.post["Content-Type"] = "application/json";
-
 
 // Obtener token del localStorage
 const getToken = () => {
@@ -16,66 +13,103 @@ const getToken = () => {
 // Verificar si el token está expirado
 const isTokenExpired = (token: string) => {
   try {
-    const decoded = jwtDecode(token) as { exp: number };
-    return decoded.exp * 1000 < Date.now();
-  } catch {
+    const decoded = jwtDecode(token);
+    if (!decoded.exp) return false;
+    const now = Date.now() / 1000;
+    return decoded.exp < now;
+  } catch (error) {
     return true;
   }
 };
 
-// Función para renovar el token (llama a tu endpoint de renovación)
-const renewToken = async () => {
+// Verificar si el token está cerca de expirar (5 minutos)
+const isTokenCloseToExpire = (token: string) => {
   try {
-    const response = await axios.post('/auth/refresh-token', {
-      token: getToken(),
-    });
-    const newToken = response.data.token;
-    localStorage.setItem('authUser', JSON.stringify({ token: newToken }));
-    return newToken;
+    const decoded = jwtDecode(token);
+    if (!decoded.exp) return false;
+    const now = Date.now() / 1000;
+    return decoded.exp < (now + 300); // 300 segundos = 5 minutos
   } catch (error) {
-    throw new Error('Error renovando token');
+    return false;
   }
 };
 
-// Interceptor para añadir token a cada petición
-axios.interceptors.request.use(async (config) => {
-  const token = getToken();
+// Función para renovar el token
+const renewToken = async () => {
+  const currentToken = getToken();
+  if (!currentToken) throw new Error('No token available');
   
-  if (token) {
-    if (isTokenExpired(token)) {
-      // Redirigir a login si el token está expirado
-      localStorage.removeItem('authUser');
-      // window.location.href = '/login';
-      return Promise.reject('Token expirado');
-    } else {
-      // Renovar token si está activo (opcional, depende de tu lógica)
-      const newToken = await renewToken();
-      config.headers.Authorization = `Bearer ${newToken}`;
-    }
-  }
-  return config;
-});
+  const response = await axios.post('/auth/refresh-token', {
+    token: currentToken,
+  });
+  
+  const newToken = response.data.token;
+  const authUser = localStorage.getItem('authUser');
+  const userData = authUser ? JSON.parse(authUser) : {};
+  
+  localStorage.setItem('authUser', JSON.stringify({ ...userData, token: newToken }));
+  setAuthorization(newToken);
+  return newToken;
+};
 
-// content type
-const authUser: any = localStorage.getItem("authUser")
-const token = JSON.parse(authUser) ? JSON.parse(authUser).token : null;
-if (token)
+// Redirigir al login
+const redirectToLogin = () => {
+  // Aquí puedes implementar tu lógica de redirección
+  localStorage.removeItem('authUser');
+  window.location.href = '/login'; // Ajusta según tu ruta de login
+};
+
+// Configurar el token inicial
+const token = getToken();
+if (token) {
   axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+}
 
-// intercepting to capture errors
+// Interceptor de solicitudes para manejar la renovación del token
+axios.interceptors.request.use(
+  async (config) => {
+    const token = getToken();
+    
+    if (token) {
+      if (isTokenExpired(token)) {
+        // Token expirado - redirigir al login
+        redirectToLogin();
+        return Promise.reject(new Error('Token expired'));
+      }
+      
+      if (isTokenCloseToExpire(token)) {
+        try {
+          const newToken = await renewToken();
+          config.headers.Authorization = `Bearer ${newToken}`;
+        } catch (error) {
+          // Si falla la renovación, redirigir al login
+          redirectToLogin();
+          return Promise.reject(error);
+        }
+      }
+    }
+    
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Interceptor de respuestas (mantenemos el original)
 axios.interceptors.response.use(
   function (response) {
     return response.data ? response.data : response;
   },
   function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
     let message;
-    switch (error.status) {
+    switch (error.response?.status) {
       case 500:
         message = "Internal Server Error";
         break;
       case 401:
         message = "Invalid credentials";
+        // Opcional: podrías redirigir al login aquí también
         break;
       case 404:
         message = "Sorry! the data you are looking for could not be found";
@@ -86,34 +120,33 @@ axios.interceptors.response.use(
     return Promise.reject(message);
   }
 );
+
 /**
- * Sets the default authorization
+ * Establece la autorización por defecto
  * @param {*} token
  */
-const setAuthorization = (token: any) => {
-  axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+const setAuthorization = (token: string | null) => {
+  if (token) {
+    axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+  } else {
+    delete axios.defaults.headers.common["Authorization"];
+  }
 };
 
 class APIClient {
   /**
-   * Fetches data from given url
+   * Obtiene datos de la URL proporcionada
    */
-
-  //  get = (url, params) => {
-  //   return axios.get(url, params);
-  // };
-  get = (url: any, params: any) => {
+  get = (url: string, params?: any) => {
     let response;
-
-    let paramKeys: any = [];
+    let paramKeys: string[] = [];
 
     if (params) {
-      Object.keys(params).map(key => {
+      Object.keys(params).forEach(key => {
         paramKeys.push(key + '=' + params[key]);
-        return paramKeys;
       });
 
-      const queryString = paramKeys && paramKeys.length ? paramKeys.join('&') : "";
+      const queryString = paramKeys.length ? paramKeys.join('&') : "";
       response = axios.get(`${url}?${queryString}`, params);
     } else {
       response = axios.get(`${url}`, params);
@@ -121,37 +154,42 @@ class APIClient {
 
     return response;
   };
+
   /**
-   * post given data to url
+   * Envía datos a la URL proporcionada
    */
-  create = (url: any, data: any) => {
+  create = (url: string, data: any) => {
     return axios.post(url, data);
   };
+
   /**
-   * Updates data
+   * Actualiza datos
    */
-  update = (url: any, data: any) => {
+  update = (url: string, data: any) => {
     return axios.patch(url, data);
   };
 
-  put = (url: any, data: any) => {
+  /**
+   * Actualiza todos los datos (PUT)
+   */
+  put = (url: string, data: any) => {
     return axios.put(url, data);
   };
+
   /**
-   * Delete
+   * Elimina un recurso
    */
-  delete = (url: any, config: any) => {
+  delete = (url: string, config?: any) => {
     return axios.delete(url, { ...config });
   };
 }
-const getLoggedUser = () => {
 
+/**
+ * Obtiene el usuario autenticado del localStorage
+ */
+const getLoggedUser = () => {
   const user = localStorage.getItem("authUser");
-  if (!user) {
-    return null;
-  } else {
-    return JSON.parse(user);
-  }
+  return user ? JSON.parse(user) : null;
 };
 
 export { APIClient, setAuthorization, getLoggedUser };

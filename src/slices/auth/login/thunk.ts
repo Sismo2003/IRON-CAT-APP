@@ -15,10 +15,8 @@ export const loginUser = (
     history: any
 ): ThunkAction<void, RootState, unknown, Action<string>> => async (dispatch: Dispatch) => {
     try {
-        console.log("user", user);
         let response: any;
         if (process.env.REACT_APP_DEFAULTAUTH === "production") {
-            console.log("production");
             response = await postLogin({
                 email: user.email,
                 password: user.password,
