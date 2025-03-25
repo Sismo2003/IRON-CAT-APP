@@ -1,6 +1,7 @@
 import { APIClient } from "./api_helper";
 
 import * as url from "./url_helper";
+import {GET_ALL_TICEKTS, GET_TICKET_BY_ID} from "./url_helper";
 
 const api = new APIClient();
 // Gets the logged in user data from local session
@@ -64,6 +65,21 @@ export const postJwtForgetPwd = (data: any) => api.create(url.POST_FAKE_JWT_PASS
 
 // postSocialLogin
 export const postSocialLogin = (data: any) => api.create(url.SOCIAL_LOGIN, data);
+
+
+
+// TICKET Management
+
+export const getAllTickets = () => api.get(url.GET_ALL_TICEKTS, null);
+export const addTicket = (data: any) => api.create(url.ADD_TICKET, data);
+export const getTicketById = (id: any) => api.get(url.GET_TICKET_BY_ID,  { id });
+
+//NOTA NO EXISTEN ESTOS TICKETS
+// export const updateTicket = (data: any) => api.update(url.UPDATE_TICKET + '/' + data.id, data);
+// export const deleteTicket = (data: any) => api.delete(url.DELETE_TICKET + '/' + data, { headers: { data } });
+
+
+
 
 // Assing Material
 export const assignMaterialToClient = (data: any) => api.create(url.ASSIGN_MATERIAL, data);
@@ -132,13 +148,6 @@ export const getSaleProductList = () => api.get(url.GET_SALE_PRODUCT_LIST, null)
 export const addSaleProductList = (data: any) => api.create(url.ADD_SALE_PRODUCT_LIST, data);
 export const updateSaleProductList = (data: any) => api.update(url.UPDATE_SALE_PRODUCT_LIST + '/' + data.id, data);
 export const deleteSaleProductList = (data: any) => api.delete(url.DELETE_SALE_PRODUCT_LIST + '/' + data, { headers: { data } });
-
-// TICKET Management
-// Ticket List
-export const getTicket = () => api.get(url.GET_TICKET, null);
-export const addTicket = (data: any) => api.create(url.ADD_TICKET, data);
-export const updateTicket = (data: any) => api.update(url.UPDATE_TICKET + '/' + data.id, data);
-export const deleteTicket = (data: any) => api.delete(url.DELETE_TICKET + '/' + data, { headers: { data } });
 
 // CUSTOMER Management
 // CUSTOMER List

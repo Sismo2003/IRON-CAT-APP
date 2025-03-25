@@ -77,7 +77,7 @@ const menuData: any = [
             {
                 id: 'All-tickets',
                 label: 'Caja',
-                link: '/apps-tk-auth',
+                link: '/CashRegister',
                 parentId: 'salePoint'
             }
 

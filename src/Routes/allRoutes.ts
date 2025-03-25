@@ -1,3 +1,10 @@
+
+
+// caja
+import CashRegister from "pages/CashRegister/main";
+// tickets viewer
+import TicketsViewer from "pages/Tickets/TicketsViewer";
+
 // dashboard
 import Analytics from "pages/Dashboards/Analytics";
 import Ecommerce from "pages/Dashboards/Ecommerce";
@@ -22,7 +29,7 @@ import GridView from "pages/MaterialsManagement/Materials/GridView";
 import Overview from "pages/MaterialsManagement/Materials/Overview";
 import AddNew from "pages/MaterialsManagement/Materials/AddNew";
 import Checkout from "pages/MaterialsManagement/Checkout";
-import Orders from "pages/MaterialsManagement/Orders"; // REMPLAZAR POR LOS TICKETS
+import Orders from "pages/MaterialsManagement/Orders";
 import OrderOverview from "pages/MaterialsManagement/OrderOverview";
 
 // Scales
@@ -202,6 +209,8 @@ import Pricing from "pages/Pages/Pricing";
 import Faqs from "pages/Pages/Faqs";
 import ContactUs from "pages/Pages/ContactUs";
 
+
+
 interface RouteObject {
   path: string;
   component: React.ComponentType<any>; // Use React.ComponentType to specify the type of the component
@@ -216,6 +225,22 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/dashboards-email", component: Email },
   { path: "/dashboards-hr", component: HRDashboard },
   { path: "/dashboards-social", component: SocialMediaDashboard },
+
+
+  // Cash Register - caja
+  {path : "/CashRegister" , component: CashRegister },
+
+  // Scales
+  { path: "/apps-scales-shopcart", component: ShoppingCart },
+  { path: "/apps-scales-salecart", component: SalesCart },
+  { path: "/apps-scales-clientcart", component: ClientCart },
+
+  // TICKET Management
+  { path: "/apps-tk-ticket", component: TicketsViewer },
+  { path: "/apps-tk-auth", component: OrderOverview },
+
+  // CUSTOMER Management
+  { path: "/apps-customer-list", component: CustomerList },
 
   // Ui Element
   { path: "/ui-alerts", component: UiAlert },
@@ -318,17 +343,7 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/apps-materials-product-create", component: AddNew },
   { path: "/apps-materials-checkout", component: Checkout },
 
-  // Scales
-  { path: "/apps-scales-shopcart", component: ShoppingCart },
-  { path: "/apps-scales-salecart", component: SalesCart },
-  { path: "/apps-scales-clientcart", component: ClientCart },
 
-  // TICKET Management
-  { path: "/apps-tk-ticket", component: Orders },
-  { path: "/apps-tk-auth", component: OrderOverview },
-
-  // CUSTOMER Management
-  { path: "/apps-customer-list", component: CustomerList },
 
   // HR Management
   { path: "/apps-hr-employee", component: EmployeeList },
