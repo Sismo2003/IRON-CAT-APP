@@ -7,64 +7,64 @@ export const POST_FAKE_REGISTER = "/auth/signup";
 
 
 // Tickets Management
-export const GET_ALL_TICEKTS = servidor_ip + "/tickets/get-all-tickets";
-export const GET_TICKET_BY_ID = servidor_ip + "/tickets/get-ticket";
-export const ADD_TICKET = servidor_ip + "/tickets/add-ticket";
+export const GET_ALL_TICEKTS = "/tickets/get-all-tickets";
+export const GET_TICKET_BY_ID = "/tickets/get-ticket";
+export const ADD_TICKET = "/tickets/add-ticket";
 
 
 
 // Notes
-export const GET_NOTES = servidor_ip + "/notes/get-all-notes";
-export const ADD_NOTES =  servidor_ip + "/notes/add-note";
-export const UPDATE_NOTES = servidor_ip + "/notes/edit-note";
-export const DELETE_NOTES = servidor_ip + "/notes/delete-notes";
+export const GET_NOTES = "/notes/get-all-notes";
+export const ADD_NOTES =  "/notes/add-note";
+export const UPDATE_NOTES = "/notes/edit-note";
+export const DELETE_NOTES = "/notes/delete-notes";
 
 // Products
 // List View
-export const GET_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce/get-product-list";
-export const ADD_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce/add-product-list";
-export const UPDATE_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce/edit-product-list";
-export const DELETE_SALE_PRODUCT_LIST =  servidor_ip + "/ecommerce/delete-product-list";
+export const GET_SALE_PRODUCT_LIST =  "/ecommerce/get-product-list";
+export const ADD_SALE_PRODUCT_LIST =  "/ecommerce/add-product-list";
+export const UPDATE_SALE_PRODUCT_LIST =  "/ecommerce/edit-product-list";
+export const DELETE_SALE_PRODUCT_LIST =  "/ecommerce/delete-product-list";
 
 // HR Management
 // Employee List
-export const GET_EMPLOYEE =  servidor_ip + "/hr/get-employee";
-export const ADD_EMPLOYEE =  servidor_ip + "/hr/add-employee";
-export const UPDATE_EMPLOYEE = servidor_ip + "/hr/edit-employee";
-export const DELETE_EMPLOYEE =  servidor_ip + "/hr/delete-employee";
+export const GET_EMPLOYEE =  "/hr/get-employee";
+export const ADD_EMPLOYEE =  "/hr/add-employee";
+export const UPDATE_EMPLOYEE = "/hr/edit-employee";
+export const DELETE_EMPLOYEE =  "/hr/delete-employee";
 
 // TICKET Management
 // Ticket List
-// export const GET_TICKET =  servidor_ip + "/hr/get-ticket";
-// export const ADD_TICKET =  servidor_ip + "/hr/add-ticket";
-// export const UPDATE_TICKET =  servidor_ip + "/hr/edit-ticket";
-// export const DELETE_TICKET =  servidor_ip + "/hr/delete-ticket";
+// export const GET_TICKET =  "/hr/get-ticket";
+// export const ADD_TICKET =  "/hr/add-ticket";
+// export const UPDATE_TICKET =  "/hr/edit-ticket";
+// export const DELETE_TICKET =  "/hr/delete-ticket";
 
 // CUSTOMER Management
 // CUSTOMER List
-export const GET_CUSTOMER =  servidor_ip + "/customer/get-customer";
-export const ADD_CUSTOMER =  servidor_ip + "/customer/add-customer";
-export const UPDATE_CUSTOMER =  servidor_ip + "/customer/edit-customer";
-export const DELETE_CUSTOMER =  servidor_ip + "/customer/delete-customer";
+export const GET_CUSTOMER =  "/customer/get-customer";
+export const ADD_CUSTOMER =  "/customer/add-customer";
+export const UPDATE_CUSTOMER =  "/customer/edit-customer";
+export const DELETE_CUSTOMER =  "/customer/delete-customer";
 
 // Products
 // List View
-export const GET_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce/get-product-list";
-export const ADD_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce/add-product-list";
-export const UPDATE_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce/edit-product-list";
-export const DELETE_SHOP_PRODUCT_LIST =  servidor_ip + "/ecommerce/delete-product-list";
+export const GET_SHOP_PRODUCT_LIST =  "/ecommerce/get-product-list";
+export const ADD_SHOP_PRODUCT_LIST =  "/ecommerce/add-product-list";
+export const UPDATE_SHOP_PRODUCT_LIST =  "/ecommerce/edit-product-list";
+export const DELETE_SHOP_PRODUCT_LIST =  "/ecommerce/delete-product-list";
 
 
 // ASSING MATERIAL
-export const ASSIGN_MATERIAL = servidor_ip + "/assign-material-to-client/add-material";
-export const UNASSIGN_MATERIAL = servidor_ip + "/assign-material-to-client/delete-material";
-export const GET_MATERIALS_BY_CLIENT = servidor_ip + "/assign-material-to-client/get-material";
-export const GET_ASSIGNED_MATERIALS = servidor_ip + "/assign-material-to-client/get-material-by-client-id";
+export const ASSIGN_MATERIAL = "/assign-material-to-client/add-material";
+export const UNASSIGN_MATERIAL = "/assign-material-to-client/delete-material";
+export const GET_MATERIALS_BY_CLIENT = "/assign-material-to-client/get-material";
+export const GET_ASSIGNED_MATERIALS = "/assign-material-to-client/get-material-by-client-id";
 
 
 
 // LOGIN
-export const POST_FAKE_LOGIN = "/auth/signin";
+export const POST_LOGIN = "/auth/signin";
 export const POST_FAKE_JWT_LOGIN = "/post-jwt-login";
 export const POST_FAKE_PASSWORD_FORGET = "/auth/forgot-password";
 export const POST_FAKE_JWT_PASSWORD_FORGET = "/jwt-forget-pwd";

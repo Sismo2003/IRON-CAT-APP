@@ -39,7 +39,7 @@ const Login = (props: any) => {
 
         initialValues: {
             email: user.email || "admin@nimbuscloud.com" || '',
-            password: user.password || "123456" || '',
+            password: user.password || '',
         },
         validationSchema: Yup.object({
             email: Yup.string().required("Por favor Ingresa tu correo"),
@@ -106,7 +106,7 @@ const Login = (props: any) => {
                                 Tu ingreso a sido<b>exitoso.</b>
                             </div>}
                             {error && <div className="px-4 py-3 mb-3 text-sm text-red-500 border border-red-200 rounded-md bg-red-50 dark:bg-red-400/20 dark:border-red-500/50" id="successAlert">
-                               Usuario o contraseña<b> incorrectos. </b>Intentalo de nuevo
+                                Usuario o contraseña<b> incorrectos. </b>Intentalo de nuevo
                             </div>}
                             <div className="mb-3">
                                 <label htmlFor="email" className="inline-block mb-2 text-base font-medium">Usuario/Correo</label>
@@ -128,9 +128,9 @@ const Login = (props: any) => {
                             <div className="mb-3">
                                 <label htmlFor="Contraseña" className="inline-block mb-2 text-base font-medium">Contraseña</label>
                                 <input
-                                    type="Contraseña"
+                                    type="password"
                                     id="Contraseña"
-                                    name="Contraseña"
+                                    name="password"
                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                     placeholder="Enter password"
                                     onChange={validation.handleChange}

@@ -22,7 +22,7 @@ export const isUserAuthenticated = () => {
 export const postFakeRegister = (data: any) => api.create(url.POST_FAKE_REGISTER, data);
 
 // Login Method
-export const postFakeLogin = (data: any) => api.create(url.POST_FAKE_LOGIN, data);
+export const postLogin = (data: any) => api.create(url.POST_LOGIN, data);
 
 // postForgetPwd
 export const postFakeForgetPwd = (data: any) => api.create(url.POST_FAKE_PASSWORD_FORGET, data);

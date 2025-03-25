@@ -1,4 +1,4 @@
-import { postFakeLogin } from "helpers/fakebackend_helper";
+import { postLogin } from "helpers/fakebackend_helper";
 import { loginError, loginSuccess, logoutSuccess } from "./reducer";
 import { ThunkAction } from "redux-thunk";
 import { Action, Dispatch } from "redux";
@@ -15,10 +15,11 @@ export const loginUser = (
     history: any
 ): ThunkAction<void, RootState, unknown, Action<string>> => async (dispatch: Dispatch) => {
     try {
+        console.log("user", user);
         let response: any;
-        if (process.env.REACT_APP_DEFAULTAUTH === "fake") {
-
-            response = await postFakeLogin({
+        if (process.env.REACT_APP_DEFAULTAUTH === "production") {
+            console.log("production");
+            response = await postLogin({
                 email: user.email,
                 password: user.password,
             });
@@ -62,24 +63,24 @@ export const logoutUser = () => async (dispatch: Dispatch) => {
 }
 
 
-export const socialLogin = (type: any, history: any) => async (dispatch: any) => {
-    try {
-        let response: any;
+// export const socialLogin = (type: any, history: any) => async (dispatch: any) => {
+//     try {
+//         let response: any;
 
-        if (process.env.REACT_APP_DEFAULTAUTH === "firebase") {
-            const fireBaseBackend = getFirebaseBackend();
-            response = fireBaseBackend.socialLoginUser(type);
-        }
+//         if (process.env.REACT_APP_DEFAULTAUTH === "firebase") {
+//             const fireBaseBackend = getFirebaseBackend();
+//             response = fireBaseBackend.socialLoginUser(type);
+//         }
 
-        const socialData = await response;
+//         const socialData = await response;
 
-        if (socialData) {
-            sessionStorage.setItem("authUser", JSON.stringify(socialData));
-            dispatch(loginSuccess(socialData));
-            history('/dashboard');
-        }
+//         if (socialData) {
+//             sessionStorage.setItem("authUser", JSON.stringify(socialData));
+//             dispatch(loginSuccess(socialData));
+//             history('/dashboard');
+//         }
 
-    } catch (error) {
-        dispatch(loginError(error));
-    }
-}
+//     } catch (error) {
+//         dispatch(loginError(error));
+//     }
+// }

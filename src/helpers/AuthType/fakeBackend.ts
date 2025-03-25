@@ -40,7 +40,7 @@ let users = [
     username: "admin",
     role: "admin",
     password: "123456",
-    email: "admin@themesbrand.com",
+    email: "admin@nimbuscloud.com",
   },
 ];
 
@@ -48,26 +48,25 @@ const fakeBackend = () => {
   // This sets the mock adapter on the default instance
   const mock = new MockAdapter(axios, { onNoMatch: "passthrough" });
 
-  // login
-  mock.onPost(url.POST_FAKE_LOGIN).reply(config => {
-    const user = JSON.parse(config["data"]);
+  // // login
+  // mock.onPost(url.POST_FAKE_LOGIN).reply(config => {
+  //   const user = JSON.parse(config["data"]);
+  //   const validUser = users.filter(
+  //     usr => usr.email === user.email && usr.password === user.password
+  //   );
 
-    const validUser = users.filter(
-      usr => usr.email === user.email && usr.password === user.password
-    );
-
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (validUser["length"] === 1) {
-          resolve([200, validUser[0]]);
-        } else {
-          reject([
-            "Username and password are invalid. Please enter correct username and password",
-          ]);
-        }
-      });
-    });
-  });
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       if (validUser["length"] === 1) {
+  //         resolve([200, validUser[0]]);
+  //       } else {
+  //         reject([
+  //           "Username and password are invalid. Please enter correct username and password",
+  //         ]);
+  //       }
+  //     });
+  //   });
+  // });
 
   // register
   mock.onPost(url.POST_FAKE_REGISTER).reply((config: any) => {
