@@ -73,10 +73,10 @@ export const postSocialLogin = (data: any) => api.create(url.SOCIAL_LOGIN, data)
 export const getAllTickets = () => api.get(url.GET_ALL_TICEKTS, null);
 export const addTicket = (data: any) => api.create(url.ADD_TICKET, data);
 export const getTicketById = (id: any) => api.get(url.GET_TICKET_BY_ID,  { id });
+export const deleteTicket = (id: any) => api.delete(`${url.DELETE_TICKET}/${id}`);
 
 //NOTA NO EXISTEN ESTOS TICKETS
 // export const updateTicket = (data: any) => api.update(url.UPDATE_TICKET + '/' + data.id, data);
-// export const deleteTicket = (data: any) => api.delete(url.DELETE_TICKET + '/' + data, { headers: { data } });
 
 
 

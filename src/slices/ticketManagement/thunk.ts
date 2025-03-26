@@ -3,6 +3,7 @@ import {
     getAllTickets as getTickets,
     getTicketById as getTicketById,
     addTicket as newTicket,
+    deleteTicket as deleteTicketById
 } from "../../helpers/fakebackend_helper";
 
 
@@ -41,6 +42,16 @@ export const lookTicket = createAsyncThunk("ticketManagement/getTicketByid", asy
     }
 });
 
+export const deleteTicket = createAsyncThunk("ticketManagement/deleteTicket", async (event: any) => {
+    try {
+        const response = deleteTicketById(event);
+        toast.success("Ticket deleted Successfully", { autoClose: 2000 });
+        return event;
+    } catch (error) {
+        toast.error("Ticket deleted Failed", { autoClose: 2000 });
+        return error;
+    }
+});
 
 
 
@@ -60,15 +71,5 @@ export const lookTicket = createAsyncThunk("ticketManagement/getTicketByid", asy
 //         return error;
 //     }
 // });
-// export const deleteTicket = createAsyncThunk("ticketManagement/deleteTicket", async (event: any) => {
-//     try {
-//         console.log("event", event);
-//         const response = deleteTicketApi(event);
-//         toast.success("Ticket deleted Successfully", { autoClose: 2000 });
-//         return event;
-//     } catch (error) {
-//         toast.error("Ticket deleted Failed", { autoClose: 2000 });
-//         return error;
-//     }
-// });
+
 

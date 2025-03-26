@@ -6,9 +6,15 @@ import moment from "moment";
 
 // icons
 import {
-    Boxes, TicketX, Loader, Search,
-    TicketCheck, /*PackageCheck,*/ PackageX, /*Plus,*/
-    /*RefreshCcw,*/ MoreHorizontal, Trash2, Eye, FileEdit,
+    Boxes,
+    TicketX,
+    Loader,
+    Search,
+    TicketCheck,
+    PackageX,
+    MoreHorizontal,
+    Trash2,
+    FileEdit,
     Ticket
 } from 'lucide-react';
 import { OrdersOverviewChart } from "./charts";
@@ -24,11 +30,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import {
-    addOrders as onAddOrders,
-    updateOrders as onUpdateOrders,
-    deleteOrders as onDeleteOrders,
+
     // Nuevas opciones
     getTicket as getTickets,
+    deleteTicket as onDeleteTicket,
 } from 'slices/thunk';
 
 
@@ -76,14 +81,14 @@ const Orders = () => {
     // Delete Data
     const onClickDelete = (cell: any) => {
         setDeleteModal(true);
-        if (cell.id) {
+        if (cell.ticket_id) {
             setEventData(cell);
         }
     };
 
     const handleDelete = () => {
         if (eventData) {
-            dispatch(onDeleteOrders(eventData.id));
+            dispatch(onDeleteTicket(eventData.ticket_id));
             setDeleteModal(false);
         }
     };
@@ -149,7 +154,7 @@ const Orders = () => {
     // Search Data
     const filterSearchData = (e: any) => {
         const search = e.target.value;
-        const keysToSearch = ['orderId', 'customerName', 'paymentMethod', 'deliveryStatus'];
+        const keysToSearch = ['ticket_id'];
         filterDataBySearch(dataList, search, keysToSearch, setData);
     };
 
@@ -289,7 +294,7 @@ const Orders = () => {
     );
 
 
-    // console.log(dataList);
+    console.log(dataList);
 
     // contador de status para las cards!
     const ticketTotals = useMemo(() => {
@@ -558,7 +563,7 @@ const Orders = () => {
                                        placeholder="Tipo de ticket"
                                        name="ticketType"
                                        disabled
-                                       value={validation.values.ticket_type == 'sale' ? 'VENTA' : 'COMPRA'}
+                                       value={validation.values.ticket_type === 'sale' ? 'VENTA' : 'COMPRA'}
                                 />
                             </div>
                             {/* Ticket Creation Date */}

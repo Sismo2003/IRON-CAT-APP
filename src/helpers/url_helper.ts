@@ -10,7 +10,7 @@ export const POST_FAKE_REGISTER = "/auth/signup";
 export const GET_ALL_TICEKTS = "/tickets/get-all-tickets";
 export const GET_TICKET_BY_ID = "/tickets/get-ticket";
 export const ADD_TICKET = "/tickets/add-ticket";
-
+export const DELETE_TICKET = "/tickets/delete-ticket";
 
 
 // Notes

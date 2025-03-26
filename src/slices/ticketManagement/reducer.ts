@@ -2,11 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
     getTicket,
     addTicket,
-    lookTicket
+    lookTicket,
+    deleteTicket
 
     // updateTicket,
     // deleteTicket
 } from './thunk';
+import {deleteNotes} from "../notes/thunk";
 
 export const initialState = {
     ticketlist: [],
@@ -54,6 +56,22 @@ const TICKETManagementSlice = createSlice({
             state.loading = true;
         });
         builder.addCase(lookTicket.rejected, (state: any, action: any) => {
+            state.error = action.payload.error || null;
+            state.loading = false;
+        });
+
+        // delete ticket by id
+        builder.addCase(deleteTicket.fulfilled, (state: any, action: any) => {
+            state.loading = false;
+            state.ticketlist = state.ticketlist.filter(
+                (ticketlist: any) => ticketlist.ticket_id.toString() !== action.payload.toString()
+            );
+        });
+
+        builder.addCase(deleteTicket.pending, (state: any, action: any) => {
+            state.loading = true;
+        });
+        builder.addCase(deleteTicket.rejected, (state: any, action: any) => {
             state.error = action.payload.error || null;
             state.loading = false;
         });
