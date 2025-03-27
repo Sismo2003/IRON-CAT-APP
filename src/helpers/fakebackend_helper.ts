@@ -1,7 +1,6 @@
 import { APIClient } from "./api_helper";
 
 import * as url from "./url_helper";
-import {GET_ALL_TICEKTS, GET_TICKET_BY_ID} from "./url_helper";
 
 const api = new APIClient();
 // Gets the logged in user data from local session

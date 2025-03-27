@@ -5,7 +5,10 @@ import Select from 'react-select';
 import scale from "assets/images/scale.png";
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { getShopProductList as onGetProductList } from 'slices/thunk';
+import {
+  getShopProductList as onGetProductList,
+  addTicket as onAddTicket,
+} from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
@@ -30,6 +33,7 @@ interface MaterialOption {
 
 interface CartItem {
   id: number;
+  product_id: number;
   material: string;
   weight: number;
   price: number;
@@ -51,7 +55,15 @@ const ShoppingCart = () => {
     })
   );
 
+  const ticketManagement = createSelector(
+    (state: any) => state.TICKETManagment,
+    (state) => ({
+      ticket_loading: state.loading,
+    })
+  );
+
   const { materialList } = useSelector(selectDataList);
+  const { ticket_loading } = useSelector(ticketManagement);
 
   const [materials, setMaterials] = useState<MaterialOption[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -84,6 +96,7 @@ const ShoppingCart = () => {
       setMaterials(formattedMaterials);
     }
   }, [materialList]);
+
 
   useEffect(() => {
     const ws = new WebSocket(ws_ip);
@@ -154,6 +167,7 @@ const ShoppingCart = () => {
     setCart([...cart, {
       id: scaleId,
       material: material.label,
+      product_id: material.value,
       weight: weight - waste, // Restar la merma al peso
       price,
       total,
@@ -227,6 +241,7 @@ const ShoppingCart = () => {
       customer_name: customerName,
       cart: cart.map((item) => ({
         id: item.id,
+        product_id: item.product_id,
         material: item.material,
         type: item.type,
         weight: item.weight,
@@ -235,6 +250,12 @@ const ShoppingCart = () => {
         waste: item.waste,
       }))
     };
+
+    // Primero despacha la acción y espera su resolución
+    const result = await dispatch(onAddTicket(payload));
+    console.log('Resultado del thunk:', result); // Verifica esto en consola
+
+    
     
     try {
       const response = await fetch('http://192.168.100.77:8000/src/printer.php', {

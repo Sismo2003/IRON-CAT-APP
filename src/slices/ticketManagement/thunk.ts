@@ -22,7 +22,7 @@ export const getTicket = createAsyncThunk("ticketManagement/getTicket", async ()
 export const addTicket = createAsyncThunk("ticketManagement/addTicket", async (event: any) => {
     try {
         const response = newTicket(event);
-        const data = await response;
+        await response;
         toast.success("Ticket creado con éxito", { autoClose: 2000 });
         return event;
     } catch (error) {
