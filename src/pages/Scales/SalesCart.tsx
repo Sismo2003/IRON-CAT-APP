@@ -4,7 +4,10 @@ import Select from 'react-select';
 import scale from "assets/images/scale.png";
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { getShopProductList as onGetProductList } from 'slices/thunk';
+import { 
+  getShopProductList as onGetProductList,
+  addTicket as onAddTicket,
+} from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
@@ -29,11 +32,13 @@ interface MaterialOption {
 
 interface CartItem {
   id: number;
+  product_id: number;
   material: string;
   weight: number;
   price: number;
   total: number;
   waste: number; // Merma siempre presente, inicializada en 0
+  type: 'wholesale' | 'retail'; // Tipo de precio
   usePredefinedMerma: boolean; // Indica si se usa merma predefinida
 }
 
@@ -49,13 +54,22 @@ const ShoppingCart = () => {
     })
   );
 
+  const ticketManagement = createSelector(
+    (state: any) => state.TICKETManagment,
+    (state) => ({
+      ticket_loading: state.loading,
+    })
+  );
+
   const { materialList } = useSelector(selectDataList);
+  const { ticket_loading } = useSelector(ticketManagement);
 
   const [materials, setMaterials] = useState<MaterialOption[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
   const [selectedPriceTypes, setSelectedPriceTypes] = useState<{ [key: number]: 'wholesale' | 'retail' }>({});
+  const [customerName, setCustomerName] = useState<string>(""); 
 
   // Opciones predefinidas para la merma
   const predefinedMermaOptions = [
@@ -81,6 +95,7 @@ const ShoppingCart = () => {
       setMaterials(formattedMaterials);
     }
   }, [materialList]);
+
 
   useEffect(() => {
     const ws = new WebSocket(ws_ip);
@@ -151,10 +166,12 @@ const ShoppingCart = () => {
     setCart([...cart, {
       id: scaleId,
       material: material.label,
+      product_id: material.value,
       weight: weight - waste, // Restar la merma al peso
       price,
       total,
       waste,
+      type: priceType,
       usePredefinedMerma: false, // Por defecto no usa merma predefinida
     }]);
   };
@@ -211,22 +228,33 @@ const ShoppingCart = () => {
 
   // Función para realizar el checkout
   const handleCheckout = async () => {
-    console.log("fetch");
+    if (!customerName.trim()) {
+      showToast("Por favor ingrese el nombre del cliente");
+      return;
+    }
+
     const payload = {
       total: cart.reduce((sum, item) => sum + item.total, 0),
       user_id: 1, // ID del usuario actual SE VA A CAMBIAR
       type: "sale",
+      customer_name: customerName,
       cart: cart.map((item) => ({
         id: item.id,
+        product_id: item.product_id,
         material: item.material,
+        type: item.type,
         weight: item.weight,
         price: item.price,
         total: item.total,
         waste: item.waste,
       }))
     };
+
+    // Primero despacha la acción y espera su resolución
+    const result = await dispatch(onAddTicket(payload));
+    console.log('Resultado del thunk:', result); // Verifica esto en consola
+
     
-    console.log("Payload:", payload);
     
     try {
       const response = await fetch('http://192.168.100.77:8000/src/printer.php', {
@@ -252,7 +280,7 @@ const ShoppingCart = () => {
 
   return (
     <>
-      <BreadCrumb title="Carrito de Compras" pageTitle="Compras" />
+      <BreadCrumb title="Carrito de Ventas" pageTitle="Ventas" />
       <ToastContainer 
         closeButton={false} 
         limit={1} 
@@ -307,7 +335,7 @@ const ShoppingCart = () => {
         </div>
         <div className="xl:col-span-3">
           <div className="card p-4 bg-white shadow rounded-lg">
-            <h6 className="mb-4 text-15">Carrito de compras<span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{cart.length ? cart.length : 0}</span></h6>
+            <h6 className="mb-4 text-15">Carrito de ventas<span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{cart.length ? cart.length : 0}</span></h6>
             {cart.length === 0 ? (
               <div className="flex flex-col items-center justify-center my-5">
                 <ShoppingBasket className="w-12 h-12 text-gray-500" />
@@ -375,6 +403,25 @@ const ShoppingCart = () => {
               <h6 className="text-16">
                 Total: ${cart.reduce((sum, item) => sum + item.total, 0).toFixed(2)}
               </h6>
+
+              {/* Nuevo input para el cliente */}
+              <div className="my-3 border-t pt-3">
+                <label htmlFor="customerName" className="inline-block mb-2 text-base font-medium">
+                  Nombre del Cliente
+                </label>
+                <input
+                  type="text"
+                  id="customerName"
+                  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                  placeholder="Ingrese nombre del cliente"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  required
+                />
+                {!customerName.trim() && (
+                  <p className="mt-1 text-sm text-red-500">Este campo es requerido</p>
+                )}
+              </div>
 
               <button
                 onClick={handleCheckout}
