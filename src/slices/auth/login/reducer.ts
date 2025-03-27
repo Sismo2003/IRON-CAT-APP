@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface LoginState {
-    user: string;
+    user: {};
     error: string;
     success: boolean;
     isUserLogout: boolean;
 }
 
 const initialState: LoginState = {
-    user: "",
+    user: {},
     error: "",
     success: false,
     isUserLogout: false
@@ -18,7 +18,7 @@ const loginSlice = createSlice({
     name: "login",
     initialState,
     reducers: {
-        loginSuccess(state: LoginState, action: PayloadAction<string>) {
+        loginSuccess(state: LoginState, action: PayloadAction<{}>) {
             state.user = action.payload;
             state.success = true;
         },

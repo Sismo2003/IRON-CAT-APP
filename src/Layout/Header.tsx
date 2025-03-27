@@ -23,7 +23,6 @@ import { Dropdown } from 'Common/Components/Dropdown';
 import { changeLeftsidebarSizeType } from 'slices/thunk';
 
 
-const username : string = "Iker F.";
 const userRole : string = "Desarollador Js";
 
 
@@ -42,7 +41,7 @@ function obtenerSaludo(): string {
 
 
 const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
-
+    let authUser: any = JSON.parse(localStorage.getItem('authUser') || '{}');
     const dispatch = useDispatch<any>();
 
     // react-redux
@@ -215,7 +214,7 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
                                 <Dropdown className="relative flex items-center h-header">
                                     <Dropdown.Trigger type="button" className="inline-block p-0 transition-all duration-200 ease-linear bg-topbar rounded-full text-topbar-item dropdown-toggle btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover group-data-[topbar=dark]:text-topbar-item-dark group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200" id="dropdownMenuButton" data-bs-toggle="dropdown">
                                         <div className="bg-pink-100 rounded-full">
-                                            <img src={userProfile} alt="" className="size-[37.5px] rounded-full" />
+                                            <img src={authUser.img} alt="" className="size-[37.5px] rounded-full" />
                                         </div>
                                     </Dropdown.Trigger>
                                     <Dropdown.Content placement="right-end" className="absolute z-50 p-4 ltr:text-left rtl:text-right bg-white rounded-md shadow-md !top-4 dropdown-menu min-w-[14rem] dark:bg-zink-600" aria-labelledby="dropdownMenuButton">
@@ -223,13 +222,13 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
                                         <a href="#!" className="flex gap-3 mb-3">
                                             <div className="relative inline-block shrink-0">
                                                 <div className="rounded bg-slate-100 dark:bg-zink-500">
-                                                    <img src={userProfile} alt="" className="size-12 rounded" />
+                                                    <img src={authUser.img} alt="" className="size-12 rounded" />
                                                 </div>
                                                 <span className="-top-1 ltr:-right-1 rtl:-left-1 absolute size-2.5 bg-green-400 border-2 border-white rounded-full dark:border-zink-600"></span>
                                             </div>
                                             <div>
-                                                <h6 className="mb-1 text-15">{username || "Usuario"}</h6>
-                                                <p className="text-slate-500 dark:text-zink-300">{ userRole || "CEO & Founder"}</p>
+                                                <h6 className="mb-1 text-15">{authUser.name || "Usuario"}</h6>
+                                                <p className="text-slate-500 dark:text-zink-300">{ authUser.role === 'admin' ? 'Administrador IRON-CAT' : 'Usuario IRON-CAT'}</p>
                                             </div>
                                         </a>
                                         <ul>

@@ -1,5 +1,6 @@
 import { postLogin } from "helpers/fakebackend_helper";
 import { loginError, loginSuccess, logoutSuccess } from "./reducer";
+import { profileFailed, profileSuccess } from "../profile/reducer";
 import { ThunkAction } from "redux-thunk";
 import { Action, Dispatch } from "redux";
 import { RootState } from "slices";
@@ -35,11 +36,13 @@ export const loginUser = (
 
         if (response) {
             dispatch(loginSuccess(response));
+            dispatch(profileSuccess(response));
             history("/dashboard");
         }
     } catch (error) {
 
         dispatch(loginError(error));
+        dispatch(profileFailed(error));
     }
 };
 

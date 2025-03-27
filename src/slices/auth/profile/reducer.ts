@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ProfileState {
-    user: string;
+    user: {};
     error: string;
     success: boolean;
 }
 
 const initialState: ProfileState = {
-    user: "",
+    user: {},
     error: "",
     success: false
 };
@@ -16,7 +16,7 @@ const profileSlice = createSlice({
     name: "profile",
     initialState,
     reducers: {
-        profileSuccess(state: ProfileState, action: PayloadAction<string>) {
+        profileSuccess(state: ProfileState, action: PayloadAction<{}>) {
             state.user = action.payload;
             state.success = true;
         },
