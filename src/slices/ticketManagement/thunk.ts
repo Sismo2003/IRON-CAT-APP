@@ -1,9 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
     getAllTickets as getTickets,
-    getTicketById as getTicketById,
+    getTicketById,
     addTicket as newTicket,
-    deleteTicket as deleteTicketById
+    deleteTicket as deleteTicketById,
+    updateTicketStatus
 } from "../../helpers/fakebackend_helper";
 
 
@@ -44,11 +45,22 @@ export const lookTicket = createAsyncThunk("ticketManagement/getTicketByid", asy
 
 export const deleteTicket = createAsyncThunk("ticketManagement/deleteTicket", async (event: any) => {
     try {
-        const response = deleteTicketById(event);
-        toast.success("Ticket deleted Successfully", { autoClose: 2000 });
+        deleteTicketById(event);
+        toast.success("Ticket borrado con exito!", { autoClose: 2000 });
         return event;
     } catch (error) {
-        toast.error("Ticket deleted Failed", { autoClose: 2000 });
+        toast.error("Se produjo un error al intentar borrar el ticket, vuelve a intentarlo o contacta a tu soporte.", { autoClose: 2000 });
+        return error;
+    }
+});
+
+export const updateStatus = createAsyncThunk("ticketManagement/updateStatus", async (event: any) => {
+    try {
+        updateTicketStatus(event);
+        toast.success("Estado de ticket actualizado correctamete!", { autoClose: 2000 });
+        return event;
+    } catch (error) {
+        toast.error("Se produjo un erro al actulizar el estado del ticket, vuelve a intentarlo.", { autoClose: 2000 });
         return error;
     }
 });

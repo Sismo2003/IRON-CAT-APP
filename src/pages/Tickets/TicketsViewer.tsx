@@ -34,6 +34,7 @@ import {
     // Nuevas opciones
     getTicket as getTickets,
     deleteTicket as onDeleteTicket,
+    updateStatus
 } from 'slices/thunk';
 
 
@@ -106,34 +107,30 @@ const Orders = () => {
         enableReinitialize: true,
 
        initialValues: {
-           ticket_id: (eventData && eventData.ticket_id) || null,
-           ticketCustomerName: (eventData && eventData.ticketCustomerName) || null,
-           ticket_total: (eventData && eventData.ticket_total) || null,
-           ticket_type: (eventData && eventData.ticket_type) || null,
-           ticket_status: (eventData && eventData.ticket_status) || null,
-           ticket_date: (eventData && eventData.ticket_date) ||  null,
+           ticket_id: (eventData && eventData.ticket_id) || "",
+           ticketCustomerName: (eventData && eventData.ticketCustomerName) || "",
+           ticket_total: (eventData && eventData.ticket_total) || "",
+           ticket_type: (eventData && eventData.ticket_type) || "",
+           ticket_status: (eventData && eventData.ticket_status) || " ",
+           ticket_date: (eventData && eventData.ticket_date) ||  "",
            productos: (eventData && eventData.productos) || [],
            responsible: (eventData && eventData.responsible) || [] ,
            client: (eventData && eventData.client) || []
        },
         validationSchema: Yup.object({
-            // orderId: Yup.string().required("Please Enter Id"),
-            orderDate: Yup.string().required("Please Enter Date"),
-            deliveryDate: Yup.string().required("Please Enter Date"),
-            customerName: Yup.string().required("Please Enter Name"),
-            paymentMethod: Yup.string().required("Please Enter Payment Method"),
-            amount: Yup.string().required("Please Enter Amount"),
-            deliveryStatus: Yup.string().required("Please Enter Status")
+            ticket_id: Yup.string().required("Es necesario el identificador del ticket!")
         }),
 
         onSubmit: (values) => {
-
             const updateData = {
-                id: eventData ? eventData.id : 0,
-                ...values,
+                id: eventData ? eventData.ticket_id : 0,
+                onStatus : validation.values.ticket_status,
+                // ...values,
             };
-            // update user
-            // dispatch(onUpdateOrders(updateData));
+            //dispatch for update state from the ticket!
+            if(validation.values.ticket_status !== eventData.ticket_status) {
+                dispatch(updateStatus(updateData));
+            }
 
             toggle();
         },
@@ -176,13 +173,16 @@ const Orders = () => {
     const Status = ({ item }: any) => {
         switch (item) {
             case "Por autorizar":
-                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-yellow-100 border-yellow-200 text-yellow-500 dark:bg-yellow-500/20 dark:border-yellow-500/20">{item}</span>);
+            case 'pending':
+                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-yellow-100 border-yellow-200 text-yellow-500 dark:bg-yellow-500/20 dark:border-yellow-500/20">Por autorizar</span>);
             case "Cancelados":
-                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-red-100 border-red-200 text-red-500 dark:bg-red-500/20 dark:border-red-500/20">{item}</span>);
+            case 'deleted':
+                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-red-100 border-red-200 text-red-500 dark:bg-red-500/20 dark:border-red-500/20">Cancelados</span>);
             case "Autorizados":
-                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-sky-100 border-sky-200 text-sky-500 dark:bg-sky-500/20 dark:border-sky-500/20">{item}</span>);
+            case 'authorized':
+                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-green-100 border-green-200 text-green-500 dark:bg-green-500/20 dark:border-green-500/20">Autorizados</span>);
             default:
-                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-green-100 border-green-200 text-green-500 dark:bg-green-500/20 dark:border-green-500/20">{item}</span>);
+                return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-sky-100 border-sky-200 text-sky-500 dark:bg-sky-500/20 dark:border-sky-500/20">{item}</span>);
         }
     };
 
@@ -267,7 +267,6 @@ const Orders = () => {
                                 className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
                               onClick={() => {
                                 const data = cell.row.original;
-                                console.log("Datos para modal:" , data);
                                 handleUpdateDataClick(data);
                             }}>
                                 <FileEdit className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
@@ -294,7 +293,7 @@ const Orders = () => {
     );
 
 
-    console.log(dataList);
+    // console.log(dataList);
 
     // contador de status para las cards!
     const ticketTotals = useMemo(() => {
@@ -551,9 +550,9 @@ const Orders = () => {
                                     onChange={validation.handleChange}
                                     className="form-select border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-700 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                 >
-                                    <option value="Por autorizar">Por Autorizar</option>
-                                    <option value="Cancelados">Cancelado</option>
-                                    <option value="Autorizados">Autorizado</option>
+                                    <option value="pending">Por Autorizar</option>
+                                    <option value="deleted">Cancelado</option>
+                                    <option value="authorized">Autorizado</option>
                                 </select>
                             </div>
                             {/* Ticket Type */}
@@ -655,7 +654,10 @@ const Orders = () => {
 
                         </div>
                         <div className="flex justify-end gap-2 mt-4">
-                            <button type="reset" className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-600 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10" onClick={toggle}>Cancel</button>
+                            <button type="reset" className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-600 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10"
+                            onClick={toggle}>
+                                Cerrar
+                            </button>
                             <button type="submit" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">
                                 Actualizar
                             </button>

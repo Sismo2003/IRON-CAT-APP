@@ -11,7 +11,7 @@ export const GET_ALL_TICEKTS = "/tickets/get-all-tickets";
 export const GET_TICKET_BY_ID = "/tickets/get-ticket";
 export const ADD_TICKET = "/tickets/add-ticket";
 export const DELETE_TICKET = "/tickets/delete-ticket";
-
+export const UPDATE_TICKET_STATUS = "/tickets/update-ticket-status";
 
 // Notes
 export const GET_NOTES = "/notes/get-all-notes";
