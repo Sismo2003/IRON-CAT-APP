@@ -38,7 +38,7 @@ const Login = (props: any) => {
         enableReinitialize: true,
 
         initialValues: {
-            email: user.email || "admin@nimbuscloud.com" || '',
+            email: user.email ||  '',
             password: user.password || '',
         },
         validationSchema: Yup.object({
@@ -118,7 +118,7 @@ const Login = (props: any) => {
                                     placeholder="Enter username or email"
                                     onChange={validation.handleChange}
                                     onBlur={validation.handleBlur}
-                                    value={validation.values.email || ""}
+
                                 />
                                 {validation.touched.email && validation.errors.email ? (
                                     <div id="email-error" className="mt-1 text-sm text-red-500">{validation.errors.email}</div>
@@ -135,7 +135,7 @@ const Login = (props: any) => {
                                     placeholder="Enter password"
                                     onChange={validation.handleChange}
                                     onBlur={validation.handleBlur}
-                                    value={validation.values.password || ""}
+
                                 />
                                 {validation.touched.password && validation.errors.password ? (
                                     <div id="password-error" className="mt-1 text-sm text-red-500">{validation.errors.password}</div>
