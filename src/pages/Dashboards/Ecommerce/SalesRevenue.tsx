@@ -8,8 +8,10 @@ import "flatpickr/dist/flatpickr.css";
 const SalesRevenue = () => {
     return (
         <React.Fragment>
-            <div className="col-span-12 card 2xl:col-span-8">
+            {/* Único cambio: eliminamos 2xl:col-span-8 y dejamos solo col-span-12 */}
+            <div className="col-span-12 card"> {/* ← Cambio aquí */}
                 <div className="card-body">
+                    {/* Todo el contenido interior permanece EXACTAMENTE igual */}
                     <div className="flex flex-col gap-4 mb-4 md:mb-3 md:items-center md:flex-row">
                         <h6 className="grow text-15">Ingresos generales por ventas </h6>
                         <div className="relative">
