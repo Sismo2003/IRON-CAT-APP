@@ -11,7 +11,7 @@ const SalesRevenue = () => {
             <div className="col-span-12 card 2xl:col-span-8">
                 <div className="card-body">
                     <div className="flex flex-col gap-4 mb-4 md:mb-3 md:items-center md:flex-row">
-                        <h6 className="grow text-15">Sales Revenue Overview</h6>
+                        <h6 className="grow text-15">Ingresos generales por ventas </h6>
                         <div className="relative">
                             <CalendarRange className="absolute size-4 ltr:left-3 rtl:right-3 top-3 text-slate-500 dark:text-zink-200"></CalendarRange>
                             <Flatpickr
@@ -31,7 +31,7 @@ const SalesRevenue = () => {
                                     <BarChart />
                                 </div>
                                 <div className="grow">
-                                    <p className="mb-1 text-slate-500 dark:text-zink-200">Total Sales</p>
+                                    <p className="mb-1 text-slate-500 dark:text-zink-200">Ventas totales </p>
                                     <h5 className="text-15">$
                                     <CountUp end={1517.36} decimals={2}  className="counter-value" />k</h5>
                                 </div>
@@ -43,7 +43,7 @@ const SalesRevenue = () => {
                                     <TrendingUp />
                                 </div>
                                 <div className="grow">
-                                    <p className="mb-1 text-slate-500 dark:text-zink-200">Total Profit</p>
+                                    <p className="mb-1 text-slate-500 dark:text-zink-200">Ganancia total</p>
                                     <h5 className="text-15">$<CountUp end={746.84} decimals={2} className="counter-value" />k</h5>
                                 </div>
                             </div>

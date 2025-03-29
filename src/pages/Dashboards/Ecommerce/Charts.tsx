@@ -1,6 +1,7 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 import useChartColors from "Common/useChartColors";
+import { Variable } from "lucide-react";
 
 const OrderStatisticsChart = ({ chartId }: any) => {
 
@@ -8,10 +9,14 @@ const OrderStatisticsChart = ({ chartId }: any) => {
 
     //Order Statistics
     const series = [{
-        name: 'Pending',
+
+        name: 'Cancelados',
+        data: [20, 45, 32, 10, 7, 60, 35, 50, 22, 19, 9, 3] 
+    }, {
+        name: 'Pendientes',
         data: [17, 16, 19, 22, 24, 29, 25, 20, 25, 31, 28, 35]
     }, {
-        name: 'New Orders',
+        name: 'Autorizados',
         data: [30, 24, 32, 27, 16, 22, 32, 21, 24, 20, 38, 2]
     }];
     var options: any = {
@@ -49,7 +54,7 @@ const OrderStatisticsChart = ({ chartId }: any) => {
                 dir="ltr"
                 options={options}
                 series={series}
-                data-chart-colors='["bg-purple-500", "bg-sky-500"]'
+                data-chart-colors= '["bg-red-500", "bg-yellow-500", "bg-blue-500"]'
                 id={chartId}
                 className="apex-charts"
                 type='line'
@@ -66,10 +71,10 @@ const SalesRevenueOverviewChart = ({ chartId }: any) => {
 
     //Sales Revenue Overview
     const series = [{
-        name: 'Total Sales',
+        name: 'Venta total',
         data: [44, 55, 41, 67, 22, 43, 21, 49, 20, 41, 67, 22,]
     }, {
-        name: 'Total Profit',
+        name: 'Ganancia total',
         data: [11, 17, 15, 15, 21, 14, 15, 13, 5, 15, 15, 21,]
     }];
     var options: any = {
@@ -119,7 +124,7 @@ const SalesRevenueOverviewChart = ({ chartId }: any) => {
                 dir="ltr"
                 options={options}
                 series={series}
-                data-chart-colors='["bg-custom-500", "bg-custom-400", "bg-custom-300"]'
+                data-chart-colors='["bg-blue-500", "bg-purple-500", "bg-red-500"]'
                 id={chartId}
                 className="apex-charts"
                 type='bar'
@@ -134,7 +139,12 @@ const TrafficResourcesChart = ({ chartId }: any) => {
     const chartColors = useChartColors(chartId);
 
     //Traffic Resources Chart
-    const series = [44, 34, 22];
+    let count : number=0;
+    const series = [80, 45, 20];
+    series.forEach(variable => {
+        count+=variable;
+
+    })
     var options: any = {
         chart: {
             height: 222,
@@ -148,7 +158,7 @@ const TrafficResourcesChart = ({ chartId }: any) => {
                         label: 'Total',
                         formatter: function (w: any) {
                             // By default this function returns the average of all series. The below is just an example to show the use of custom formatter function
-                            return 875;
+                            return count;
                         }
                     }
                 }
@@ -164,7 +174,7 @@ const TrafficResourcesChart = ({ chartId }: any) => {
             }
         },
         colors: chartColors,
-        labels: ['Direct', 'Referrals', 'Search Engine'],
+        labels: ['Aluminio', 'Cobre', 'Chatarra'],
     };
 
     return (
@@ -173,7 +183,7 @@ const TrafficResourcesChart = ({ chartId }: any) => {
                 dir="ltr"
                 options={options}
                 series={series}
-                data-chart-colors='["bg-sky-500", "bg-purple-500", "bg-green-500", "bg-yellow-500"]'
+                data-chart-colors='["bg-sky-500", "bg-purple-500", "bg-red-500", "bg-yellow-500"]'
                 id={chartId}
                 className="apex-charts"
                 type='radialBar'
