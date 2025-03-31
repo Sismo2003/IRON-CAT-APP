@@ -71,6 +71,9 @@ const ShoppingCart = () => {
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
   const [selectedPriceTypes, setSelectedPriceTypes] = useState<{ [key: number]: 'wholesale' | 'retail' }>({});
   const [customerName, setCustomerName] = useState<string>(""); 
+  const [authUser, setAuthUser] = useState(() => 
+    JSON.parse(localStorage.getItem('authUser') || '{}')
+  );
 
   // Opciones predefinidas para la merma
   const predefinedMermaOptions = [
@@ -79,9 +82,10 @@ const ShoppingCart = () => {
     { value: 15, label: "Caja (15kg)" },
   ];
 
-  // Obtener datos de la base de datos
+  // Obtener datos de los materiales de la base de datos y usuario logeado
   useEffect(() => {
     dispatch(onGetProductList());
+    setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
 
   // Transformar los datos de la base de datos
@@ -241,7 +245,7 @@ const ShoppingCart = () => {
 
     const payload = {
       total: cart.reduce((sum, item) => sum + item.total, 0),
-      user_id: 1, // ID del usuario actual SE VA A CAMBIAR
+      user_id: authUser.id, // ID del usuario logeado
       type: "shop",
       customer_name: customerName,
       cart: cart.map((item) => ({
@@ -259,6 +263,12 @@ const ShoppingCart = () => {
     // Primero despacha la acción y espera su resolución
     const result = await dispatch(onAddTicket(payload));
     console.log('Resultado del thunk:', result); // Verifica esto en consola
+
+    setCart([]); // Vacía el carrito
+    setCustomerName(""); // Limpia el nombre del cliente
+    setSelectedMaterials({}); // Resetea materiales seleccionados
+    setSelectedPriceTypes({}); // Resetea tipos de precio
+    setWeights({}); // Limpia los pesos registrados
 
     
     

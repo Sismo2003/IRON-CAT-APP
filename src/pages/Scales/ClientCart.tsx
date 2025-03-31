@@ -59,7 +59,7 @@ const predefinedMermaOptions = [
 const ShoppingCart = () => {
   const dispatch = useDispatch<any>();
   const navigate = useNavigate();
-  let authUser: any = JSON.parse(localStorage.getItem('authUser') || '{}');
+  
 
   const selectDataList = createSelector(
     (state: any) => state.AssignedMaterials,
@@ -93,11 +93,14 @@ const ShoppingCart = () => {
   const [selectedPriceTypes, setSelectedPriceTypes] = useState<{
     [key: number]: 'wholesale' | 'retail';
   }>({});
+  const [authUser, setAuthUser] = useState(() => 
+    JSON.parse(localStorage.getItem('authUser') || '{}')
+  );
 
   // Obtener clientes y datos de usuario
   useEffect(() => {
     dispatch(onGetCustomer());
-    authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+    setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
 
   // Obtener materiales ligados al cliente seleccionado
@@ -297,6 +300,14 @@ const ShoppingCart = () => {
     // Primero despacha la acción y espera su resolución
     const result = await dispatch(onAddTicket(payload));
     console.log('Resultado del thunk:', result); // Verifica esto en consola
+
+    // Limpiar estados después de éxito
+    setCart([]);
+    setSelectedClient(null);
+    setTransactionType(null);
+    setSelectedMaterials({});
+    setSelectedPriceTypes({});
+    setWeights({});
 
     try {
       const response = await fetch('http://192.168.100.77:8000/src/printer.php', {
