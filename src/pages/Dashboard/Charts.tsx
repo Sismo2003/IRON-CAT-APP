@@ -3,21 +3,47 @@ import ReactApexChart from "react-apexcharts";
 import useChartColors from "Common/useChartColors";
 // import { Variable } from "lucide-react";
 
-const OrderStatisticsChart = ({ chartId }: any) => {
+import {createSelector} from "reselect";
+import {useSelector} from "react-redux";
 
+const OrderStatisticsChart = ({ chartId }: any) => {
+    const selectDataList = createSelector(
+      (state: any) => state.TICKETManagment,
+      (state) => ({
+          TicketsStatusCount : state.TicketsStatusCount,
+          
+      })
+    );
+    
+    
+    const { TicketsStatusCount } = useSelector(selectDataList);
+    
     const chartColors = useChartColors(chartId);
 
     //Order Statistics
-    const series = [{
-        name: 'Cancelados',
-        data: [20, 45, 32, 10, 7, 60, 35, 50, 22, 19, 1]
-    }, {
-        name: 'Pendientes',
-        data: [17, 16, 19, 22, 24, 29, 25, 20, 25, 31, 28]
-    }, {
-        name: 'Autorizados',
-        data: [30, 24, 32, 27, 16, 22, 32, 21, 24, 20, 38]
-    }];
+    const series = [
+        {
+            name: 'Cancelados',
+            data: TicketsStatusCount.map((item: any) => item.deleted)
+        },
+        {
+            name: 'Pendientes',
+            data: TicketsStatusCount.map((item: any) => item.pending)
+        },
+        {
+            name: 'Autorizados',
+            data: TicketsStatusCount.map((item: any) => item.authorized)
+        },
+        {
+            name: 'Compra de material',
+            data: TicketsStatusCount.map((item: any) => item.sale)
+        },
+        {
+            name: 'Venta de material ',
+            data: TicketsStatusCount.map((item: any) => item.shop)
+        },
+      
+    ];
     var options: any = {
         chart: {
             type: 'line',
@@ -194,9 +220,20 @@ const TrafficResourcesChart = ({ chartId }: any) => {
         </React.Fragment>
     );
 };
-
+///this
 const SalesMonthChart = ({ chartId }: any) => {
-
+    
+    const selectDataList = createSelector(
+      (state: any) => state.TICKETManagment,
+      (state) => ({
+          data : state.TicketsCountByDay,
+          
+      })
+    );
+    
+    const { data } = useSelector(selectDataList);
+    
+    console.log("salesMonthChart", data)
     const chartColors = useChartColors(chartId);
 
     //Sales This Month Chart
@@ -341,6 +378,9 @@ const SalesMonthChart = ({ chartId }: any) => {
             ]
         }
     ];
+
+    
+
     var options: any = {
 
         chart: {

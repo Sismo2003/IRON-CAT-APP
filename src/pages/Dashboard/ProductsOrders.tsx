@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState, useEffect} from 'react';
+import React, { useMemo, useState, useEffect} from 'react';
 import TableContainer from 'Common/TableContainer';
 import { ProductOrdersData } from "Common/data";
 import { Link } from 'react-router-dom';
@@ -21,7 +21,10 @@ const ProductsOrders = () => {
       })
     );
     
-    const { dataList } = useSelector(selectDataList);
+    
+    const { dataList,  } = useSelector(selectDataList);
+
+    
     const [data, setData] = useState<any>([]);
     const [activeTab, setActiveTab] = useState("1");
     

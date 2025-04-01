@@ -15,8 +15,9 @@ export const initialState = {
     ticketCount : 0,
     MonthlyTickets : 0,
     TicketsStatusCount: [],
+    MonthTicketCountByType : [],
+    TicketsCountByDay: []
 };
-
 
 
 const TICKETManagementSlice = createSlice({
@@ -39,7 +40,7 @@ const TICKETManagementSlice = createSlice({
                 return ticketDate.getMonth() === currentMonth && ticketDate.getFullYear() === currentYear;
             }).length;
 
-            const ticketsStatusCount = new Array(12).fill(0).map(() => ({
+            const ticketsStatusCount = new Array(currentMonth + 1).fill(0).map(() => ({
                 authorized: 0,
                 pending: 0,
                 deleted: 0,
@@ -47,29 +48,58 @@ const TICKETManagementSlice = createSlice({
                 sale: 0,
             }));
 
+            let monthTicketCountByType = { shop: 0, sale: 0 };
+
             state.ticketlist.forEach((ticket: any) => {
                 const ticketDate = new Date(ticket.ticket_date);
                 if (ticketDate.getFullYear() === currentYear) {
                     const month = ticketDate.getMonth();
-                    if (ticket.ticket_status === 'authorized' || ticket.ticket_status === 'Autorizados' ) {
-                        ticketsStatusCount[month].authorized++;
-                    }
-                    if (ticket.ticket_status === 'pending' || ticket.ticket_status === 'Por autorizar'  ) {
-                        ticketsStatusCount[month].pending++;
-                    }
-                    if (ticket.ticket_status === 'deleted' || ticket.ticket_status === 'Cancelados') {
-                        ticketsStatusCount[month].deleted++;
-                    }
-                    if (ticket.ticket_type === 'shop') {
-                        ticketsStatusCount[month].shop++;
-                    }
-                    if (ticket.ticket_type === 'sale') {
-                        ticketsStatusCount[month].sale++;
+                    if (month <= currentMonth) {  // Only count for months that have passed or are the current month
+                        if (ticket.ticket_status === 'authorized' || ticket.ticket_status === 'Autorizados') {
+                            ticketsStatusCount[month].authorized++;
+                        }
+                        if (ticket.ticket_status === 'pending' || ticket.ticket_status === 'Por autorizar') {
+                            ticketsStatusCount[month].pending++;
+                        }
+                        if (ticket.ticket_status === 'deleted' || ticket.ticket_status === 'Cancelados') {
+                            ticketsStatusCount[month].deleted++;
+                        }
+                        if (ticket.ticket_type === 'shop') {
+                            ticketsStatusCount[month].shop++;
+                        }
+                        if (ticket.ticket_type === 'sale') {
+                            ticketsStatusCount[month].sale++;
+                        }
                     }
                 }
             });
-
             state.TicketsStatusCount = ticketsStatusCount;
+            
+
+            const currentDay = now.getDate();
+            let ticketsCountByDay = [];
+
+            for (let day = 1; day <= currentDay + 1; day++) {
+                const dayTickets = state.ticketlist.filter((ticket: any) => {
+                    const ticketDate = new Date(ticket.ticket_date);
+                    return (
+                        ticketDate.getFullYear() === currentYear &&
+                        ticketDate.getMonth() === currentMonth &&
+                        ticketDate.getDate() === day
+                    );
+                });
+
+                const shopCount = dayTickets.filter((ticket: any) => ticket.ticket_type === 'shop').length;
+                const saleCount = dayTickets.filter((ticket: any) => ticket.ticket_type === 'sale').length;
+
+                ticketsCountByDay.push({
+                    day,
+                    shop: shopCount,
+                    sale: saleCount
+                });
+            }
+
+            state.TicketsCountByDay = ticketsCountByDay;
         });
         builder.addCase(getTicket.pending, (state: any, action: any) => {
             state.loading = true;
