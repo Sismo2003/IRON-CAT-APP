@@ -61,6 +61,7 @@ const Orders = () => {
     const { dataList } = useSelector(selectDataList);
 
     const [data, setData] = useState<any>([]);
+    
     const [eventData, setEventData] = useState<any>();
 
     const [show, setShow] = useState<boolean>(false);
@@ -68,12 +69,9 @@ const Orders = () => {
     // Get Data
     useEffect(() => {
         dispatch(getTickets());
-    }, [dispatch]);
-
-    useEffect(() => {
-        // setData(dataList);
         setData(Object.values(dataList));
-    }, [dataList]);
+    }, [dispatch,dataList]);
+    
 
     // Delete Modal
     const [deleteModal, setDeleteModal] = useState<boolean>(false);
@@ -320,7 +318,6 @@ const Orders = () => {
         return totals;
     }, [dataList]);
 
-    // console.log(ticketTotals);
 
     return (
         <React.Fragment>

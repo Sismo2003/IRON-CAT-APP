@@ -12,6 +12,8 @@ import Email from "pages/Dashboards/Email";
 import HRDashboard from "pages/Dashboards/HR";
 import SocialMediaDashboard from "pages/Dashboards/SocialMedia";
 
+import DashboardIronCat from "pages/Dashboard"
+
 // Chat
 import Chat from "pages/Chat";
 
@@ -219,12 +221,9 @@ interface RouteObject {
 
 const authProtectedRoutes: Array<RouteObject> = [
   // Dashboard
-  { path: "/", component: Ecommerce },
-  { path: "/dashboard", component: Ecommerce },
-  { path: "/dashboards-analytics", component: Analytics },
-  { path: "/dashboards-email", component: Email },
-  { path: "/dashboards-hr", component: HRDashboard },
-  { path: "/dashboards-social", component: SocialMediaDashboard },
+  { path: "/", component: DashboardIronCat },
+  { path: "/dashboard", component: DashboardIronCat },
+  
 
   { path: "/Order-test", component: Orders },
 
@@ -243,7 +242,15 @@ const authProtectedRoutes: Array<RouteObject> = [
 
   // CUSTOMER Management
   { path: "/apps-customer-list", component: CustomerList },
-
+  
+  // Dashboards
+  { path: "/dashboards-analytics", component: Analytics },
+  { path: "/dashboards-ecommerce", component: Ecommerce },
+  { path: "/dashboards-email", component: Email },
+  { path: "/dashboards-hr", component: HRDashboard },
+  { path: "/dashboards-social", component: SocialMediaDashboard },
+  
+  
   // Ui Element
   { path: "/ui-alerts", component: UiAlert },
   { path: "/ui-avatar", component: UiAvatar },

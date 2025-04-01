@@ -11,8 +11,13 @@ import {
 export const initialState = {
     ticketlist: [],
     loading: true,
-    ticketByid: []
+    ticketByid: [],
+    ticketCount : 0,
+    MonthlyTickets : 0,
+    TicketsStatusCount: [],
 };
+
+
 
 const TICKETManagementSlice = createSlice({
     name: 'TICKETManagement',
@@ -23,6 +28,48 @@ const TICKETManagementSlice = createSlice({
         builder.addCase(getTicket.fulfilled, (state: any, action: any) => {
             state.ticketlist = action.payload;
             state.loading = false;
+            state.ticketCount = state.ticketlist.length;
+            
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            state.MonthlyTickets = state.ticketlist.filter((ticket: { ticket_date: string }) => {
+                const ticketDate = new Date(ticket.ticket_date);
+                return ticketDate.getMonth() === currentMonth && ticketDate.getFullYear() === currentYear;
+            }).length;
+
+            const ticketsStatusCount = new Array(12).fill(0).map(() => ({
+                authorized: 0,
+                pending: 0,
+                deleted: 0,
+                shop: 0,
+                sale: 0,
+            }));
+
+            state.ticketlist.forEach((ticket: any) => {
+                const ticketDate = new Date(ticket.ticket_date);
+                if (ticketDate.getFullYear() === currentYear) {
+                    const month = ticketDate.getMonth();
+                    if (ticket.ticket_status === 'authorized' || ticket.ticket_status === 'Autorizados' ) {
+                        ticketsStatusCount[month].authorized++;
+                    }
+                    if (ticket.ticket_status === 'pending' || ticket.ticket_status === 'Por autorizar'  ) {
+                        ticketsStatusCount[month].pending++;
+                    }
+                    if (ticket.ticket_status === 'deleted' || ticket.ticket_status === 'Cancelados') {
+                        ticketsStatusCount[month].deleted++;
+                    }
+                    if (ticket.ticket_type === 'shop') {
+                        ticketsStatusCount[month].shop++;
+                    }
+                    if (ticket.ticket_type === 'sale') {
+                        ticketsStatusCount[month].sale++;
+                    }
+                }
+            });
+
+            state.TicketsStatusCount = ticketsStatusCount;
         });
         builder.addCase(getTicket.pending, (state: any, action: any) => {
             state.loading = true;
@@ -64,6 +111,15 @@ const TICKETManagementSlice = createSlice({
             state.ticketlist = state.ticketlist.filter(
                 (ticketlist: any) => ticketlist.ticket_id.toString() !== action.payload.toString()
             );
+            if (
+              state.ticketByid &&
+              state.ticketByid.data &&
+              state.ticketByid.data.ticket &&
+              state.ticketByid.data.ticket.length > 0 &&
+              Number(state.ticketByid.data.ticket[0].id) === Number(action.payload.id)
+            ) {
+                state.ticketByid = [];
+            }
         });
         builder.addCase(deleteTicket.pending, (state: any, action: any) => {
             state.loading = true;
@@ -80,6 +136,15 @@ const TICKETManagementSlice = createSlice({
                     ? { ...ticket, ticket_status: action.payload.onStatus }
                     : ticket
             );
+            if (
+              state.ticketByid &&
+              state.ticketByid.data &&
+              state.ticketByid.data.ticket &&
+              state.ticketByid.data.ticket.length > 0 &&
+              Number(state.ticketByid.data.ticket[0].id) === Number(action.payload.id)
+            ) {
+                state.ticketByid.data.ticket[0].status = action.payload.onStatus;
+            }
             state.loading = false;
         });
         builder.addCase(updateStatus.pending, (state: any, action: any) => {
@@ -89,9 +154,6 @@ const TICKETManagementSlice = createSlice({
             state.error = action.payload.error || null;
             state.loading = false;
         });
-
-
-        
     }
 });
 
