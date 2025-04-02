@@ -6,9 +6,10 @@ import SalesRevenue from './SalesRevenue';
 import TrafficResources from './TrafficResources';
 import ProductsOrders from './ProductsOrders';
 import CustomerService from './CustomerService';
-import SalesMonth from './SalesMonth';
-import TopSellingProducts from './TopSellingProducts';
 import Audience from './Audience';
+import MonthlyCampaign from './MonthlyCampaign';
+import Subscription from './Subscription';
+
 
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -32,14 +33,29 @@ const DashboardIronCat = () => {
       <React.Fragment>
           <BreadCrumb title='Administración' pageTitle='Dashboards' />
           <div className="grid grid-cols-11 gap-x-5">
+              {/*Cards*/}
               <Widgets />
+              
+              {/*Estados de tickets*/}
               <OrderStatistics />
+              
+              {/*Materiales mas comprados y vendidos*/}
+              {/*<TrafficResources />*/}
+              
+              <MonthlyCampaign/>
+              
+              <Subscription />
+              
+              {/*Ingresos por ventas y compras grafica*/}
               <SalesRevenue />
-              <TrafficResources />
+              
+              {/*Lista de Tickets*/}
               <ProductsOrders />
+              
+              {/*Mejores Clientes*/}
               <CustomerService />
-              <SalesMonth />
-              <TopSellingProducts />
+              
+              {/*Tickets por dia venta y compra*/}
               <Audience />
           </div>
       </React.Fragment>

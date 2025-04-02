@@ -15,8 +15,8 @@ export const initialState = {
     ticketCount : 0,
     MonthlyTickets : 0,
     TicketsStatusCount: [],
-    MonthTicketCountByType : [],
-    TicketsCountByDay: []
+    TicketsCountByDay: [],
+    productsSaleCharts : []
 };
 
 
@@ -47,9 +47,7 @@ const TICKETManagementSlice = createSlice({
                 shop: 0,
                 sale: 0,
             }));
-
-            let monthTicketCountByType = { shop: 0, sale: 0 };
-
+            
             state.ticketlist.forEach((ticket: any) => {
                 const ticketDate = new Date(ticket.ticket_date);
                 if (ticketDate.getFullYear() === currentYear) {
@@ -100,6 +98,70 @@ const TICKETManagementSlice = createSlice({
             }
 
             state.TicketsCountByDay = ticketsCountByDay;
+            
+            
+            const filteredTickets = state.ticketlist.filter((ticket: any) => {
+                const ticketDate = new Date(ticket.ticket_date);
+                return (
+                    ticketDate.getFullYear() === currentYear &&
+                    ticketDate.getMonth() === currentMonth
+                );
+            });
+
+            const ticketTypeSummary: {
+                [ticketType: string]: {
+                    [productId: string]: {
+                        product_id: number,
+                        product_name: string,
+                        totalWeight: number,
+                        totalAmount: number,
+                        product_img : string
+                    }
+                }
+            } = {};
+
+            filteredTickets.forEach((ticket: any) => {
+                const ticketType = ticket.ticket_type || 'unknown';
+                if (!ticketTypeSummary[ticketType]) {
+                    ticketTypeSummary[ticketType] = {};
+                }
+                
+                if (Array.isArray(ticket.productos)) {
+                    ticket.productos.forEach((product: any) => {
+                        const productId = product.product_id.toString();
+                        const weight = parseFloat(product.weight) || 0;
+                        const total = parseFloat(product.total) || 0;
+                        
+                        
+                        if (!ticketTypeSummary[ticketType][productId]) {
+                            ticketTypeSummary[ticketType][productId] = {
+                                product_id: product.product_id,
+                                product_img : product.product_img,
+                                product_name: product.product_name,
+                                totalWeight: 0,
+                                totalAmount: 0
+                            };
+                        }
+                        ticketTypeSummary[ticketType][productId].totalWeight += weight;
+                        ticketTypeSummary[ticketType][productId].totalAmount += total;
+                    });
+                }
+            });
+
+            const limitedSummary: typeof ticketTypeSummary = {};
+
+            Object.entries(ticketTypeSummary).forEach(([type, products]) => {
+                const sorted = Object.values(products)
+                    .sort((a, b) => b.totalAmount - a.totalAmount)
+                    // .slice(0, 6);
+                limitedSummary[type] = {};
+                sorted.forEach((product) => {
+                    limitedSummary[type][product.product_id.toString()] = product;
+                });
+            });
+
+            state.productsSaleCharts = limitedSummary;
+            
         });
         builder.addCase(getTicket.pending, (state: any, action: any) => {
             state.loading = true;
