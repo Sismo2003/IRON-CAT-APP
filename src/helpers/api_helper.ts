@@ -1,8 +1,8 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-// axios.defaults.baseURL = "http://thegrid.myddns.me:3000"; // production
-axios.defaults.baseURL = "http://localhost:3000"; // development
+axios.defaults.baseURL = "http://thegrid.myddns.me:3000"; // production
+// axios.defaults.baseURL = "http://localhost:3000"; // development
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
 // Obtener token del localStorage
