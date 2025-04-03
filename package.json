@@ -109,6 +109,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@types/cleave.js": "^1.4.12"
+    "@types/cleave.js": "^1.4.12",
+    "@types/luxon": "^3.6.1"
   }
 }

@@ -45,3 +45,5 @@ export * from "./users/thunk";
 export * from "./assignCustomerMaterial/thunk";
 
 export * from "./assignedMaterialsToClient/thunk";
+
+export * from "./wasteManagement/thunk";

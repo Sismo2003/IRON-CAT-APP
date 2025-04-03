@@ -22,7 +22,8 @@ import {
     // ShoppingBag,
     House,
     ShoppingCart,
-    Weight
+    Weight,
+    CookingPot
 
 } from "lucide-react";
 
@@ -155,7 +156,7 @@ const menuData: any = [
         subItems: [
             {
                 id: 'employee_list',
-                label: 'Employee List',
+                label: 'Lista de empleados',
                 link: '/apps-hr-employee',
                 parentId: 'employees'
             }
@@ -285,6 +286,20 @@ const menuData: any = [
                 label: 'Clientes registrados',
                 link: '/apps-customer-list',
                 parentId: 'customer-management'
+            }
+        ],
+    },
+    {
+        id: "waste",
+        label: 'Merma',
+        icon: <CookingPot />,
+        link: "/#",
+        subItems: [
+            {
+                id: 'waste_list',
+                label: 'Lisa de merma',
+                link: '/apps-waste',
+                parentId: 'waste'
             }
         ],
     },

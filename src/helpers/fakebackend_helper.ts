@@ -78,7 +78,11 @@ export const updateTicketStatus = (data: any) => api.update(`${url.UPDATE_TICKET
 // export const updateTicket = (data: any) => api.update(url.UPDATE_TICKET + '/' + data.id, data);
 
 
-
+// Waste
+export const getWaste = () => api.get(url.GET_WASTE, null);
+export const addWaste = (data: any) => api.create(url.ADD_WASTE, data);
+export const updateWaste = (data: any) => api.update(url.UPDATE_WASTE + '/' + data.id, data);
+export const deleteWaste = (data: any) => api.delete(url.DELETE_WASTE + '/' + data, { headers: { data } });
 
 // Assing Material
 export const assignMaterialToClient = (data: any) => api.create(url.ASSIGN_MATERIAL, data);

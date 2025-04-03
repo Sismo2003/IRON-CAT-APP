@@ -86,7 +86,7 @@ const ShoppingCart = () => {
 
   const [materials, setMaterials] = useState<MaterialOption[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientOption | null>(null);
-  const [transactionType, setTransactionType] = useState<'compra' | 'venta' | null>(null);
+  const [transactionType, setTransactionType] = useState<'shop' | 'sale' | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
@@ -200,9 +200,9 @@ const ShoppingCart = () => {
     
     // Seleccionar el precio correcto en función del tipo de transacción
     let price = 0;
-    if (transactionType === 'compra') {
+    if (transactionType === 'shop') {
       price = priceType === 'wholesale' ? material.wholesale_price_buy : material.retail_price_buy;
-    } else if (transactionType === 'venta') {
+    } else if (transactionType === 'sale') {
       price = priceType === 'wholesale' ? material.wholesale_price_sell : material.retail_price_sell;
     }
 
@@ -333,7 +333,7 @@ const ShoppingCart = () => {
 
   return (
     <>
-      <BreadCrumb title="Carrito de Compras" pageTitle="Compras" />
+      <BreadCrumb title="Carrito de Clientes Especiales" pageTitle="Clientes Especiales" />
       <ToastContainer 
         closeButton={false} 
         limit={1} 
@@ -355,12 +355,12 @@ const ShoppingCart = () => {
             <Select
               className="border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
               options={[
-                { value: 'compra', label: 'Compra' },
-                { value: 'venta', label: 'Venta' },
+                { value: 'shop', label: 'Compra' },
+                { value: 'sale', label: 'Venta' },
               ]}
               placeholder="Seleccionar tipo de transacción"
-              value={transactionType ? { value: transactionType, label: transactionType === 'compra' ? 'Compra' : 'Venta' } : null}
-              onChange={(selectedOption) => setTransactionType(selectedOption?.value as 'compra' | 'venta' | null)}
+              value={transactionType ? { value: transactionType, label: transactionType === 'shop' ? 'Compra' : 'Venta' } : null}
+              onChange={(selectedOption) => setTransactionType(selectedOption?.value as 'shop' | 'sale' | null)}
             />
           </div>
           {scales.map((scale) => (
