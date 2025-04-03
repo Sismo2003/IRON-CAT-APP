@@ -54,7 +54,8 @@ import AssingMaterialReducer from "./assignCustomerMaterial/reducer";
 // Assigned Material
 import AssignedMaterialReducer from "./assignedMaterialsToClient/reducer";
 
-// ticket import
+// Waste Management
+import WasteManagementReducer from "./wasteManagement/reducer";
 
 
 
@@ -77,7 +78,8 @@ const rootReducer = combineReducers({
     Invoice: InvoiceReducer,
     Users: UsersReducer,
     AssingMaterial: AssingMaterialReducer,
-    AssignedMaterials: AssignedMaterialReducer
+    AssignedMaterials: AssignedMaterialReducer,
+    WasteManagement: WasteManagementReducer
 });
 
 

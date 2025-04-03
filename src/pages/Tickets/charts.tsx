@@ -1,14 +1,31 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 import useChartColors from "Common/useChartColors";
+import {useSelector} from "react-redux";
+import {createSelector} from "reselect";
+
+
+const selectDataList = createSelector(
+  (state: any) => state.TICKETManagment,
+  (state) => ({
+      MonthlyTickets: state.MonthlyTickets,
+  })
+);
 
 const OrdersOverviewChart = ({ chartId }: any) => {
+    const { MonthlyTickets } = useSelector(selectDataList);
 
     const chartColors = useChartColors(chartId);
-    //  Total Employee
+    const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dec"];
+    const currentMonthIndex = new Date().getMonth();
+    const availableTickets = MonthlyTickets.slice(0, currentMonthIndex + 1);
+    const availableMonths = months.slice(0, currentMonthIndex + 1);
+    const filteredData = availableTickets.filter((ticket: number) => ticket !== 0);
+    const filteredMonths = availableMonths.filter((_, index) => availableTickets[index] !== 0);
+    
     const series = [{
-        name: 'Orders',
-        data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 3.4, 5.5, 8.8]
+        name: 'Tickets',
+        data: filteredData,
     }];
 
     var options: any = {
@@ -30,7 +47,7 @@ const OrdersOverviewChart = ({ chartId }: any) => {
         dataLabels: {
             enabled: true,
             formatter: function (val: any) {
-                return val + "%";
+                return val;
             },
             style: {
                 fontSize: '12px',
@@ -42,8 +59,8 @@ const OrdersOverviewChart = ({ chartId }: any) => {
             }
         },
         xaxis: {
-            categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            position: 'top',
+            categories: filteredMonths,
+            position: 'bottom',
             axisBorder: {
                 show: false
             },
@@ -64,7 +81,7 @@ const OrdersOverviewChart = ({ chartId }: any) => {
             labels: {
                 show: false,
                 formatter: function (val: any) {
-                    return val + "%";
+                    return val ;
                 }
             }
 

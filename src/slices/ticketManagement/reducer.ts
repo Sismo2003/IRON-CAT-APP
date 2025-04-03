@@ -15,8 +15,8 @@ export const initialState = {
     ticketCount : 0,
     MonthlyTickets : 0,
     TicketsStatusCount: [],
-    MonthTicketCountByType : [],
-    TicketsCountByDay: []
+    TicketsCountByDay: [],
+    productsSaleCharts : []
 };
 
 
@@ -35,10 +35,12 @@ const TICKETManagementSlice = createSlice({
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
             
-            state.MonthlyTickets = state.ticketlist.filter((ticket: { ticket_date: string }) => {
-                const ticketDate = new Date(ticket.ticket_date);
-                return ticketDate.getMonth() === currentMonth && ticketDate.getFullYear() === currentYear;
-            }).length;
+            state.MonthlyTickets = Array.from({ length: currentMonth + 1 }, (_, monthIndex) =>
+                state.ticketlist.filter((ticket: { ticket_date: string }) => {
+                    const ticketDate = new Date(ticket.ticket_date);
+                    return ticketDate.getMonth() === monthIndex && ticketDate.getFullYear() === currentYear;
+                }).length
+            );
 
             const ticketsStatusCount = new Array(currentMonth + 1).fill(0).map(() => ({
                 authorized: 0,
@@ -47,9 +49,7 @@ const TICKETManagementSlice = createSlice({
                 shop: 0,
                 sale: 0,
             }));
-
-            let monthTicketCountByType = { shop: 0, sale: 0 };
-
+            
             state.ticketlist.forEach((ticket: any) => {
                 const ticketDate = new Date(ticket.ticket_date);
                 if (ticketDate.getFullYear() === currentYear) {
@@ -79,7 +79,7 @@ const TICKETManagementSlice = createSlice({
             const currentDay = now.getDate();
             let ticketsCountByDay = [];
 
-            for (let day = 1; day <= currentDay + 1; day++) {
+            for (let day = 1; day <= currentDay; day++) {
                 const dayTickets = state.ticketlist.filter((ticket: any) => {
                     const ticketDate = new Date(ticket.ticket_date);
                     return (
@@ -100,6 +100,70 @@ const TICKETManagementSlice = createSlice({
             }
 
             state.TicketsCountByDay = ticketsCountByDay;
+            
+            
+            const filteredTickets = state.ticketlist.filter((ticket: any) => {
+                const ticketDate = new Date(ticket.ticket_date);
+                return (
+                    ticketDate.getFullYear() === currentYear &&
+                    ticketDate.getMonth() === currentMonth
+                );
+            });
+
+            const ticketTypeSummary: {
+                [ticketType: string]: {
+                    [productId: string]: {
+                        product_id: number,
+                        product_name: string,
+                        totalWeight: number,
+                        totalAmount: number,
+                        product_img : string
+                    }
+                }
+            } = {};
+
+            filteredTickets.forEach((ticket: any) => {
+                const ticketType = ticket.ticket_type || 'unknown';
+                if (!ticketTypeSummary[ticketType]) {
+                    ticketTypeSummary[ticketType] = {};
+                }
+                
+                if (Array.isArray(ticket.productos)) {
+                    ticket.productos.forEach((product: any) => {
+                        const productId = product.product_id.toString();
+                        const weight = parseFloat(product.weight) || 0;
+                        const total = parseFloat(product.total) || 0;
+                        
+                        
+                        if (!ticketTypeSummary[ticketType][productId]) {
+                            ticketTypeSummary[ticketType][productId] = {
+                                product_id: product.product_id,
+                                product_img : product.product_img,
+                                product_name: product.product_name,
+                                totalWeight: 0,
+                                totalAmount: 0
+                            };
+                        }
+                        ticketTypeSummary[ticketType][productId].totalWeight += weight;
+                        ticketTypeSummary[ticketType][productId].totalAmount += total;
+                    });
+                }
+            });
+
+            const limitedSummary: typeof ticketTypeSummary = {};
+
+            Object.entries(ticketTypeSummary).forEach(([type, products]) => {
+                const sorted = Object.values(products)
+                    .sort((a, b) => b.totalAmount - a.totalAmount)
+                    // .slice(0, 6);
+                limitedSummary[type] = {};
+                sorted.forEach((product) => {
+                    limitedSummary[type][product.product_id.toString()] = product;
+                });
+            });
+
+            state.productsSaleCharts = limitedSummary;
+            
         });
         builder.addCase(getTicket.pending, (state: any, action: any) => {
             state.loading = true;
@@ -141,15 +205,8 @@ const TICKETManagementSlice = createSlice({
             state.ticketlist = state.ticketlist.filter(
                 (ticketlist: any) => ticketlist.ticket_id.toString() !== action.payload.toString()
             );
-            if (
-              state.ticketByid &&
-              state.ticketByid.data &&
-              state.ticketByid.data.ticket &&
-              state.ticketByid.data.ticket.length > 0 &&
-              Number(state.ticketByid.data.ticket[0].id) === Number(action.payload.id)
-            ) {
-                state.ticketByid = [];
-            }
+            state.ticketByid = [];
+            
         });
         builder.addCase(deleteTicket.pending, (state: any, action: any) => {
             state.loading = true;

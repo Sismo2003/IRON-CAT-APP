@@ -383,7 +383,7 @@ const ShoppingCart = () => {
                     value={selectedMaterials[scale.id] ? 
                       materials.find(m => m.label === selectedMaterials[scale.id]) : null
                     }
-          
+              
                     placeholder="Seleccionar"
                 />
                   <Select

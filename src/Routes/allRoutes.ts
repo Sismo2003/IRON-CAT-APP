@@ -62,6 +62,9 @@ import CreatePayslip from "pages/HRManagement/Payroll/CreatePayslip";
 // Notes
 import Notes from "pages/Notes";
 
+// Waste
+import WasteList from "pages/Waste/WasteList";
+
 // Social Media
 import Friends from "pages/SocialMedia/Friends";
 import Event from "pages/SocialMedia/Event";
@@ -370,6 +373,9 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/apps-hr-payroll-employee-salary", component: EmployeeSalary },
   { path: "/apps-hr-payroll-payslip", component: Payslip },
   { path: "/apps-hr-payroll-create-payslip", component: CreatePayslip },
+
+  // Waste
+  { path: "/apps-waste", component: WasteList },
 
   // Notes
   { path: "/apps-notes", component: Notes },

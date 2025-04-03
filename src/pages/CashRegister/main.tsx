@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import BreadCrumb from 'Common/BreadCrumb';
+import Modal from "Common/Components/Modal";
 
 import {useDispatch, useSelector} from 'react-redux';
 import { createSelector } from 'reselect';
@@ -16,7 +17,9 @@ import {
 	TicketX,
 	TicketCheck,
 	Ticket,
-	ScanSearch
+	ScanSearch,
+	TicketPercent,
+	ClipboardList
 } from 'lucide-react';
 
 import {toast, ToastContainer} from "react-toastify";
@@ -56,7 +59,34 @@ const Checkout = () => {
 		dispatch(deleteTicket(id));
 	}
 	
-	function TicketUpdateStatus(id:number, status :string){
+	// defaultModal2
+	const [defaultModal2, setDefaultModal2] = useState<boolean>(false);
+	const default2Toggle = () => setDefaultModal2(!defaultModal2);
+	
+	const [paymentReceived, setPaymentReceived] = useState<number | null>(null);
+	const paymentInputRef = useRef<HTMLInputElement>(null);
+	
+	interface pendingStateUpdateFormat {
+		id : number,
+		onStatus : string
+	}
+	const [pendingUpdate, setPendingUpdate] = useState<pendingStateUpdateFormat>();
+	
+	const handlePayment = () => {
+	  if (paymentInputRef.current) {
+			
+			
+	    const valueStr = paymentInputRef.current.value;
+	    const value = parseFloat(valueStr.replace(/[^0-9.]/g, ''));
+			if(Number(ticketList?.data?.ticket?.[0]?.total) <= value) setPaymentReceived(value);
+			else{
+				toast.info('El pago del cliente no puede ser menor a la cantidad a pagar!', { autoClose: 2000 });
+			}
+	  }
+	};
+	
+	
+	function TicketUpdateStatus(id:number, status :string, type : string){
 		if(!id || id === null){
 			console.log(id);
 			toast.info("Es necesario el Folio del ticket!");
@@ -66,13 +96,24 @@ const Checkout = () => {
 			toast.info("Es necesario el status del ticket!");
 			return;
 		}
-		dispatch(updateStatus({id, onStatus: status}));
-	
 		
+		if((type === 'sale' || type === 'venta' ) && (status === 'authorized' || status === 'autorizado')  ) {
+			setPaymentReceived(null);
+			setPendingUpdate({id : id, onStatus : status  })
+			default2Toggle();
+			return; // Detenemos la ejecución para abrir el modal
+		}
+		
+		dispatch(updateStatus({id, onStatus: status}));
 	}
 	
-	
-	
+	const handleModalAccept = () => {
+		if (pendingUpdate) {
+			dispatch(updateStatus({ id: pendingUpdate.id, onStatus: pendingUpdate.onStatus }));
+			setPendingUpdate({id : -1 , onStatus : ''});
+			default2Toggle(); // Cierra el modal
+		}
+	};
 	
 	return (
 		<React.Fragment>
@@ -155,7 +196,7 @@ const Checkout = () => {
 														</div>
 													</td>
 													<td className="px-3.5 py-4 border-b border-dashed first:pl-0 last:pr-0 border-slate-200 dark:border-zink-500 ltr:text-right rtl:text-left">
-														${item.total ?? 'N/A'}
+														${ item.total ?? 'N/A'}
 													</td>
 												</tr>
 											))}
@@ -170,7 +211,7 @@ const Checkout = () => {
 												<td className="px-3.5 pt-3 first:pl-0 last:pr-0 text-slate-500 dark:text-zink-200">
 													Total
 												</td>
-												<td className="px-3.5 pt-3 first:pl-0 last:pr-0 ltr:text-right rtl:text-left">$ {ticketList.data.ticket[0].total ?? 'N/A'}</td>
+												<td className="px-3.5 pt-3 first:pl-0 last:pr-0 ltr:text-right rtl:text-left">$ {ticketList?.data?.ticket?.[0]?.total ?? 'N/A'}</td>
 											</tr>
 											</tbody>
 										</table>
@@ -180,25 +221,48 @@ const Checkout = () => {
 							{/*  Buttoms */}
 							<div className="flex  items-center justify-end gap-3 mb-5">
 								<div className="shrink-0">
-									<button
-										type="button"
-										onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'deleted')}
-										className="text-red-500 bg-red-100 btn hover:text-white hover:bg-red-600 focus:text-white focus:bg-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:ring active:ring-red-100 dark:bg-red-500/20 dark:text-red-500 dark:hover:bg-red-500 dark:hover:text-white dark:focus:bg-red-500 dark:focus:text-white dark:active:bg-red-500 dark:active:text-white dark:ring-red-400/20"
-									>
-										<span className="align-middle">Cancelar Ticket</span>
-										<TicketX className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
-									</button>
+									{ticketList.data.ticket[0].status !== 'deleted' ? (
+										<button
+											type="button"
+											onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'deleted', ticketList?.data?.ticket[0].type)}
+											className="text-red-500 bg-red-100 btn hover:text-white hover:bg-red-600 focus:text-white focus:bg-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:ring active:ring-red-100 dark:bg-red-500/20 dark:text-red-500 dark:hover:bg-red-500 dark:hover:text-white dark:focus:bg-red-500 dark:focus:text-white dark:active:bg-red-500 dark:active:text-white dark:ring-red-400/20"
+										>
+											<span className="align-middle">Cancelar Ticket</span>
+											<TicketX className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
+										</button>
+									) : (
+										<button
+											type="button"
+											onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'pending', ticketList?.data?.ticket[0].type)}
+											className="text-yellow-500 bg-yellow-100 btn hover:text-white hover:bg-yellow-600 focus:text-white focus:bg-yellow-600 focus:ring focus:ring-yellow-100 active:text-white active:bg-yellow-600 active:ring active:ring-yellow-100 dark:bg-yellow-500/20 dark:text-yellow-500 dark:hover:bg-yellow-500 dark:hover:text-white dark:focus:bg-yellow-500 dark:focus:text-white dark:active:bg-yellow-500 dark:active:text-white dark:ring-yellow-400/20"
+										>
+											<span className="align-middle">Ticket Pendiente</span>
+											<TicketPercent  className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
+										</button>
+									)}
+									
 								</div>
 								<div className="shrink-0">
-									<button
-										
-										type="button"
-										onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'authorized')}
-										className="text-green-500 bg-green-100 btn hover:text-white hover:bg-green-600 focus:text-white focus:bg-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:ring active:ring-green-100 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500 dark:hover:text-white dark:focus:bg-green-500 dark:focus:text-white dark:active:bg-green-500 dark:active:text-white dark:ring-green-400/20"
-									>
-										<span className="align-middle">Autorizar Ticket</span>
-										<TicketCheck className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
-									</button>
+									{ticketList.data.ticket[0].status !== 'authorized' ? (
+										<button
+											
+											type="button"
+											onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'authorized', ticketList?.data?.ticket[0].type)}
+											className="text-green-500 bg-green-100 btn hover:text-white hover:bg-green-600 focus:text-white focus:bg-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:ring active:ring-green-100 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500 dark:hover:text-white dark:focus:bg-green-500 dark:focus:text-white dark:active:bg-green-500 dark:active:text-white dark:ring-green-400/20"
+										>
+											<span className="align-middle">Autorizar Ticket</span>
+											<TicketCheck className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
+										</button>
+									) : (
+										<button
+											type="button"
+											onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'pending', ticketList?.data?.ticket[0].type)}
+											className="text-yellow-500 bg-yellow-100 btn hover:text-white hover:bg-yellow-600 focus:text-white focus:bg-yellow-600 focus:ring focus:ring-yellow-100 active:text-white active:bg-yellow-600 active:ring active:ring-yellow-100 dark:bg-yellow-500/20 dark:text-yellow-500 dark:hover:bg-yellow-500 dark:hover:text-white dark:focus:bg-yellow-500 dark:focus:text-white dark:active:bg-yellow-500 dark:active:text-white dark:ring-yellow-400/20"
+										>
+											<span className="align-middle">Ticket Pendiente</span>
+											<TicketPercent  className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
+										</button>
+									)}
 								</div>
 							</div>
 						</div>
@@ -323,10 +387,57 @@ const Checkout = () => {
 						)}
 					</div>
 				</div>
-				
-				
-			
 			</div>
+			
+			<Modal show={defaultModal2} onHide={default2Toggle} id="defaultModal2" modal-center="true"
+			       className="fixed flex flex-col transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4"
+			       dialogClassName="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full"                            >
+				<Modal.Header className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500"
+          closeButtonClass="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
+
+				  <Modal.Title className="text-16">
+				    Venta de productos
+				    <div className="text-gray-500 font-normal text-sm">Ingrese la cantidad de dinero recibido por el cliente</div>
+				  </Modal.Title>
+				</Modal.Header>
+				<Modal.Body className="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
+						<label htmlFor="calculations"></label>
+					<div className="flex">
+						<input
+							type="text"
+							id="calculations"
+							ref={paymentInputRef}
+							className="ltr:rounded-r-none rtl:rounded-l-none form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+							placeholder="$500.00"
+						/>
+						<button onClick={handlePayment} className="flex items-center justify-center w-[39px] h-[39px] ltr:rounded-l-none rtl:rounded-r-none p-0 text-slate-500 btn bg-slate-200 border-slate-200 hover:text-slate-600 hover:bg-slate-300 hover:border-slate-300 focus:text-slate-600 focus:bg-slate-300 focus:border-slate-300 focus:ring focus:ring-slate-100 active:text-slate-600 active:bg-slate-300 active:border-slate-300 active:ring active:ring-slate-100 dark:bg-zink-600 dark:hover:bg-zink-500 dark:border-zink-600 dark:hover:border-zink-500 dark:text-zink-200 dark:ring-zink-400/50">
+							<ClipboardList className="inline-block size-4"></ClipboardList>
+						</button>
+					
+					</div>
+				</Modal.Body>
+				<Modal.Footer className="flex flex-col items-start p-4 mt-auto border-t border-slate-200 dark:border-zink-500 space-y-2">
+				  <div className="flex justify-between w-full">
+				    <span className="font-semibold text-gray-800">Total a pagar:</span>
+				    <span className="text-gray-500">$ {Number(ticketList?.data?.ticket?.[0]?.total).toFixed(2)}</span>
+				  </div>
+				  <div className="flex justify-between w-full">
+				    <span className="font-semibold text-gray-800">Dinero recibido:</span>
+				    <span className="text-gray-500">$ {paymentReceived !== null ? paymentReceived.toFixed(2) : '0.00'}</span>
+				  </div>
+				  <div className="flex justify-between w-full">
+				    <span className="font-semibold text-gray-800">Cambio:</span>
+				    <span className="text-gray-500">$ {paymentReceived !== null ? Math.abs(paymentReceived - Number(ticketList?.data?.ticket?.[0]?.total)).toFixed(2) : '0.00'}</span>
+				  </div>
+				  <button
+				    type="button"
+				    className="mt-2 text-custom-500 btn bg-custom-100 hover:text-white hover:bg-custom-600 focus:text-white focus:bg-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:ring active:ring-custom-100 dark:bg-custom-500/20 dark:text-custom-500 dark:hover:bg-custom-500 dark:hover:text-white dark:focus:bg-custom-500 dark:focus:text-white dark:active:bg-custom-500 dark:active:text-white dark:ring-custom-400/20"
+				    onClick={handleModalAccept}
+				  >
+				    Aceptar
+				  </button>
+				</Modal.Footer>
+			</Modal>
 		
 		</React.Fragment>
 	);

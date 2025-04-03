@@ -25,18 +25,6 @@ const CustomerService = () => {
                                 <li>
                                     <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" to="#!">1 Semana</Link>
                                 </li>
-                                <li>
-                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" to="#!">1 Mes</Link>
-                                </li>
-                                <li>
-                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" to="#!">3 Meses</Link>
-                                </li>
-                                <li>
-                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" to="#!">6 Meses</Link>
-                                </li>
-                                <li>
-                                    <Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" to="#!">1 Año</Link>
-                                </li>
                             </Dropdown.Content>
                         </Dropdown>
                     </div>
@@ -53,48 +41,15 @@ const CustomerService = () => {
                                 <div className="shrink-0">
                                     <CalendarDays className="inline-block size-4 mb-1 align-middle"></CalendarDays>
                                 </div>
-                                <p className="mb-0 text-slate-500 dark:text-zink-200">Este mes: <span className="font-medium text-slate-800 dark:text-zink-50">$24,741</span></p>
+                                <p className="mb-0 text-slate-500 dark:text-zink-200">
+                                    Este mes:
+                                    <span className="font-medium text-slate-800 dark:text-zink-50"> $24,741</span>
+                                </p>
                             </div>
                         </div>
                     </div>
                     <h6 className="mt-4 mb-3">Cliente más frecuente del mes</h6>
                     <ul className="divide-y divide-slate-200 dark:divide-zink-500">
-                        <li className="flex items-center gap-3 py-2 first:pt-0 last:pb-0">
-                            <div className="size-8 rounded-full shrink-0 bg-slate-100 dark:bg-zink-600">
-                                <img src={avatar2} alt="" className="size-8 rounded-full" />
-                            </div>
-                            <div className="grow">
-                                <h6 className="font-medium">Iker Famoso</h6>
-                                <p className="text-slate-500 dark:text-zink-200">eliker@gmail.com</p>
-                            </div>
-                            <div className="shrink-0">
-                                <h6>$2,452</h6>
-                            </div>
-                        </li>
-                        <li className="flex items-center gap-3 py-2 first:pt-0 last:pb-0">
-                            <div className="size-8 rounded-full shrink-0 bg-slate-100 dark:bg-zink-600">
-                                <img src={avatar3} alt="" className="size-8 rounded-full" />
-                            </div>
-                            <div className="grow">
-                                <h6 className="font-medium">Alexis Ortiz</h6>
-                                <p className="text-slate-500 dark:text-zink-200">Alexisjj@outlook.com</p>
-                            </div>
-                            <div className="shrink-0">
-                                <h6>$1,893</h6>
-                            </div>
-                        </li>
-                        <li className="flex items-center gap-3 py-2 first:pt-0 last:pb-0">
-                            <div className="size-8 rounded-full shrink-0 bg-slate-100 dark:bg-zink-600">
-                                <img src={avatar4} alt="" className="size-8 rounded-full" />
-                            </div>
-                            <div className="grow">
-                                <h6 className="font-medium">Jose Arreola</h6>
-                                <p className="text-slate-500 dark:text-zink-200">jacks@outlook.com</p>
-                            </div>
-                            <div className="shrink-0">
-                                <h6>$1,196</h6>
-                            </div>
-                        </li>
                         <li className="flex items-center gap-3 py-2 first:pt-0 last:pb-0">
                             <div className="size-8 rounded-full shrink-0 bg-slate-100 dark:bg-zink-600">
                                 <img src={avatar5} alt="" className="size-8 rounded-full" />

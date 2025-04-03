@@ -5,6 +5,11 @@
 // REGISTER
 export const POST_FAKE_REGISTER = "/auth/signup";
 
+// Waste
+export const GET_WASTE = "/waste/get-waste";
+export const ADD_WASTE = "/waste/add-waste";
+export const UPDATE_WASTE = "/waste/edit-waste";
+export const DELETE_WASTE = "/waste/delete-waste";
 
 // Tickets Management
 export const GET_ALL_TICEKTS = "/tickets/get-all-tickets";
