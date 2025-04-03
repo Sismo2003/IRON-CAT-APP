@@ -1,6 +1,6 @@
 // Widgets.tsx
 import React from 'react';
-import { HandCoins, CupSoda, Anvil, Ticket } from 'lucide-react';
+import { Pickaxe, CupSoda, Anvil, Ticket } from 'lucide-react';
 import CountUp from 'react-countup';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -10,17 +10,33 @@ const Widgets = () => {
     (state: any) => state.TICKETManagment,
     (state) => ({
       MonthlyTickets: state.MonthlyTickets,
+      productsSaleCharts : state.productsSaleCharts,
     })
   );
   
+  
+  
+  
+  
+  //Order Statistics
+  
   // Solo usamos useSelector para acceder a la data ya cargada en el store
-  const { MonthlyTickets } = useSelector(selectTicket);
+  const { MonthlyTickets, productsSaleCharts } = useSelector(selectTicket);
+  
+  const transformedShop = Object.values(productsSaleCharts?.shop || {}).map((item: any) => ({
+    value: item.totalWeight,
+    title: item.product_name
+  }));
+  
+  console.log(transformedShop);
+  
+  const actualMonthCounter = MonthlyTickets[MonthlyTickets.length - 1];
   
   const WIDGET_DATA = [
     {
       id: 1,
       title: `Tickets de ${new Date().toLocaleString('es-ES', { month: 'long' })}`,
-      value: MonthlyTickets,
+      value: actualMonthCounter,
       icon: <Ticket />,
       color: 'custom',
       decimals: 0,
@@ -28,18 +44,18 @@ const Widgets = () => {
     },
     {
       id: 2,
-      title: 'Total Egresos',
-      value: 13461,
-      icon: <HandCoins />,
+      title: transformedShop[0]?.title + ' recolectado',
+      value: Number(transformedShop[0]?.value),
+      icon: <Pickaxe />,
       color: 'purple',
       decimals: 2,
-      prefix: '$',
-      unit: ''
+      prefix: '',
+      unit: 'kg'
     },
     {
       id: 3,
-      title: 'Metal Recolectado',
-      value: 9.5344,
+      title: transformedShop[1]?.title + ' recolectado',
+      value: Number(transformedShop[1]?.value),
       icon: <Anvil />,
       color: 'green',
       decimals: 2,
@@ -47,8 +63,8 @@ const Widgets = () => {
     },
     {
       id: 4,
-      title: 'PET Recolectado',
-      value: 73.454,
+      title: transformedShop[2]?.title + ' recolectado',
+      value: Number(transformedShop[2]?.value),
       icon: <CupSoda />,
       color: 'red',
       decimals: 2,

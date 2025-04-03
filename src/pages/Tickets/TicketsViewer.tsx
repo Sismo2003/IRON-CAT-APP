@@ -30,8 +30,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import {
-
-    // Nuevas opciones
     getTicket as getTickets,
     deleteTicket as onDeleteTicket,
     updateStatus
@@ -53,24 +51,28 @@ const Orders = () => {
     const selectDataList = createSelector(
         (state: any) => state.TICKETManagment,
         (state) => ({
-            dataList: state.ticketlist,
-            loading: state.loading
+            dataList: state.ticketlist
         })
     );
 
     const { dataList } = useSelector(selectDataList);
+    
 
     const [data, setData] = useState<any>([]);
     
     const [eventData, setEventData] = useState<any>();
 
     const [show, setShow] = useState<boolean>(false);
+    
 
-    // Get Data
     useEffect(() => {
         dispatch(getTickets());
-        setData(Object.values(dataList));
-    }, [dispatch,dataList]);
+    }, [dispatch]);
+
+    useEffect(() => {
+        const tickets = Object.values(dataList);
+        setData(tickets);
+    }, [dataList]);
     
 
     // Delete Modal
@@ -185,24 +187,6 @@ const Orders = () => {
     };
 
     const columns = useMemo(() => [
-        {
-            header: (
-                <div className="flex items-center h-full">
-                    <input id="CheckboxAll" className="size-4 cursor-pointer bg-white border border-slate-200 checked:bg-none dark:bg-zink-700 dark:border-zink-500 rounded-sm appearance-none arrow-none relative after:absolute after:content-['\eb7b'] after:top-0 after:left-0 after:font-remix after:leading-none after:opacity-0 checked:after:opacity-100 after:text-custom-500 checked:border-custom-500 dark:after:text-custom-500 dark:checked:border-custom-800"
-                   type="checkbox" />
-                </div>
-            ),
-            enableSorting: false,
-            id: "checkAll",
-            cell: (cell: any) => {
-                return (
-                    <div className="flex items-center h-full">
-                        <input id={"Checkbox" + cell.row.original.id} className="size-4 cursor-pointer bg-white border border-slate-200 checked:bg-none dark:bg-zink-700 dark:border-zink-500 rounded-sm appearance-none arrow-none relative after:absolute after:content-['\eb7b'] after:top-0 after:left-0 after:font-remix after:leading-none after:opacity-0 checked:after:opacity-100 after:text-custom-500 checked:border-custom-500 dark:after:text-custom-500 dark:checked:border-custom-800"
-                       type="checkbox" />
-                    </div>
-                );
-            }
-        },
         {
             header: "Folio",
             accessorKey: "ticket_id",

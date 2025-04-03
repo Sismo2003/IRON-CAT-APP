@@ -35,10 +35,12 @@ const TICKETManagementSlice = createSlice({
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
             
-            state.MonthlyTickets = state.ticketlist.filter((ticket: { ticket_date: string }) => {
-                const ticketDate = new Date(ticket.ticket_date);
-                return ticketDate.getMonth() === currentMonth && ticketDate.getFullYear() === currentYear;
-            }).length;
+            state.MonthlyTickets = Array.from({ length: currentMonth + 1 }, (_, monthIndex) =>
+                state.ticketlist.filter((ticket: { ticket_date: string }) => {
+                    const ticketDate = new Date(ticket.ticket_date);
+                    return ticketDate.getMonth() === monthIndex && ticketDate.getFullYear() === currentYear;
+                }).length
+            );
 
             const ticketsStatusCount = new Array(currentMonth + 1).fill(0).map(() => ({
                 authorized: 0,
@@ -77,7 +79,7 @@ const TICKETManagementSlice = createSlice({
             const currentDay = now.getDate();
             let ticketsCountByDay = [];
 
-            for (let day = 1; day <= currentDay + 1; day++) {
+            for (let day = 1; day <= currentDay; day++) {
                 const dayTickets = state.ticketlist.filter((ticket: any) => {
                     const ticketDate = new Date(ticket.ticket_date);
                     return (
@@ -203,15 +205,8 @@ const TICKETManagementSlice = createSlice({
             state.ticketlist = state.ticketlist.filter(
                 (ticketlist: any) => ticketlist.ticket_id.toString() !== action.payload.toString()
             );
-            if (
-              state.ticketByid &&
-              state.ticketByid.data &&
-              state.ticketByid.data.ticket &&
-              state.ticketByid.data.ticket.length > 0 &&
-              Number(state.ticketByid.data.ticket[0].id) === Number(action.payload.id)
-            ) {
-                state.ticketByid = [];
-            }
+            state.ticketByid = [];
+            
         });
         builder.addCase(deleteTicket.pending, (state: any, action: any) => {
             state.loading = true;

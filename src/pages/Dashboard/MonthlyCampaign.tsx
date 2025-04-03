@@ -14,7 +14,7 @@ const MonthlyCampaign = () => {
 	
 	const { productsSaleCharts } = useSelector(selectDataList);
 	
-	console.log(productsSaleCharts);
+	// console.log(productsSaleCharts);
 	
 	const [TicketType, setTicketType] = useState('sale');
 	const months = [
@@ -50,7 +50,7 @@ const MonthlyCampaign = () => {
 							</button>
 						</div>
 					)}
-					<div className="max-h-80 overflow-y-auto">
+					<div className="h-80 overflow-y-auto">
 						<ul className="flex flex-col gap-5">
 							{productsSaleCharts &&
 								productsSaleCharts[TicketType] &&

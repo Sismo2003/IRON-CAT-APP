@@ -103,6 +103,7 @@ const SubscriptionChart = (props: any) => {
     
     const { productsSaleCharts } = useSelector(selectDataList);
     
+    
     // const chartColors = useChartColors(chartId);
     //Subscription Distribution
     // const series = [44, 55, 41, 17, 15];
@@ -134,7 +135,6 @@ const SubscriptionChart = (props: any) => {
 
 // Finalmente, este es el array de porcentajes que suman 100
     const series = seriesTemp;
-    console.log(series);
     
     
     // console.log(series1);
@@ -188,7 +188,6 @@ const SubscriptionChart = (props: any) => {
 const SalesRevenueOverviewChart = ({ chartId }: any) => {
 
     const chartColors = useChartColors(chartId);
-    console.log("chartColors",chartColors)
 
     //Sales Revenue Overview
     const series = [{

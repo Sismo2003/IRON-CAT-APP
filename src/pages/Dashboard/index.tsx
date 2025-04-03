@@ -47,7 +47,7 @@ const DashboardIronCat = () => {
               <Subscription />
               
               {/*Ingresos por ventas y compras grafica*/}
-              <SalesRevenue />
+              {/*<SalesRevenue />*/}
               
               {/*Lista de Tickets*/}
               <ProductsOrders />
