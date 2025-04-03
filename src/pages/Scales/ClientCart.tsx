@@ -333,7 +333,7 @@ const ShoppingCart = () => {
 
   return (
     <>
-      <BreadCrumb title="Carrito de Compras" pageTitle="Compras" />
+      <BreadCrumb title="Carrito de clientes especiales" pageTitle="Clientes especiales" />
       <ToastContainer 
         closeButton={false} 
         limit={1} 
@@ -383,7 +383,9 @@ const ShoppingCart = () => {
                     value={selectedMaterials[scale.id] ? 
                       materials.find(m => m.label === selectedMaterials[scale.id]) : null
                     }
-                  />
+          
+                    placeholder="Seleccionar"
+                />
                   <Select
                     className="mt-2 border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                     options={[
@@ -414,7 +416,7 @@ const ShoppingCart = () => {
         </div>
         <div className="xl:col-span-3">
           <div className="card p-4 bg-white shadow rounded-lg">
-            <h6 className="mb-4 text-15">Carrito de compras<span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{cart.length ? cart.length : 0}</span></h6>
+            <h6 className="mb-4 text-15">Carrito de clientes especiales<span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{cart.length ? cart.length : 0}</span></h6>
             {cart.length === 0 ? (
               <div className="flex flex-col items-center justify-center my-5">
                 <ShoppingBasket className="w-12 h-12 text-gray-500" />
