@@ -6,9 +6,10 @@ import scale from "assets/images/scale.png";
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { 
-  getMaterialsAssignedByClient as onGetMaterialsAssignedByClient,
-  getCustomer as onGetCustomer,
-  addTicket as onAddTicket
+  getMaterialsAssignedByClient as onGetMaterialsAssignedByClient, // Acción para obtener materiales asignados por cliente
+  getCustomer as onGetCustomer, // Acción para obtener la lista de clientes
+  addTicket as onAddTicket, // Acción para agregar un ticket
+  getWasteRecords as onGetWasteRecords, // Acción para obtener la lista de merma
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
@@ -50,11 +51,31 @@ interface CartItem {
   usePredefinedMerma: boolean;
 }
 
-const predefinedMermaOptions = [
-  { value: 5, label: "Bote (5kg)" },
-  { value: 10, label: "Charola (10kg)" },
-  { value: 15, label: "Caja (15kg)" },
-];
+interface WasteOption {
+  value: number; // weight como número
+  label: string; // name de la merma
+  wasteId: string; // waste_id para referencia
+  img?: string; // Imagen opcional
+}
+
+// Componente personalizado para mostrar opciones con imágenes
+const CustomOption = ({ innerProps, label, data }: any) => (
+  <div {...innerProps} className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-zink-600 cursor-pointer">
+    {data.img && (
+      <img src={data.img} alt={label} className="w-8 h-8 mr-2 rounded-full" />
+    )}
+    <span className="text-slate-700 dark:text-zink-100">{`${label} - (${data.value}kg)`}</span>
+  </div>
+);
+
+const CustomSingleValue = ({ data }: any) => (
+  <div className="flex items-center">
+    {data.img && (
+      <img src={data.img} alt={data.label} className="w-6 h-6 mr-2 rounded-full" />
+    )}
+    <span className="text-slate-700 dark:text-zink-100">{`${data.label} - (${data.value}kg)`}</span>
+  </div>
+);
 
 const ShoppingCart = () => {
   const dispatch = useDispatch<any>();
@@ -76,8 +97,17 @@ const ShoppingCart = () => {
     })
   );
 
+  const selectWasteList = createSelector(
+    (state: any) => state.WasteManagement,
+    (state) => ({
+      wasteList: state.wastelist,
+      loading: state.loading,
+    })
+  );
+
   const { materialList } = useSelector(selectDataList);
   const { clientlList } = useSelector(clientDataList);
+  const { wasteList } = useSelector(selectWasteList);
 
   const clients = clientlList.map((client: any) => ({
     value: client.id,
@@ -90,6 +120,7 @@ const ShoppingCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
+  const [wasteOptions, setWasteOptions] = useState<WasteOption[]>([]);
   const [selectedPriceTypes, setSelectedPriceTypes] = useState<{
     [key: number]: 'wholesale' | 'retail';
   }>({});
@@ -100,6 +131,7 @@ const ShoppingCart = () => {
   // Obtener clientes y datos de usuario
   useEffect(() => {
     dispatch(onGetCustomer());
+    dispatch(onGetWasteRecords());
     setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
 
@@ -109,6 +141,19 @@ const ShoppingCart = () => {
       dispatch(onGetMaterialsAssignedByClient({ clientId: selectedClient.value }));
     }
   }, [dispatch, selectedClient, transactionType]);
+
+  // Transformar los datos de la lista de merma
+  useEffect(() => {
+    if (wasteList && wasteList.length > 0) {
+      const formattedWasteOptions = wasteList.map((waste: any) => ({
+        value: parseFloat(waste.weight), // Convertir el peso a número
+        label: waste.name,
+        wasteId: waste.waste_id,
+        img: waste.img, // Incluir la imagen si está disponible
+      }));
+      setWasteOptions(formattedWasteOptions);
+    }
+  }, [wasteList]);
 
   // Transformar los datos de los materiales
   useEffect(() => {
@@ -345,15 +390,26 @@ const ShoppingCart = () => {
           <h5 className="underline text-16 mb-5">Basculas</h5>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
             <Select
-              className="border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
               options={clients}
               isSearchable={true}
               placeholder="Seleccionar cliente"
               value={selectedClient}
               onChange={handleClientChange}
+              classNames={{
+                control: ({ isFocused }) =>
+                  `border ${
+                    isFocused ? 'border-custom-500 dark:border-custom-800' : 'border-slate-200 dark:border-zink-500'
+                  } bg-white dark:bg-zink-700`,
+                placeholder: () => 'text-slate-400 dark:text-zink-200',
+                singleValue: () => 'dark:text-zink-100',
+                menu: () => 'dark:bg-zink-700',
+                option: ({ isFocused, isSelected }) =>
+                  `cursor-pointer px-3 py-2 ${
+                    isFocused ? 'bg-custom-500 text-white' : isSelected ? 'bg-custom-600 text-white' : 'text-slate-800 dark:text-zink-100'
+                  }`,
+              }}
             />
             <Select
-              className="border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
               options={[
                 { value: 'compra', label: 'Compra' },
                 { value: 'venta', label: 'Venta' },
@@ -361,6 +417,19 @@ const ShoppingCart = () => {
               placeholder="Seleccionar tipo de transacción"
               value={transactionType ? { value: transactionType, label: transactionType === 'compra' ? 'Compra' : 'Venta' } : null}
               onChange={(selectedOption) => setTransactionType(selectedOption?.value as 'compra' | 'venta' | null)}
+              classNames={{
+                control: ({ isFocused }) =>
+                  `border ${
+                    isFocused ? 'border-custom-500 dark:border-custom-800' : 'border-slate-200 dark:border-zink-500'
+                  } bg-white dark:bg-zink-700`,
+                placeholder: () => 'text-slate-400 dark:text-zink-200',
+                singleValue: () => 'dark:text-zink-100',
+                menu: () => 'dark:bg-zink-700',
+                option: ({ isFocused, isSelected }) =>
+                  `cursor-pointer px-3 py-2 ${
+                    isFocused ? 'bg-custom-500 text-white' : isSelected ? 'bg-custom-600 text-white' : 'text-slate-800 dark:text-zink-100'
+                  }`,
+              }}
             />
           </div>
           {scales.map((scale) => (
@@ -371,7 +440,6 @@ const ShoppingCart = () => {
                   <h5>{scale.name}</h5>
                   <p className="text-slate-500">Peso: {weights[scale.id] || 0} kg</p>
                   <Select
-                    className="border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                     options={materials}
                     isSearchable={true}
                     name="materialTypeSelect"
@@ -383,11 +451,22 @@ const ShoppingCart = () => {
                     value={selectedMaterials[scale.id] ? 
                       materials.find(m => m.label === selectedMaterials[scale.id]) : null
                     }
-              
                     placeholder="Seleccionar"
-                />
+                    classNames={{
+                      control: ({ isFocused }) =>
+                        `border ${
+                          isFocused ? 'border-custom-500 dark:border-custom-800' : 'border-slate-200 dark:border-zink-500'
+                        } bg-white dark:bg-zink-700`,
+                      placeholder: () => 'text-slate-400 dark:text-zink-200',
+                      singleValue: () => 'dark:text-zink-100',
+                      menu: () => 'dark:bg-zink-700',
+                      option: ({ isFocused, isSelected }) =>
+                        `cursor-pointer px-3 py-2 ${
+                          isFocused ? 'bg-custom-500 text-white' : isSelected ? 'bg-custom-600 text-white' : 'text-slate-800 dark:text-zink-100'
+                        }`,
+                    }}
+                  />
                   <Select
-                    className="mt-2 border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                     options={[
                       { value: 'wholesale', label: 'Precio de Mayoreo' },
                       { value: 'retail', label: 'Precio de Menudeo' },
@@ -401,6 +480,19 @@ const ShoppingCart = () => {
                       setSelectedPriceTypes({ ...selectedPriceTypes, [scale.id]: selectedOption?.value as 'wholesale' | 'retail' })
                     }
                     placeholder="Seleccionar tipo de precio"
+                    classNames={{
+                      control: ({ isFocused }) =>
+                        `border mt-2 ${
+                          isFocused ? 'border-custom-500 dark:border-custom-800' : 'border-slate-200 dark:border-zink-500'
+                        } bg-white dark:bg-zink-700`,
+                      placeholder: () => 'text-slate-400 dark:text-zink-200',
+                      singleValue: () => 'dark:text-zink-100',
+                      menu: () => 'dark:bg-zink-700',
+                      option: ({ isFocused, isSelected }) =>
+                        `cursor-pointer px-3 py-2 ${
+                          isFocused ? 'bg-custom-500 text-white' : isSelected ? 'bg-custom-600 text-white' : 'text-slate-800 dark:text-zink-100'
+                        }`,
+                    }}
                   />
                 </div>
                 <button
@@ -430,10 +522,10 @@ const ShoppingCart = () => {
                     <div className="flex items-center gap-2">
                       <span>${item.total.toFixed(2)}</span>
                       <button
-                        className="cursor-pointer p-2 inline-flex items-center justify-center hover:bg-gray-200 hover:rounded-md"
+                        className="cursor-pointer p-2 inline-flex items-center justify-center hover:bg-slate-100 dark:hover:bg-zink-600 hover:rounded-md transition-colors duration-200"
                         onClick={() => handleDeleteItem(index)}
                       >
-                        <Trash2 className="text-red-500 w-5" />
+                        <Trash2 className="text-red-500 dark:text-red-400 w-5" />
                       </button>
                     </div>
                   </div>
@@ -453,22 +545,45 @@ const ShoppingCart = () => {
                     </div>
                     {item.usePredefinedMerma ? (
                       <Select
-                        options={predefinedMermaOptions}
+                        options={wasteOptions}
                         value={item.waste > 0 ? 
-                          predefinedMermaOptions.find(option => option.value === item.waste) : 
+                          wasteOptions.find(option => option.value === item.waste) : 
                           null
                         }
                         onChange={(selectedOption) => {
                           handleMermaChange(index, selectedOption?.value || 0);
                         }}
-                        className="w-1/2 h-10"
                         isClearable={true}
+                        components={{ 
+                          Option: CustomOption,
+                          SingleValue: CustomSingleValue
+                        }}
+                        className="w-1/2"
+                        classNames={{
+                          control: ({ isFocused }) =>
+                            `border h-10 ${
+                              isFocused
+                                ? 'border-custom-500 dark:border-custom-800'
+                                : 'border-slate-200 dark:border-zink-500'
+                            } bg-white dark:bg-zink-700`,
+                          placeholder: () => 'text-slate-400 dark:text-zink-200',
+                          singleValue: () => 'dark:text-zink-100',
+                          menu: () => 'dark:bg-zink-700 w-1/2',
+                          option: ({ isFocused, isSelected }) =>
+                            `cursor-pointer px-3 py-2 ${
+                              isFocused
+                                ? 'bg-custom-500 text-white'
+                                : isSelected
+                                ? 'bg-custom-600 text-white'
+                                : 'text-slate-800 dark:text-zink-100'
+                            }`,
+                        }}
                       />
                     ) : (
                       <input
                         type="number"
                         placeholder="50kg"
-                        className="border border-gray-400 rounded-md px-2 py-1 w-1/2 h-10"
+                        className="border rounded-md px-2 py-1 w-1/2 h-10 border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                         value={item.waste || ''}
                         onChange={(e) => handleMermaChange(index, parseFloat(e.target.value) || 0)}
                       />

@@ -93,10 +93,10 @@ const ListView = () => {
             enableColumnFilter: false,
             enableSorting: true,
             cell: (cell: any) => (
-                <Link to="/apps-ecommerce-product-overview" className="flex items-center gap-2">
+                <span className="flex items-center gap-2">
                     <img src={cell.row.original.img} alt="Product images" className="h-6" />
                     <h6 className="product_name">{cell.getValue()}</h6>
-                </Link>
+                </span>
             ),
         },
         {
