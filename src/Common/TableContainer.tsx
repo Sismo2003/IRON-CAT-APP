@@ -273,7 +273,7 @@ const TableContainer = ({
           <div className={PaginationClassName}>
             <div className="mb-4 grow md:mb-0">
               <div className="text-slate-500 dark:text-zink-200">Mostrando
-                <b> {getState().pagination.pageSize}</b> de
+                <b> {getState().pagination.pageIndex * getState().pagination.pageSize + 1}-{Math.min((getState().pagination.pageIndex + 1) * getState().pagination.pageSize, data.length)}</b> de
                 <b> {data.length}</b> Resultados</div>
             </div>
             <ul className="flex flex-wrap items-center gap-2 shrink-0">
@@ -281,17 +281,59 @@ const TableContainer = ({
                 <Link to="#!" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 h-8 px-3 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-50 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-custom-500 dark:[&.active]:text-custom-500 [&.active]:bg-custom-50 dark:[&.active]:bg-custom-500/10 [&.active]:border-custom-50 dark:[&.active]:border-custom-500/10 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${!getCanPreviousPage() && "disabled"}`} onClick={previousPage}>
                   <ChevronLeft className="size-4 mr-1 rtl:rotate-180"></ChevronLeft> Anterior</Link>
               </li>
-              {getPageOptions().map((item: any, key: number) => (
-                <React.Fragment key={key}>
-                  <li>
-                    <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === item && "active"}`} onClick={() => setPageIndex(item)}>{item + 1}</Link>
-                  </li>
-                </React.Fragment>
-              ))}
+              
+              {/* Mostrar primera página */}
+              {getState().pagination.pageIndex > 2 && (
+                <li>
+                  <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === 0 && "active"}`} 
+                    onClick={() => setPageIndex(0)}>1</Link>
+                </li>
+              )}
+
+              {/* Mostrar puntos suspensivos si hay páginas ocultas al inicio */}
+              {getState().pagination.pageIndex > 3 && (
+                <li className="px-1">...</li>
+              )}
+
+              {/* Mostrar páginas alrededor de la actual */}
+              {Array.from({ length: Math.min(5, getPageOptions().length) }, (_, i) => {
+                let pageIndex: number;
+                if (getState().pagination.pageIndex < 3) {
+                  pageIndex = i;
+                } else if (getState().pagination.pageIndex > getPageOptions().length - 4) {
+                  pageIndex = getPageOptions().length - 5 + i;
+                } else {
+                  pageIndex = getState().pagination.pageIndex - 2 + i;
+                }
+                
+                if (pageIndex >= 0 && pageIndex < getPageOptions().length) {
+                  return (
+                    <li key={pageIndex}>
+                      <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === pageIndex && "active"}`} 
+                      onClick={() => setPageIndex(pageIndex)}>{pageIndex + 1}</Link>
+                    </li>
+                  );
+                }
+                return null;
+              })}
+
+              {/* Mostrar puntos suspensivos si hay páginas ocultas al final */}
+              {getState().pagination.pageIndex < getPageOptions().length - 4 && (
+                <li className="px-1">...</li>
+              )}
+
+              {/* Mostrar última página */}
+              {getState().pagination.pageIndex < getPageOptions().length - 3 && (
+                <li>
+                  <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === getPageOptions().length - 1 && "active"}`} 
+                    onClick={() => setPageIndex(getPageOptions().length - 1)}>{getPageOptions().length}</Link>
+                </li>
+              )}
+
               <li>
-                <Link to="#!" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 h-8 px-3 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-50 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-custom-500 dark:[&.active]:text-custom-500 [&.active]:bg-custom-50 dark:[&.active]:bg-custom-500/10 [&.active]:border-custom-50 dark:[&.active]:border-custom-500/10 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto 
-                ${!getCanNextPage() && ""}`} onClick={() => getCanNextPage() && nextPage()}>
-                  Siguiente <ChevronRight className="size-4 ml-1 rtl:rotate-180"></ChevronRight> </Link>
+                <Link to="#!" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 h-8 px-3 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-50 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-custom-500 dark:[&.active]:text-custom-500 [&.active]:bg-custom-50 dark:[&.active]:bg-custom-500/10 [&.active]:border-custom-50 dark:[&.active]:border-custom-500/10 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${!getCanNextPage() && "disabled"}`} onClick={() => getCanNextPage() && nextPage()}>
+                  Siguiente <ChevronRight className="size-4 ml-1 rtl:rotate-180"></ChevronRight>
+                </Link>
               </li>
             </ul>
           </div>
