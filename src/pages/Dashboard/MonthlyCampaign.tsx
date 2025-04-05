@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState} from 'react';
 
-import { Eye, Mail, PackageOpen, UserX2, Users2 } from 'lucide-react';
 import {createSelector} from "reselect";
 import {useSelector} from "react-redux";
 

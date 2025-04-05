@@ -13,8 +13,13 @@ const selectDataList = createSelector(
 );
 
 const OrdersOverviewChart = ({ chartId }: any) => {
-    const { MonthlyTickets } = useSelector(selectDataList);
-
+    let { MonthlyTickets } = useSelector(selectDataList);
+    
+    
+    if (!Array.isArray(MonthlyTickets)) {
+        MonthlyTickets = [];
+    }
+    
     const chartColors = useChartColors(chartId);
     const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dec"];
     const currentMonthIndex = new Date().getMonth();
