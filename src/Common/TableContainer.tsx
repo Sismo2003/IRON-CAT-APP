@@ -282,52 +282,64 @@ const TableContainer = ({
                   <ChevronLeft className="size-4 mr-1 rtl:rotate-180"></ChevronLeft> Anterior</Link>
               </li>
               
-              {/* Mostrar primera página */}
-              {getState().pagination.pageIndex > 2 && (
-                <li>
-                  <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === 0 && "active"}`} 
-                    onClick={() => setPageIndex(0)}>1</Link>
-                </li>
-              )}
-
-              {/* Mostrar puntos suspensivos si hay páginas ocultas al inicio */}
-              {getState().pagination.pageIndex > 3 && (
-                <li className="px-1">...</li>
-              )}
-
-              {/* Mostrar páginas alrededor de la actual */}
-              {Array.from({ length: Math.min(5, getPageOptions().length) }, (_, i) => {
-                let pageIndex: number;
-                if (getState().pagination.pageIndex < 3) {
-                  pageIndex = i;
-                } else if (getState().pagination.pageIndex > getPageOptions().length - 4) {
-                  pageIndex = getPageOptions().length - 5 + i;
-                } else {
-                  pageIndex = getState().pagination.pageIndex - 2 + i;
-                }
-                
-                if (pageIndex >= 0 && pageIndex < getPageOptions().length) {
-                  return (
-                    <li key={pageIndex}>
-                      <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === pageIndex && "active"}`} 
+              {/* Mostrar todas las páginas si son pocas (menos de 6) */}
+              {getPageOptions().length <= 5 ? (
+                getPageOptions().map((pageIndex: number) => (
+                  <li key={pageIndex}>
+                    <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === pageIndex && "active"}`} 
                       onClick={() => setPageIndex(pageIndex)}>{pageIndex + 1}</Link>
+                  </li>
+                ))
+              ) : (
+                <>
+                  {/* Mostrar primera página si no está visible */}
+                  {getState().pagination.pageIndex > 1 && (
+                    <li>
+                      <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === 0 && "active"}`} 
+                      onClick={() => setPageIndex(0)}>1</Link>
                     </li>
-                  );
-                }
-                return null;
-              })}
+                  )}
 
-              {/* Mostrar puntos suspensivos si hay páginas ocultas al final */}
-              {getState().pagination.pageIndex < getPageOptions().length - 4 && (
-                <li className="px-1">...</li>
-              )}
+                  {/* Mostrar puntos suspensivos si hay páginas ocultas al inicio */}
+                  {getState().pagination.pageIndex > 2 && (
+                    <li className="px-1">...</li>
+                  )}
 
-              {/* Mostrar última página */}
-              {getState().pagination.pageIndex < getPageOptions().length - 3 && (
-                <li>
-                  <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === getPageOptions().length - 1 && "active"}`} 
-                    onClick={() => setPageIndex(getPageOptions().length - 1)}>{getPageOptions().length}</Link>
-                </li>
+                  {/* Mostrar páginas alrededor de la actual */}
+                  {Array.from({ length: Math.min(3, getPageOptions().length) }, (_, i) => {
+                    let pageIndex: number;
+                    if (getState().pagination.pageIndex < 2) {
+                      pageIndex = i;
+                    } else if (getState().pagination.pageIndex > getPageOptions().length - 3) {
+                      pageIndex = getPageOptions().length - 3 + i;
+                    } else {
+                      pageIndex = getState().pagination.pageIndex - 1 + i;
+                    }
+                    
+                    if (pageIndex >= 0 && pageIndex < getPageOptions().length) {
+                      return (
+                        <li key={pageIndex}>
+                          <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === pageIndex && "active"}`} 
+                          onClick={() => setPageIndex(pageIndex)}>{pageIndex + 1}</Link>
+                        </li>
+                      );
+                    }
+                    return null;
+                  })}
+
+                  {/* Mostrar puntos suspensivos si hay páginas ocultas al final */}
+                  {getState().pagination.pageIndex < getPageOptions().length - 3 && (
+                    <li className="px-1">...</li>
+                  )}
+
+                  {/* Mostrar última página si no está visible */}
+                  {getState().pagination.pageIndex < getPageOptions().length - 2 && (
+                    <li>
+                      <Link to="#" className={`inline-flex items-center justify-center bg-white dark:bg-zink-700 size-8 transition-all duration-150 ease-linear border rounded border-slate-200 dark:border-zink-500 text-slate-500 dark:text-zink-200 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/10 focus:bg-custom-50 dark:focus:bg-custom-500/10 focus:text-custom-500 dark:focus:text-custom-500 [&.active]:text-white dark:[&.active]:text-white [&.active]:bg-custom-500 dark:[&.active]:bg-custom-500 [&.active]:border-custom-500 dark:[&.active]:border-custom-500 [&.active]:hover:text-custom-700 dark:[&.active]:hover:text-custom-700 [&.disabled]:text-slate-400 dark:[&.disabled]:text-zink-300 [&.disabled]:cursor-auto ${getState().pagination.pageIndex === getPageOptions().length - 1 && "active"}`} 
+                        onClick={() => setPageIndex(getPageOptions().length - 1)}>{getPageOptions().length}</Link>
+                    </li>
+                  )}
+                </>
               )}
 
               <li>
