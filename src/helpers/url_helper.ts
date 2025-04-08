@@ -48,6 +48,7 @@ export const DELETE_EMPLOYEE =  "/hr/delete-employee";
 // CUSTOMER Management
 // CUSTOMER List
 export const GET_CUSTOMER =  "/customer/get-customer";
+export const GET_CUSTOMER_BY_ID =  "/customer/get-customer-by-id";
 export const ADD_CUSTOMER =  "/customer/add-customer";
 export const UPDATE_CUSTOMER =  "/customer/edit-customer";
 export const DELETE_CUSTOMER =  "/customer/delete-customer";

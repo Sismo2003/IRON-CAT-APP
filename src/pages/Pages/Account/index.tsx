@@ -15,7 +15,7 @@ const Account = () => {
         <React.Fragment>
             <Tab.Container defaultActiveKey="overviewTabs">
                 <div className="mt-1 -ml-3 -mr-3 rounded-none card">
-                    <AccountInfo  className="card-body !px-2.5"/>
+                    <AccountInfo className={"card-body !px-2.5"} clientId={clientId}/>
                     <div className="card-body !px-2.5 !py-0">
                         <Nav className="flex flex-wrap w-full text-sm font-medium text-center nav-tabs">
                             <Nav.Item eventKey="overviewTabs" className="group">

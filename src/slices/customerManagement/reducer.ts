@@ -1,13 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
     getCustomer,
+    getCustomerById,
     addCustomer,
     updateCustomer,
     deleteCustomer
 } from './thunk';
 
+interface customer {
+    id: number;
+    name: string;
+    fullname: string;
+    address: string;
+    customer_id: string;
+    email: string;
+    img: string;
+    phone: string;
+    rfc?: string;
+    last_visit?: string;
+}
+
 export const initialState = {
     customerlist: [],
+    customer: {} as customer,
     loading: false,
 };
 
@@ -25,6 +40,17 @@ const CustomerManagementSlice = createSlice({
             state.loading = true;
         });
         builder.addCase(getCustomer.rejected, (state: any, action: any) => {
+            state.loading = false;
+            state.error = action.payload.error || null;
+        });
+        builder.addCase(getCustomerById.fulfilled, (state: any, action: any) => {
+            state.loading = false;
+            state.customer = action.payload;
+        });
+        builder.addCase(getCustomerById.pending, (state: any, action: any) => {
+            state.loading = true;
+        });
+        builder.addCase(getCustomerById.rejected, (state: any, action: any) => {
             state.loading = false;
             state.error = action.payload.error || null;
         });

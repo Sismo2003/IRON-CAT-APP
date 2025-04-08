@@ -155,6 +155,7 @@ export const deleteSaleProductList = (data: any) => api.delete(url.DELETE_SALE_P
 // CUSTOMER Management
 // CUSTOMER List
 export const getCustomer = () => api.get(url.GET_CUSTOMER, null);
+export const getCustomerById = (data: any) => api.get(url.GET_CUSTOMER_BY_ID, { id: data.clientId });
 export const addCustomer = (data: any) => api.create(url.ADD_CUSTOMER, data);
 export const updateCustomer = (data: any) => api.put(url.UPDATE_CUSTOMER + '/' + data.id, data);
 export const deleteCustomer = (data: any) => api.delete(url.DELETE_CUSTOMER + '/' + data, { headers: { data } });

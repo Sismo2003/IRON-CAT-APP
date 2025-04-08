@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
     getCustomer as getCustomerApi,
+    getCustomerById as getCustomerByIdApi,
     addCustomer as addCustomerApi,
     updateCustomer as updateCustomerApi,
     deleteCustomer as deleteCustomerApi,
@@ -16,6 +17,16 @@ export const getCustomer = createAsyncThunk("CustomerManagement/getCustomer", as
         return error;
     }
 });
+
+export const getCustomerById = createAsyncThunk("CustomerManagement/getCustomerById", async (event: any) => {
+    try {
+        const response = getCustomerByIdApi(event);
+        return (await response).data;
+    } catch (error) {
+        return error;
+    }
+});
+
 export const addCustomer = createAsyncThunk("CustomerManagement/addCustomer", async (event: any) => {
     try {
         const response = addCustomerApi(event);
