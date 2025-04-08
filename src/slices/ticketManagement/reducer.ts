@@ -13,10 +13,13 @@ export const initialState = {
     loading: true,
     ticketByid: [],
     ticketCount : 0,
+    //arr de total de tickets de cada mes hasta el mes actual
     MonthlyTickets : 0,
     TicketsStatusCount: [],
     TicketsCountByDay: [],
-    productsSaleCharts : []
+    productsSaleCharts : [],
+    // variable con el contador de tickets del mes actual
+    actualMonthTickets : 0
 };
 
 
@@ -28,19 +31,22 @@ const TICKETManagementSlice = createSlice({
         // Get all the tickets
         builder.addCase(getTicket.fulfilled, (state: any, action: any) => {
             state.ticketlist = action.payload;
-            state.loading = false;
             state.ticketCount = state.ticketlist.length;
             
             const now = new Date();
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
             
+            // conteo de ticket mes tras mes hasta el mes actual
             state.MonthlyTickets = Array.from({ length: currentMonth + 1 }, (_, monthIndex) =>
                 state.ticketlist.filter((ticket: { ticket_date: string }) => {
                     const ticketDate = new Date(ticket.ticket_date);
                     return ticketDate.getMonth() === monthIndex && ticketDate.getFullYear() === currentYear;
                 }).length
             );
+            
+            // conteo unicamente de los tickets del mes actual
+             state.actualMonthTickets = state.MonthlyTickets[state.MonthlyTickets.length - 1];
 
             const ticketsStatusCount = new Array(currentMonth + 1).fill(0).map(() => ({
                 authorized: 0,
@@ -164,6 +170,8 @@ const TICKETManagementSlice = createSlice({
 
             state.productsSaleCharts = limitedSummary;
             
+            
+            state.loading = false;
         });
         builder.addCase(getTicket.pending, (state: any, action: any) => {
             state.loading = true;

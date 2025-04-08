@@ -4,6 +4,8 @@ import CountUp from 'react-countup';
 import Flatpickr from "react-flatpickr";
 import moment from "moment";
 
+
+import ScreenLoader from "Common/Components/screenLoader";
 // icons
 import {
     Boxes,
@@ -51,12 +53,13 @@ const Orders = () => {
     const selectDataList = createSelector(
         (state: any) => state.TICKETManagment,
         (state) => ({
-            dataList: state.ticketlist
+            dataList: state.ticketlist,
+            loader : state.loading,
         })
     );
 
-    const { dataList } = useSelector(selectDataList);
-    
+    const { dataList,loader } = useSelector(selectDataList);
+    console.log(loader);
 
     const [data, setData] = useState<any>([]);
     
@@ -64,6 +67,7 @@ const Orders = () => {
 
     const [show, setShow] = useState<boolean>(false);
     
+
 
     useEffect(() => {
         dispatch(getTickets());
@@ -304,131 +308,134 @@ const Orders = () => {
 
 
     return (
+      
         <React.Fragment>
-            <BreadCrumb title='Historial de Ticketes' pageTitle='Tickets' />
-            <DeleteModal show={deleteModal} onHide={deleteToggle} onDelete={handleDelete} />
-            <ToastContainer closeButton={false} limit={1} />
-            {/* cards && charts */}
-            <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 2xl:grid-cols-12">
-                <div className="2xl:col-span-2 2xl:row-span-1">
-                    <div className="card">
-                        <div className="flex items-center gap-3 card-body">
-                            <div className="flex items-center justify-center size-12 rounded-md text-15 bg-custom-50 text-custom-500 dark:bg-custom-500/20 shrink-0">
-                                <Ticket />
-                            </div>
-                            <div className="grow">
-                                <h5 className="mb-1 text-16">
-                                    <CountUp end={Object.keys(dataList).length ?? "0"} separator="," className="counter-value" />
-                                </h5>
-                                <p className="text-slate-500 dark:text-zink-200">Total Tickets</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="2xl:col-span-2 2xl:row-span-1">
-                    <div className="card">
-                        <div className="flex items-center gap-3 card-body">
-                            <div className="flex items-center justify-center size-12 rounded-md text-15 bg-red-50 text-red-500 dark:bg-red-500/20 shrink-0">
-                                <TicketX />
-                            </div>
-                            <div className="grow">
-                                <h5 className="mb-1 text-16">
-                                    <CountUp end={ticketTotals.Cancelados} separator="," className="counter-value" />
-                                </h5>
-                                <p className="text-slate-500 dark:text-zink-200">Tickets Cancelados</p>
+            <div className="relative w-full h-full">
+                {(loader ) && <ScreenLoader />}
+                <BreadCrumb title='Historial de Ticketes' pageTitle='Tickets' />
+                <DeleteModal show={deleteModal} onHide={deleteToggle} onDelete={handleDelete} />
+                <ToastContainer closeButton={false} limit={1} />
+                {/* cards && charts */}
+                <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 2xl:grid-cols-12">
+                    <div className="2xl:col-span-2 2xl:row-span-1">
+                        <div className="card">
+                            <div className="flex items-center gap-3 card-body">
+                                <div className="flex items-center justify-center size-12 rounded-md text-15 bg-custom-50 text-custom-500 dark:bg-custom-500/20 shrink-0">
+                                    <Ticket />
+                                </div>
+                                <div className="grow">
+                                    <h5 className="mb-1 text-16">
+                                        <CountUp end={Object.keys(dataList).length ?? "0"} separator="," className="counter-value" />
+                                    </h5>
+                                    <p className="text-slate-500 dark:text-zink-200">Total Tickets</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div className="2xl:col-span-2 2xl:row-span-1">
+                        <div className="card">
+                            <div className="flex items-center gap-3 card-body">
+                                <div className="flex items-center justify-center size-12 rounded-md text-15 bg-red-50 text-red-500 dark:bg-red-500/20 shrink-0">
+                                    <TicketX />
+                                </div>
+                                <div className="grow">
+                                    <h5 className="mb-1 text-16">
+                                        <CountUp end={ticketTotals.Cancelados} separator="," className="counter-value" />
+                                    </h5>
+                                    <p className="text-slate-500 dark:text-zink-200">Tickets Cancelados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Charts  */}
+                    <div className="order-last md:col-span-2 2xl:col-span-8 2xl:row-span-3 card 2xl:order-none">
+                        <div className="card-body">
+                            <h6 className="mb-4 text-gray-800 text-15 dark:text-zink-50">Tickets Anuales</h6>
+                            <OrdersOverviewChart id="ordersOverview" />
+                        </div>
+                    </div>
+                    <div className="2xl:col-span-2 2xl:row-span-1">
+                        <div className="card">
+                            <div className="flex items-center gap-3 card-body">
+                                <div className="flex items-center justify-center size-12 text-yellow-500 rounded-md text-15 bg-yellow-50 dark:bg-yellow-500/20 shrink-0"><Loader /></div>
+                                <div className="grow">
+                                    <h5 className="mb-1 text-16">
+                                        <CountUp end={ticketTotals["Por autorizar"]} separator="," className="counter-value" />
+                                    </h5>
+                                    <p className="text-slate-500 dark:text-zink-200">Tickets Pendientes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="2xl:col-span-2 2xl:row-span-1">
+                        <div className="card">
+                            <div className="flex items-center gap-3 card-body">
+                                <div className="flex items-center justify-center size-12 text-green-500 rounded-md text-15 bg-green-50 dark:bg-green-500/20 shrink-0">
+                                    <TicketCheck />
+                                </div>
+                                <div className="grow">
+                                    <h5 className="mb-1 text-16">
+                                        <CountUp end={ticketTotals.Autorizados} separator="," className="counter-value" />
+                                    </h5>
+                                    <p className="text-slate-500 dark:text-zink-200">Tickets Autorizados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
                 </div>
-                {/* Charts  */}
-                <div className="order-last md:col-span-2 2xl:col-span-8 2xl:row-span-3 card 2xl:order-none">
+                {/* Table  */}
+                <div className="card" id="ticketsTable">
                     <div className="card-body">
-                        <h6 className="mb-4 text-gray-800 text-15 dark:text-zink-50">Tickets Anuales</h6>
-                        <OrdersOverviewChart id="ordersOverview" />
-                    </div>
-                </div>
-                <div className="2xl:col-span-2 2xl:row-span-1">
-                    <div className="card">
-                        <div className="flex items-center gap-3 card-body">
-                            <div className="flex items-center justify-center size-12 text-yellow-500 rounded-md text-15 bg-yellow-50 dark:bg-yellow-500/20 shrink-0"><Loader /></div>
-                            <div className="grow">
-                                <h5 className="mb-1 text-16">
-                                    <CountUp end={ticketTotals["Por autorizar"]} separator="," className="counter-value" />
-                                </h5>
-                                <p className="text-slate-500 dark:text-zink-200">Tickets Pendientes</p>
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+                            <div className="lg:col-span-3">
+                                <div className="relative">
+                                    <input type="text" className="ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                           placeholder="Buscar ..." autoComplete="off" onChange={(e) => filterSearchData(e)} />
+                                    <Search className="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div className="2xl:col-span-2 2xl:row-span-1">
-                    <div className="card">
-                        <div className="flex items-center gap-3 card-body">
-                            <div className="flex items-center justify-center size-12 text-green-500 rounded-md text-15 bg-green-50 dark:bg-green-500/20 shrink-0">
-                                <TicketCheck />
-                            </div>
-                            <div className="grow">
-                                <h5 className="mb-1 text-16">
-                                    <CountUp end={ticketTotals.Autorizados} separator="," className="counter-value" />
-                                </h5>
-                                <p className="text-slate-500 dark:text-zink-200">Tickets Autorizados</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            {/* Table  */}
-            <div className="card" id="ticketsTable">
-                <div className="card-body">
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-                        <div className="lg:col-span-3">
-                            <div className="relative">
-                                <input type="text" className="ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                    placeholder="Buscar ..." autoComplete="off" onChange={(e) => filterSearchData(e)} />
-                                <Search className="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600" />
-                            </div>
-                        </div>
-                    </div>
-                    {/* TAB'S FOR THE TABLE!*/}
-                    <ul className="flex flex-wrap w-full mt-5 text-sm font-medium text-center text-gray-500 nav-tabs">
-                        <li className={`group ${activeTab === "1" && "active"}`}>
-                            <Link to="#" data-tab-toggle data-target="allOrders" className="inline-block px-4 py-1.5 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white dark:group-[.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]" onClick={() => { toggleTab("1", "all"); }}>
-                                <Boxes className="inline-block size-4 ltr:mr-1 rtl:ml-1" /> <span className="align-middle">Total tickets</span>
-                            </Link>
-                        </li>
-                        <li className={`group ${activeTab === "2" && "active"}`}>
-                            <Link to="#" data-tab-toggle data-target="deliveredOrder" className="inline-block px-4 py-1.5
+                        {/* TAB'S FOR THE TABLE!*/}
+                        <ul className="flex flex-wrap w-full mt-5 text-sm font-medium text-center text-gray-500 nav-tabs">
+                            <li className={`group ${activeTab === "1" && "active"}`}>
+                                <Link to="#" data-tab-toggle data-target="allOrders" className="inline-block px-4 py-1.5 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white dark:group-[.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]" onClick={() => { toggleTab("1", "all"); }}>
+                                    <Boxes className="inline-block size-4 ltr:mr-1 rtl:ml-1" /> <span className="align-middle">Total tickets</span>
+                                </Link>
+                            </li>
+                            <li className={`group ${activeTab === "2" && "active"}`}>
+                                <Link to="#" data-tab-toggle data-target="deliveredOrder" className="inline-block px-4 py-1.5
                             text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border
                             border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white dark:group-[.active]:text-white
                             hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500
                             -mb-[1px]" onClick={() => { toggleTab("2", "Autorizados"); }}>
-                                <TicketCheck className="inline-block size-4 ltr:mr-1 rtl:ml-1" />
-                                <span className="align-middle">Autorizados </span>
-                            </Link>
-                        </li>
-                        <li className={`group ${activeTab === "3" && "active"}`}>
-                            <Link to="#" data-tab-toggle data-target="pendingOrder" className="inline-block px-4 py-1.5 text-base transition-all
+                                    <TicketCheck className="inline-block size-4 ltr:mr-1 rtl:ml-1" />
+                                    <span className="align-middle">Autorizados </span>
+                                </Link>
+                            </li>
+                            <li className={`group ${activeTab === "3" && "active"}`}>
+                                <Link to="#" data-tab-toggle data-target="pendingOrder" className="inline-block px-4 py-1.5 text-base transition-all
                             duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent
                             group-[.active]:bg-custom-500 group-[.active]:text-white dark:group-[.active]:text-white
                             hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]"
-                                onClick={() => { toggleTab("3", "Por autorizar"); }}>
-                                <Loader className="inline-block size-4 ltr:mr-1 rtl:ml-1" /> <span className="align-middle">Por autorizar</span>
-                            </Link>
-                        </li>
-                        <li className={`group ${activeTab === "4" && "active"}`}>
-                            <Link to="#" data-tab-toggle data-target="cancelledOrders" className="inline-block px-4 py-1.5
+                                      onClick={() => { toggleTab("3", "Por autorizar"); }}>
+                                    <Loader className="inline-block size-4 ltr:mr-1 rtl:ml-1" /> <span className="align-middle">Por autorizar</span>
+                                </Link>
+                            </li>
+                            <li className={`group ${activeTab === "4" && "active"}`}>
+                                <Link to="#" data-tab-toggle data-target="cancelledOrders" className="inline-block px-4 py-1.5
                                 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200
                                 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white
                                 dark:group-[.active]:text-white hover:text-custom-500 dark:hover:text-custom-500
                                 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]"
-                                onClick={() => { toggleTab("4", "Cancelados"); }}>
-                                <PackageX className="inline-block size-4 ltr:mr-1 rtl:ml-1 " /> <span className="align-middle">Cancelados</span>
-                            </Link>
-                        </li>
-                    </ul>
-
-                    {dataList && Object.keys(dataList).length > 0 ?
-                        <TableContainer
+                                      onClick={() => { toggleTab("4", "Cancelados"); }}>
+                                    <PackageX className="inline-block size-4 ltr:mr-1 rtl:ml-1 " /> <span className="align-middle">Cancelados</span>
+                                </Link>
+                            </li>
+                        </ul>
+                        
+                        {dataList && Object.keys(dataList).length > 0 ?
+                          <TableContainer
                             isPagination={true}
                             columns={(columns || [])}
                             data={(data || [])}
@@ -439,9 +446,9 @@ const Orders = () => {
                             thclassName="px-3.5 py-2.5 font-semibold text-slate-500 border-b border-slate-200 dark:border-zink-500 dark:text-zink-200"
                             tdclassName="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"
                             PaginationClassName="flex flex-col items-center mt-5 md:flex-row"
-                        />
-                        :
-                        (
+                          />
+                          :
+                          (
                             <div className="noresult">
                                 <div className="py-6 text-center">
                                     <Search className="size-6 mx-auto text-sky-500 fill-sky-100 dark:sky-500/20" />
@@ -449,8 +456,9 @@ const Orders = () => {
                                     <p className="mb-0 text-slate-500 dark:text-zink-200">No se encontro ningun registro. Si crees que es un error contacta a tu soporte.</p>
                                 </div>
                             </div>
-                        )
-                    }
+                          )
+                        }
+                    </div>
                 </div>
             </div>
 

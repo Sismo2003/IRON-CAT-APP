@@ -9,8 +9,8 @@ const Widgets = () => {
   const selectTicket = createSelector(
     (state: any) => state.TICKETManagment,
     (state) => ({
-      MonthlyTickets: state.MonthlyTickets,
-      productsSaleCharts : state.productsSaleCharts,
+      actualMonthTickets: state.actualMonthTickets,
+      productsSaleCharts : state.productsSaleCharts
     })
   );
   
@@ -21,22 +21,24 @@ const Widgets = () => {
   //Order Statistics
   
   // Solo usamos useSelector para acceder a la data ya cargada en el store
-  const { MonthlyTickets, productsSaleCharts } = useSelector(selectTicket);
+  const { actualMonthTickets, productsSaleCharts } = useSelector(selectTicket);
   
-  const transformedShop = Object.values(productsSaleCharts?.shop || {}).map((item: any) => ({
-    value: item.totalWeight,
-    title: item.product_name
-  }));
+  const transformedShop = Object.values(productsSaleCharts?.shop || {})
+    .map((item: any) => ({
+      value: item.totalWeight,
+      title: item.product_name
+    }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 3);
   
-  console.log(transformedShop);
   
-  const actualMonthCounter = MonthlyTickets[MonthlyTickets.length - 1];
+  
   
   const WIDGET_DATA = [
     {
       id: 1,
       title: `Tickets de ${new Date().toLocaleString('es-ES', { month: 'long' })}`,
-      value: actualMonthCounter,
+      value: actualMonthTickets ?? 0,
       icon: <Ticket />,
       color: 'custom',
       decimals: 0,
@@ -44,8 +46,8 @@ const Widgets = () => {
     },
     {
       id: 2,
-      title: transformedShop[0]?.title + ' recolectado',
-      value: Number(transformedShop[0]?.value),
+      title: transformedShop[0]?.title ?? 'No hay datos',
+      value: Number(transformedShop[0]?.value) ?? 0 ,
       icon: <Pickaxe />,
       color: 'purple',
       decimals: 2,
@@ -54,7 +56,7 @@ const Widgets = () => {
     },
     {
       id: 3,
-      title: transformedShop[1]?.title + ' recolectado',
+      title: transformedShop[1]?.title ?? 'No hay datos',
       value: Number(transformedShop[1]?.value),
       icon: <Anvil />,
       color: 'green',
@@ -63,8 +65,8 @@ const Widgets = () => {
     },
     {
       id: 4,
-      title: transformedShop[2]?.title + ' recolectado',
-      value: Number(transformedShop[2]?.value),
+      title: transformedShop[2]?.title ?? 'No hay datos',
+      value: Number(transformedShop[2]?.value) ?? 0 ,
       icon: <CupSoda />,
       color: 'red',
       decimals: 2,

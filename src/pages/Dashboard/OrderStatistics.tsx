@@ -12,9 +12,7 @@ const OrderStatistics = () => {
                         <h6 className="grow text-15">Estados de tickets</h6>
                      
                     </div>
-                    <div className="w-full overflow-x-auto"> {/* Contenedor para la tabla con scroll horizontal si es necesario */}
-                        <OrderStatisticsChart chartId="orderStatisticsChart" className="w-full" /> {/* Asegúrate de que el componente Chart acepte className */}
-                    </div>
+                    <OrderStatisticsChart chartId="orderStatisticsChart" className="w-full" /> {/* Asegúrate de que el componente Chart acepte className */}
                 </div>
             </div>
         </React.Fragment>

@@ -104,9 +104,7 @@ const SubscriptionChart = (props: any) => {
     const { productsSaleCharts } = useSelector(selectDataList);
     
     
-    // const chartColors = useChartColors(chartId);
-    //Subscription Distribution
-    // const series = [44, 55, 41, 17, 15];
+    
     const chartColors = useChartColors(props.chartId);
     
     const ticketType = props.ticketType || 'sale';
