@@ -55,8 +55,8 @@ const AccountInfo = ({ className, clientId }: { className?: string, clientId?: n
         <div className="lg:col-span-3 xl:col-span-2 flex justify-center lg:justify-start">
           <div className="relative w-24 h-24 md:w-28 md:h-28 xl:w-32 xl:h-32 rounded-full overflow-hidden bg-slate-100 dark:bg-zink-600 border-4 border-white dark:border-zink-700 shadow-sm">
             <img 
-              src={customerData.img || avatar1} 
-              alt="Profile" 
+              src={customerData.img ?? avatar1} 
+              alt="" 
               className="w-full h-full object-cover rounded-full"
             />
           </div>

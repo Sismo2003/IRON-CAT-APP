@@ -4,9 +4,7 @@ import {
     assignMaterialToClient as assignMaterialToClientApi,
     unassignMaterialFromClient as unassignMaterialFromClientApi,
     getMaterialsByClient as onGetMaterialsByClientApi,
-    getAssignedMaterials as onGetAssignedMaterials,
 } from "../../helpers/fakebackend_helper";
-import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // Thunk para obtener los materiales de un cliente
@@ -30,14 +28,11 @@ export const assignMaterialToClient = createAsyncThunk("materials/assignMaterial
     const response = assignMaterialToClientApi({ clientId: event.clientId, materialId: event.material.id });
     const data = await response;
     if (data) {
-      toast.success("Notes Added Successfully", { autoClose: 2000 });
       return event.material;
     } else {
-      toast.error("Notes Added Failed", { autoClose: 2000 });
       return data;
     }
   } catch (error) {
-      toast.error("Notes Added Failed", { autoClose: 2000 });
       return error;
   }
 });
@@ -48,14 +43,11 @@ export const unassignMaterialFromClient = createAsyncThunk("materials/unassignMa
     const response = unassignMaterialFromClientApi(event);
     const data = await response;
     if (data){ 
-      toast.success("Notes Added Successfully", { autoClose: 2000 });
       return event.material;
     } else {
-      toast.error("Notes Added Failed", { autoClose: 2000 });
       return data;
     }
   } catch (error) {
-      toast.error("Notes Added Failed", { autoClose: 2000 });
       return error;
   }
 });

@@ -65,10 +65,10 @@ export const addEmployee = createAsyncThunk("hrManagement/addEmployee", async (e
 export const updateEmployee = createAsyncThunk("hrManagement/updateEmployee", async (event: any) => {
     try {
         updateEmployeeApi(event);
-        toast.success("Employee updated Successfully", { autoClose: 2000 });
+        toast.success("Empleado actualizado con éxito", { autoClose: 2000 });
         return event;
     } catch (error) {
-        toast.error("Employee updated Failed", { autoClose: 2000 });
+        toast.error("Empleado no actualizado", { autoClose: 2000 });
         return error;
     }
 });

@@ -4,6 +4,7 @@ import Select from 'react-select';
 // import Flatpickr from "react-flatpickr";
 // import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
+import { DateTime } from 'luxon';
 
 // Icons
 import { Search, Plus, Trash2, Eye, Pencil, ImagePlus } from 'lucide-react';
@@ -72,6 +73,10 @@ const EmployeeList = () => {
         { label: "Administrador", value: "admin" },
         { label: "Usuario", value: "user" },
     ];
+
+    const getRoleOption = (type: string) => {
+        return roleOptions.find(option => option.value === type) || null;
+    };
 
     // Get Data
     useEffect(() => {
@@ -218,6 +223,38 @@ const EmployeeList = () => {
             header: "RFC",
             accessorKey: "rfc",
             enableColumnFilter: false,
+        },
+        {
+            header: "Ultimo acceso",
+            accessorKey: "last_login",
+            enableColumnFilter: false,
+            cell: (cell: any) => {
+                const lastLogin = cell.getValue();
+                if (!lastLogin) return <span className="text-gray-500">Nunca</span>;
+                
+                const loginDate = DateTime.fromISO(lastLogin);
+                const now = DateTime.now();
+                const daysDiff = now.diff(loginDate, 'days').days;
+                
+                // Formatear fecha
+                const formattedDate = loginDate.toFormat('dd-MM-yyyy HH:mm:ss');
+                
+                // Determinar color según días transcurridos
+                let colorClass = '';
+                if (daysDiff < 1) {
+                    colorClass = 'bg-green-100 text-green-800 border-green-200 dark:bg-green-500/20 dark:text-green-400 dark:border-green-500/30'; // Menos de 1 día
+                } else if (daysDiff <= 7) {
+                    colorClass = 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-500/30'; // 1-7 días
+                } else {
+                    colorClass = 'bg-red-100 text-red-800 border-red-200 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30'; // Más de 7 días
+                }
+                
+                return (
+                    <span className={`px-2.5 py-0.5 text-xs inline-block font-medium rounded-full border ${colorClass}`}>
+                        {formattedDate}
+                    </span>
+                );
+            },
         },
         // {
         //     header: "Ubicación",
@@ -421,7 +458,7 @@ const EmployeeList = () => {
                             
                             <div className="xl:col-span-6">
                                 <label htmlFor="usernameInput" className="inline-block mb-2 text-base font-medium">Usuario</label>
-                                <input type="text" id="usernameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Ingrese su RFC"
+                                <input type="text" id="usernameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Ingrese su usuario"
                                     name="username"
                                     onChange={validation.handleChange}
                                     value={validation.values.username || ""}
@@ -432,7 +469,7 @@ const EmployeeList = () => {
                             </div>
                             <div className="xl:col-span-6">
                                 <label htmlFor="passwordInput" className="inline-block mb-2 text-base font-medium">Contraseña</label>
-                                <input type="password" id="passwordInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Ingrese su RFC"
+                                <input type="password" id="passwordInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Ingrese la contraseña"
                                     name="password"
                                     onChange={validation.handleChange}
                                     value={validation.values.password || ""}
@@ -448,6 +485,7 @@ const EmployeeList = () => {
                                     options={roleOptions}
                                     isSearchable={true}
                                     name="type"
+                                    value={getRoleOption(validation.values.type)} // setear la opcion con el value actual si está editando
                                     id="typeSelect"
                                     onChange={(selectedOption) => {
                                         validation.setFieldValue("type", selectedOption ? selectedOption.value : "");

@@ -3,7 +3,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
     getAssignedMaterials as onGetAssignedMaterials,
 } from "../../helpers/fakebackend_helper";
-import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // Thunk para obtener materiales asignados a un cliente
