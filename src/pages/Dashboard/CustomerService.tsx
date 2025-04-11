@@ -1,5 +1,4 @@
 import React from 'react';
-import { CalendarDays, MoreVertical } from 'lucide-react';
 
 //import images
 import avatar2 from "assets/images/users/avatar-2.png"

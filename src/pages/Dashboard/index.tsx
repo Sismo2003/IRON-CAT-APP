@@ -58,7 +58,7 @@ const DashboardIronCat = () => {
 				});
 			});
 		}
-	}, [productsSaleCharts, dispatch]);
+	}, [productsSaleCharts, dispatch, productImages]);
 	
 	return (
 		<React.Fragment>

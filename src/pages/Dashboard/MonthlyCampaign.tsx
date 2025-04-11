@@ -1,13 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState} from 'react';
 import { WifiOff } from 'lucide-react';
 import {createSelector} from "reselect";
 import {useSelector } from "react-redux";
 // import {getImage} from 'slices/thunk';
-
-
-interface Props {
-	[key: number] : { [key: string]: string };
-}
 
 const MonthlyCampaign = ( ) => {
 	
