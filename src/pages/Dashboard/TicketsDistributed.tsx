@@ -22,7 +22,7 @@ const DistributedChart = ({ chartId }: any) => {
 	
 	
 	
-	
+	// console.log("errror: ",productsSaleCharts);
 	let series;
 	let type;
 	let options : any;

@@ -10,7 +10,14 @@ import rootReducer from './slices';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
-const store = configureStore({ reducer: rootReducer, devTools: true });
+const store = configureStore({
+  reducer: rootReducer,
+  devTools: true,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+});
 root.render(
   <React.StrictMode>
     <Provider store={store}>

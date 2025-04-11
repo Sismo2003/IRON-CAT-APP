@@ -4,12 +4,14 @@ import {
     getTicketById,
     addTicket as newTicket,
     deleteTicket as deleteTicketById,
-    updateTicketStatus
+    updateTicketStatus,
+    productImage,
 } from "../../helpers/fakebackend_helper";
 
 
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import {array, number} from "yup";
 
 
 // Función para mostrar alertas controladas
@@ -28,6 +30,17 @@ export const getTicket = createAsyncThunk("ticketManagement/getTicket", async ()
         return (await response).data;
     } catch (error) {
         return error;
+    }
+});
+
+
+export const getImage = createAsyncThunk("ticketManagement/getImageId", async (id: number) => {
+    try {
+        const response = await productImage(id) ;
+        const data = response;
+        return {...data, id};
+    } catch (error: any) {
+        return { message: error.message };
     }
 });
 

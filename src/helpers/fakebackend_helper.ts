@@ -2,6 +2,9 @@ import { APIClient } from "./api_helper";
 
 import * as url from "./url_helper";
 
+
+
+
 const api = new APIClient();
 // Gets the logged in user data from local session
 
@@ -74,6 +77,9 @@ export const addTicket = (data: any) => api.create(url.ADD_TICKET, data);
 export const getTicketById = (id: any) => api.get(url.GET_TICKET_BY_ID,  { id });
 export const deleteTicket = (id: any) => api.delete(`${url.DELETE_TICKET}/${id}`);
 export const updateTicketStatus = (data: any) => api.update(`${url.UPDATE_TICKET_STATUS}/${data.id}`,  data);
+// export const productImage = (id: any) => api.get(url.GET_IMG_BY_ID,  { id });
+export const productImage = (data: any) => api.get(`${url.GET_IMG_BY_ID}/${data}`,  data);
+
 //NOTA NO EXISTEN ESTOS TICKETS
 // export const updateTicket = (data: any) => api.update(url.UPDATE_TICKET + '/' + data.id, data);
 

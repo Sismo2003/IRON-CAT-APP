@@ -7,7 +7,7 @@ const Audience = () => {
 	
 	return (
 		<React.Fragment>
-			<div className="col-span-12 card lg:col-span-6 2xl:col-span-3">
+			<div className="col-span-12 card lg:col-span-12 2xl:col-span-12">
 				<div className="card-body">
 					<h6 className="relative mb-3 grow text-15">Tickets por dia</h6>
 					<AudienceChart chartId="audienceChart" />

@@ -4,9 +4,10 @@ import {
     addTicket,
     lookTicket,
     deleteTicket,
-    updateStatus
-
+    updateStatus, getImage
+    
 } from './thunk';
+
 
 export const initialState = {
     ticketlist: [],
@@ -19,7 +20,11 @@ export const initialState = {
     TicketsCountByDay: [],
     productsSaleCharts : [],
     // variable con el contador de tickets del mes actual
-    actualMonthTickets : 0
+    actualMonthTickets : 0,
+    // variable con las imagenes requeridas por el cliente!
+    productImages : {},
+    imgLoading : true,
+    clientsTickets : []
 };
 
 
@@ -122,8 +127,7 @@ const TICKETManagementSlice = createSlice({
                         product_id: number,
                         product_name: string,
                         totalWeight: number,
-                        totalAmount: number,
-                        product_img : string
+                        totalAmount: number
                     }
                 }
             } = {};
@@ -144,7 +148,6 @@ const TICKETManagementSlice = createSlice({
                         if (!ticketTypeSummary[ticketType][productId]) {
                             ticketTypeSummary[ticketType][productId] = {
                                 product_id: product.product_id,
-                                product_img : product.product_img,
                                 product_name: product.product_name,
                                 totalWeight: 0,
                                 totalAmount: 0
@@ -170,6 +173,26 @@ const TICKETManagementSlice = createSlice({
 
             state.productsSaleCharts = limitedSummary;
             
+            
+            // Agrupar tickets por cliente para el mes y año actual y obtener los 10 con más tickets registrados
+            const clientsMap: Record<number, { client: any, count: number }> = {};
+            state.ticketlist.forEach((ticket: any) => {
+                const ticketDate = new Date(ticket.ticket_date);
+                if (
+                    ticketDate.getFullYear() === currentYear &&
+                    ticketDate.getMonth() === currentMonth &&
+                    ticket.client // solo si tiene información de cliente
+                ) {
+                    const clientId = ticket.client.id;
+                    if (!clientsMap[clientId]) {
+                        clientsMap[clientId] = { client: ticket.client, count: 0 };
+                    }
+                    clientsMap[clientId].count++;
+                }
+            });
+            state.clientsTickets = Object.values(clientsMap)
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10);
             
             state.loading = false;
         });
@@ -205,6 +228,19 @@ const TICKETManagementSlice = createSlice({
         builder.addCase(lookTicket.rejected, (state: any, action: any) => {
             state.error = action.payload.error || null;
             state.loading = false;
+        });
+        
+        // Get product image by id ----
+        builder.addCase(getImage.fulfilled, (state: any, action: any) => {
+            state.productImages[action.payload.id] = action.payload.data[0];
+            state.imgLoading = false;
+        });
+        builder.addCase(getImage.pending, (state: any, action: any) => {
+            state.imgLoading = true;
+        });
+        builder.addCase(getImage.rejected, (state: any, action: any) => {
+            state.error = action.payload.error || null;
+            state.imgLoading = false;
         });
 
         // delete ticket by id
@@ -249,6 +285,8 @@ const TICKETManagementSlice = createSlice({
             state.error = action.payload.error || null;
             state.loading = false;
         });
+        
+        
     }
 });
 

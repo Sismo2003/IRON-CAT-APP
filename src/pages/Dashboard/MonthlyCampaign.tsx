@@ -1,19 +1,27 @@
-import React, { useState} from 'react';
-
+import React, {useEffect, useState} from 'react';
+import { WifiOff } from 'lucide-react';
 import {createSelector} from "reselect";
-import {useSelector} from "react-redux";
+import {useSelector } from "react-redux";
+// import {getImage} from 'slices/thunk';
 
-const MonthlyCampaign = () => {
+
+interface Props {
+	[key: number] : { [key: string]: string };
+}
+
+const MonthlyCampaign = ( ) => {
+	
+	
 	const selectDataList = createSelector(
 		(state: any) => state.TICKETManagment,
 		(state) => ({
 			productsSaleCharts : state.productsSaleCharts,
+			productImages : state.productImages
 		})
 	);
 	
-	const { productsSaleCharts } = useSelector(selectDataList);
+	const { productsSaleCharts , productImages} = useSelector(selectDataList);
 	
-	// console.log(productsSaleCharts);
 	
 	const [TicketType, setTicketType] = useState('sale');
 	const months = [
@@ -21,6 +29,9 @@ const MonthlyCampaign = () => {
 	  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 	];
 	const currentMonth = months[new Date().getMonth()];
+
+	
+	//
 	
 	return (
 		<React.Fragment>
@@ -28,7 +39,7 @@ const MonthlyCampaign = () => {
 				<div className="card-body">
 					{TicketType === 'sale' ? (
 						<div className="flex w-full items-center justify-between mb-4">
-							<h6 className="mb-3 text-15 font-medium">Top 5 productos de venta en {currentMonth}</h6>
+							<h6 className="mb-3 text-15 font-medium">Hisotorico de venta en {currentMonth}</h6>
 							<button
 								onClick={() => setTicketType('shop')}
 								type="button"
@@ -39,7 +50,7 @@ const MonthlyCampaign = () => {
 						</div>
 					) : (
 						<div className="flex w-full items-center justify-between mb-4">
-							<h6 className="mb-3 text-15 font-medium">Top 5 productos de compra en {currentMonth}</h6>
+							<h6 className="mb-3 text-15 font-medium">Hisotorico de compra en {currentMonth}</h6>
 							<button
 								onClick={() => setTicketType('sale')}
 								type="button"
@@ -50,7 +61,7 @@ const MonthlyCampaign = () => {
 						</div>
 					)}
 					<div className="h-80 overflow-y-auto">
-						<ul className="flex flex-col gap-5">
+						<ul className="flex flex-col gap-2">
 							{productsSaleCharts &&
 								productsSaleCharts[TicketType] &&
 								Object.values(productsSaleCharts[TicketType]).map((product : any) => (
@@ -59,13 +70,17 @@ const MonthlyCampaign = () => {
 											className="flex items-center gap-3 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-zinc-800 p-2 rounded-md"
 										>
 											<div className="flex items-center justify-center size-8 text-red-500 bg-red-100 rounded-md dark:bg-red-500/20 shrink-0">
-												<img
-													className="size-10"
-													src={
-														product.product_img
+												{productImages[product.product_id] ? (
+													<img
+														className="size-10"
+														src={
+															productImages[product.product_id].img
 													}
-													alt={product.product_name || 'Producto'}
-												/>
+														alt={product.product_name || 'Producto'}
+													/>
+												) : (
+													<WifiOff className="size-5" />
+												)}
 											</div>
 											<h6 className="grow">{product.product_name}</h6>
 											<div className="flex flex-col items-end whitespace-nowrap text-right">
