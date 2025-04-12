@@ -149,22 +149,21 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
 							<div className="items-center justify-center hidden px-5 text-center h-header group-data-[layout=horizontal]:md:flex group-data-[layout=horizontal]:ltr::pl-0 group-data-[layout=horizontal]:rtl:pr-0">
 								
 								<Link to="/">
-                  <span className="hidden">
-                      <img src={icon_bk} alt="" className="h-6 mx-auto" />
-                  </span>
+									<span className="hidden">
+										<img src={icon_bk} alt="" className="h-6 mx-auto" />
+									</span>
+														<span className="group-data-[topbar=dark]:hidden group-data-[topbar=brand]:hidden">
+										<img src={logo_bk} alt="" className="h-6 mx-auto" />
+									</span>
+													</Link>
+													
+													<Link to="/" className="hidden group-data-[topbar=dark]:block group-data-[topbar=brand]:block">
 									<span className="group-data-[topbar=dark]:hidden group-data-[topbar=brand]:hidden">
-                      <img src={logo_bk} alt="" className="h-6 mx-auto" />
-                  </span>
-								</Link>
-								
-								<Link to="/" className="hidden group-data-[topbar=dark]:block group-data-[topbar=brand]:block">
-                  <span className="group-data-[topbar=dark]:hidden group-data-[topbar=brand]:hidden">
-                      <img src={logo_wh} alt="" className="h-6 mx-auto" />
-                  </span>
-									<span className="group-data-[topbar=dark]:block group-data-[topbar=brand]:block">
-                      <img src={icon_wh} alt="" className="h-6 mx-auto" />
-                  </span>
-								
+										<img src={logo_wh} alt="" className="h-6 mx-auto" />
+									</span>
+														<span className="group-data-[topbar=dark]:block group-data-[topbar=brand]:block">
+										<img src={icon_wh} alt="" className="h-6 mx-auto" />
+									</span>
 								</Link>
 							</div>
 							
@@ -176,12 +175,12 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
 							<div className="flex items-center gap-1.5">
 								<Link to="/">
 									<span className="flex group-data-[topbar=dark]:hidden group-data-[topbar=brand]:hidden">
-                    <img src={nimbus_cloud_logo_bk} alt="" className="h-10 mx-auto" />
-                  </span>
-									
+										<img src={nimbus_cloud_logo_bk} alt="" className="h-10 mx-auto" />
+									</span>
+														
 									<span className="hidden group-data-[topbar=dark]:flex group-data-[topbar=brand]:block">
-                    <img src={nimbus_cloud_logo_wh} alt="" className="h-10 mx-auto" />
-                  </span>
+										<img src={nimbus_cloud_logo_wh} alt="" className="h-10 mx-auto" />
+									</span>
 								</Link>
 							</div>
 							
@@ -220,7 +219,7 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
 										</a>
 										<ul>
 											<li>
-												<a className="block ltr:pr-4 rtl:pl-4 py-1.5 text-base font-medium transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:text-custom-500 focus:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:focus:text-custom-500" href={process.env.PUBLIC_URL + "/user-profile"}><User2 className="inline-block size-4 ltr:mr-2 rtl:ml-2"></User2> Perfil</a>
+												<Link className="block ltr:pr-4 rtl:pl-4 py-1.5 text-base font-medium transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:text-custom-500 focus:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:focus:text-custom-500" to={process.env.PUBLIC_URL + "/user-profile"}><User2 className="inline-block size-4 ltr:mr-2 rtl:ml-2"></User2> Perfil</Link>
 											</li>
 											<li className="pt-2 mt-2 border-t border-slate-200 dark:border-zink-500">
 												<a className="block ltr:pr-4 rtl:pl-4 py-1.5 text-base font-medium transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:text-custom-500 focus:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:focus:text-custom-500" href={process.env.PUBLIC_URL + "/logout"}><LogOut className="inline-block size-4 ltr:mr-2 rtl:ml-2"></LogOut>Cerrar sesion</a>

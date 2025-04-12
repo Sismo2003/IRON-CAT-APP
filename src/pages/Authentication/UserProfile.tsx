@@ -18,7 +18,7 @@ interface AppUser {
   img: string;
   last_login: string;
   created_at: string;
-  type: 'admin' | 'user';
+  role: 'admin' | 'user';
 }
 
 interface ProfileState {
@@ -125,7 +125,7 @@ const UserProfileCard = ({ userData }: { userData: AppUser | null }) => (
           <p className="text-sm md:text-base text-slate-600 dark:text-zink-300">{userData?.email || 'correo@ejemplo.com'}</p>
         </div>
         <span className="self-start md:self-auto inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-600 dark:text-red-400">
-          {userData?.type === 'admin' ? 'Administrador' : 'Usuario'}
+          {userData?.role === 'admin' ? 'Administrador' : 'Usuario'}
         </span>
       </div>
     </div>
@@ -178,7 +178,7 @@ const UserProfile = () => {
         img: parsedUser.img || '/assets/images/users/avatar-1.jpg',
         last_login: parsedUser.last_login || '',
         created_at: parsedUser.created_at || '',
-        type: parsedUser.type || 'user'
+        role: parsedUser.role || 'user'
       };
     } catch (e) {
       return null;
@@ -326,7 +326,7 @@ const UserProfile = () => {
                   Rol
                 </span>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-600 dark:text-red-400">
-                  {userData?.type === 'admin' ? 'Administrador' : 'Usuario'}
+                  {userData?.role === 'admin' ? 'Administrador' : 'Usuario'}
                 </span>
               </div>
             </div>
