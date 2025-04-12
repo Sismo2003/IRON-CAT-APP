@@ -142,3 +142,7 @@ vendor/phpmailer/vendor/
 
 
 build/
+
+.idea
+composer.lock
+vendor/

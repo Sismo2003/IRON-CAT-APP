@@ -1,0 +1,17 @@
+{
+    "name": "sismo/printer2.0",
+    "autoload": {
+        "psr-4": {
+            "Sismo\\Printer20\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alexis Ortiz",
+            "email": "116782426+Sismo2003@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "mike42/escpos-php": "^4.0"
+    }
+}

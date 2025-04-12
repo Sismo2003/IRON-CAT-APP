@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket</title>
+    <style>
+        @page {
+            size: 72mm 210mm;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+
+        .ticket {
+            width: 72mm;
+            background: white;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .ticket img {
+            display: block;
+            margin: 0 auto 10px;
+            width: 100px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .separator {
+            border-top: 1px dashed black;
+            margin: 10px 0;
+        }
+
+        .table {
+            width: 100%;
+        }
+
+        .table th,
+        .table td {
+            text-align: left;
+            padding: 2px 0;
+        }
+
+        .barcode {
+            display: block;
+            margin: 10px auto;
+            text-align: center;
+        }
+
+        .small {
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ticket">
+        <div class="center">
+            <img src="logo1.png" alt="Logo">
+
+            <p>RECYCLING CENTER</p>
+        </div>
+
+        <p><strong>RFC:</strong> N/A</p>
+        <p><strong>TEL:</strong> 331562845</p>
+        <p><strong>DIR:</strong> IGNACIO BERNAL 3130</p>
+        <p class="center">2/11/2022 - 11:36 AM</p>
+        <p class="center bold">TICKET DE COMPRA</p>
+
+        <div class="separator"></div>
+
+        <p><strong>ENCARGADO:</strong> PERSONA1</p>
+        <p><strong>ID:</strong> 100754</p>
+        <p><strong>id:</strong> P4</p>
+        <p><strong>Estado:</strong> Pendiente</p>
+        <p><strong>Placas:</strong> NNN</p>
+        <p><strong>Conductor:</strong> Javier</p>
+
+        <div class="separator"></div>
+
+        <table class="table">
+            <tr>
+                <th>CANT. (KG)</th>
+                <th>PRODUCTO</th>
+                <th>MERMA</th>
+                <th>PREC/IMPORTE</th>
+            </tr>
+            <tr>
+                <td>2.20</td>
+                <td>Alum</td>
+                <td>N</td>
+                <td>50 / 60.5</td>
+            </tr>
+            <tr>
+                <td>1.50</td>
+                <td>Acero</td>
+                <td>0.10</td>
+                <td>500 / 600.5</td>
+            </tr>
+            <tr>
+                <td>5.70</td>
+                <td>Cobre</td>
+                <td>N</td>
+                <td>1250 / 1370</td>
+            </tr>
+        </table>
+
+        <div class="separator"></div>
+
+        <p><strong>CANTIDAD TOTAL (KG):</strong> 9.40KG</p>
+        <p><strong>CANTIDAD TOTAL MERMA:</strong> 0.10KG</p>
+        <p><strong>IMPORTE TOTAL:</strong> $2031.00</p>
+
+        <div class="separator"></div>
+
+        <p class="center">Operación: 0004932</p>
+
+        <!div class="barcode">
+            <!img src="barcode.png" alt="Código de barras">
+        <!/div>
+
+        <p class="small">**COPIA SIN VALOR**</p>
+        <p class="small">GRACIAS POR TU COMPRA</p>
+    </div>
+</body>
+
+</html> 
