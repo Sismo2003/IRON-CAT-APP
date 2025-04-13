@@ -25,6 +25,7 @@ export const GET_NOTES = "/notes/get-all-notes";
 export const ADD_NOTES =  "/notes/add-note";
 export const UPDATE_NOTES = "/notes/edit-note";
 export const DELETE_NOTES = "/notes/delete-notes";
+export const ADD_FAVORITE_NOTES = "/notes/update-note-flag";
 
 // Products
 // List View

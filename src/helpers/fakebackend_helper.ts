@@ -231,7 +231,7 @@ export const getNotes = () => api.get(url.GET_NOTES, null);
 export const addNotes = (data: any) => api.create(url.ADD_NOTES, data);
 export const updateNotes = (data: any) => api.put(url.UPDATE_NOTES + '/' + data.id, data);
 export const deleteNotes = (data: any) => api.delete(url.DELETE_NOTES + '/' + data, { headers: { data } });
-
+export const noteFlagUpdate = (data : {id : number ,flag : number}) => api.put(url.ADD_FAVORITE_NOTES + '/' + data.id, data);
 // Social
 // Friends
 export const getSocialFriends = () => api.get(url.GET_SOCIAL_FRIENDS, null);

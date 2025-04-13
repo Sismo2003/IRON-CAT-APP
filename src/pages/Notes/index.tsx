@@ -5,6 +5,7 @@ import moment from "moment";
 import "moment/locale/es";
 import { Calendar } from "lucide-react";
 
+import { useSearchParams } from 'react-router-dom';
 
 // Icons
 import { Search, Plus, Trash2, MoreHorizontal, Star, FileEdit, Eye, User2 } from 'lucide-react';
@@ -25,9 +26,10 @@ import {
 	getNotes as onGetNotes,
 	addNotes as onAddNotes,
 	updateNotes as onUpdateNotes,
-	deleteNotes as onDeleteNotes
+	deleteNotes as onDeleteNotes,
+	flagUpdate as onFlagUpdate,
 } from 'slices/thunk';
-import { ToastContainer } from 'react-toastify';
+import {toast, ToastContainer} from 'react-toastify';
 import filterDataBySearch from 'Common/filterDataBySearch';
 import Pagination from 'Common/Pagination';
 
@@ -47,6 +49,8 @@ const Index = () => {
 		})
 	);
 	
+	const [searchParams, setSearchParams] = useSearchParams();
+	
 	const { dataList, loading } = useSelector(selectDataList);
 	
 	const [eventData, setEventData] = useState<any>();
@@ -57,7 +61,6 @@ const Index = () => {
 	
 	const [Overviewshow, setOverview] = useState<boolean>(false);
 	
-	// const [data, setData] = useState([]);
 	const [data, setData] = useState<any[]>([]);
 	
 	
@@ -69,7 +72,6 @@ const Index = () => {
 	useEffect(() => {
 		dispatch(onGetNotes());
 	}, [dispatch]);
-	
 	
 	// Delete Modal
 	const [deleteModal, setDeleteModal] = useState<boolean>(false);
@@ -194,7 +196,6 @@ const Index = () => {
 	const indexOfLast = currentPage * perPageData;
 	const indexOfFirst = indexOfLast - perPageData;
 	
-	// const currentdata = useMemo(() => dataList?.slice(indexOfFirst, indexOfLast), [dataList, indexOfFirst, indexOfLast]);
 	
 	
 	const currentdata = useMemo(() => {
@@ -209,42 +210,42 @@ const Index = () => {
 	
 	// columns
 	const Category = ({ item }: any) => {
+		// console.log(item);
 		switch (item) {
-			case "Automoviles":
-				return (<Dropdown.Trigger
-						className="size-4  border border-dashed rounded-full dropdown-toggle shrink-0 bg-sky-100 border-sky-500 dark:bg-sky-500/20 category-dropdown "
-						id="notesAction1" data-bs-toggle="dropdown">
-						<div></div>
-					</Dropdown.Trigger>
-				);
-			case "personal":
+			case "automovil":
 				return (
 					<Dropdown.Trigger
-						className="size-4  border border-dashed rounded-full dropdown-toggle shrink-0 bg-sky-100 border-sky-500 dark:bg-sky-500/20 category-dropdown "
+						className="size-4  border border-dashed rounded-full shrink-0 category-dropdown bg-green-100 border-green-500 dark:bg-green-500/20"
 						id="notesAction1" data-bs-toggle="dropdown">
 						<div></div>
 					</Dropdown.Trigger>
 				);
-			case "business":
-				return (<Dropdown.Trigger
+			case "urgentes": //personal
+				return (
+					<Dropdown.Trigger
+						className="size-4 border border-dashed rounded-full dropdown-toggle shrink-0 bg-yellow-100 border-yellow-500 dark:bg-yellow-500/20 category-dropdown"
+						id="notesAction1" data-bs-toggle="dropdown">
+						<div></div>
+					</Dropdown.Trigger>
+				);
+				
+			case "pendientes":
+				return (
+					<Dropdown.Trigger
 					className="size-4  border border-dashed rounded-full shrink-0 category-dropdown bg-orange-100 border-orange-500 dark:bg-orange-500/20"
 					id="notesAction1" data-bs-toggle="dropdown">
 					<div></div>
 				</Dropdown.Trigger>);
-			case "social":
-				return (<Dropdown.Trigger
+			case "empleados":
+				return (
+					<Dropdown.Trigger
 					className="size-4  border border-dashed rounded-full shrink-0 category-dropdown bg-purple-100 border-purple-500 dark:bg-purple-500/20"
 					id="notesAction1" data-bs-toggle="dropdown">
 					<div></div>
 				</Dropdown.Trigger>);
-			case "home":
-				return (<Dropdown.Trigger
-					className="size-4  border border-dashed rounded-full shrink-0 category-dropdown bg-green-100 border-green-500 dark:bg-green-500/20"
-					id="notesAction1" data-bs-toggle="dropdown">
-					<div></div>
-				</Dropdown.Trigger>);
 			default:
-				return (<Dropdown.Trigger
+				return (
+					<Dropdown.Trigger
 					className="size-4  border border-dashed rounded-full shrink-0 category-dropdown bg-sky-100 border-sky-500 dark:bg-sky-500/20"
 					id="notesAction1" data-bs-toggle="dropdown">
 					<div></div>
@@ -252,8 +253,44 @@ const Index = () => {
 		}
 	};
 	
+	
+	useEffect(() => {
+		const filterParam = searchParams.get('filter') || 'all';
+		
+		let tab;
+		switch (filterParam) {
+			case 'automovil':
+				tab = 6;
+				break;
+			case 'urgentes':
+				tab = 7;
+				break;
+			case 'empleados':
+				tab = 8;
+				break;
+			case 'pendientes':
+				tab = 9;
+				break;
+			default:
+				tab = 1;
+		}
+		setActiveTab(tab);
+		
+		// Filtra la lista de notas con base en el filtro obtenido
+		const filteredNotes =
+			filterParam === 'all'
+				? dataList
+				: dataList.filter((note: any) => note.category === filterParam);
+		
+		setData(filteredNotes);
+	}, [searchParams, dataList]);
+	
+	
 	const toggleTab = (tab: any, cate: any) => {
+		
 		if (activeTab !== tab) {
+			setSearchParams({ filter: cate });
+			
 			setActiveTab(tab);
 			let filteredNotes = dataList;
 			if (cate !== "all") {
@@ -262,6 +299,8 @@ const Index = () => {
 			setData(filteredNotes);
 		}
 	};
+	
+	
 	
 	const truncateText = (text: any, numberOfWords: number) => {
 		// Split the text into an array of words
@@ -278,6 +317,21 @@ const Index = () => {
 		
 		return truncatedText + ellipsis;
 	};
+	
+	
+	// note makered as favorite
+	const handleMakeredAsFavorite = (id : number, flag : number) => {
+		if(id === null || flag === null){
+			toast.error("Error no se obtuvo los datos necesarios para la actualización de la nota!", { autoClose: 2000 });
+			return;
+		}
+		if(flag === 0){
+			dispatch(onFlagUpdate({id,flag : 1}));
+		}else{
+			dispatch(onFlagUpdate({id,flag : 0}));
+		}
+	};
+	
 	
 	return (
 		<React.Fragment>
@@ -297,44 +351,62 @@ const Index = () => {
 						<div className="card-body">
 							<div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
 								<div className="xl:col-span-4">
-									<ul className="flex flex-wrap w-full gap-2 text-sm font-medium text-center filter-btns grow">
+										<ul className="flex flex-wrap md:flex-nowrap w-full gap-2 text-sm font-medium text-center filter-btns grow">
 										<li>
-											<Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
-                                     ${activeTab === 1 && "active"}`} onClick={() => toggleTab(1, "all")}>Todos</Link>
+											<Link
+												to="#"
+												data-filter="all"
+												className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear
+												rounded-md text-slate-500 dark:text-zink-200 border border-transparent
+												[&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white
+												 dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500
+												 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
+                      ${activeTab === 1 && "active"}`} onClick={() => toggleTab(1, "all")}>Todos</Link>
 										</li>
 										<li>
-											<Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
-                                     ${activeTab === 6 && "active"}`} onClick={() => toggleTab(6, "automovil")}>Autómoviles</Link>
+											<Link
+												to="?filter=automovil"
+												data-filter="automovil"
+												className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear
+												rounded-md text-slate-500 dark:text-zink-200 border border-transparent
+												[&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white
+												 dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500
+												 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
+                      ${activeTab === 6 && "active"}`} onClick={() => toggleTab(6, "automovil")}>Autómoviles</Link>
 										</li>
 										<li>
-											<Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
-                                     ${activeTab === 7 && "active"}`} onClick={() => toggleTab(7, "urgentes")}>Urgentes</Link>
+											<Link
+												to="?filter=urgentes"
+												data-filter="urgentes"
+												className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear
+												rounded-md text-slate-500 dark:text-zink-200 border border-transparent
+												[&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white
+												 dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500
+												 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
+                      ${activeTab === 7 && "active"}`} onClick={() => toggleTab(7, "urgentes")}>Urgentes</Link>
 										</li>
 										<li>
-											<Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
-                                     ${activeTab === 8 && "active"}`} onClick={() => toggleTab(8, "empleados")}>Empleados</Link>
+											<Link
+												to="?filter=empleados"
+												data-filter="empleados"
+												className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear
+												rounded-md text-slate-500 dark:text-zink-200 border border-transparent
+												[&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white
+												 dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500
+												 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
+                      ${activeTab === 8 && "active"}`} onClick={() => toggleTab(8, "empleados")}>Empleados</Link>
 										</li>
 										<li>
-											<Link to="#" data-filter="all" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
-                                     ${activeTab === 9 && "active"}`} onClick={() => toggleTab(9, "pendientes")}>Pendientes</Link>
+											<Link
+												to="?filter=pendientes"
+												data-filter="pendientes"
+												className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear
+												rounded-md text-slate-500 dark:text-zink-200 border border-transparent
+												[&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white
+												 dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500
+												 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]
+                      ${activeTab === 9 && "active"}`} onClick={() => toggleTab(9, "pendientes")}>Pendientes</Link>
 										</li>
-										
-										{/*<li>*/}
-										{/*    <Link to="#" data-filter="business" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]*/}
-										{/*     ${activeTab === 2 && "active"}`} onClick={() => toggleTab(2, "business")}>Business</Link>*/}
-										{/*</li>*/}
-										{/*<li>*/}
-										{/*    <Link to="#" data-filter="social" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]*/}
-										{/*     ${activeTab === 3 && "active"}`} onClick={() => toggleTab(3, "social")}>Social</Link>*/}
-										{/*</li>*/}
-										{/*<li>*/}
-										{/*    <Link to="#" data-filter="home" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]*/}
-										{/*     ${activeTab === 4 && "active"}`} onClick={() => toggleTab(4, "home")}>Home</Link>*/}
-										{/*</li>*/}
-										{/*<li>*/}
-										{/*    <Link to="#" data-filter="personal" className={`inline-block px-4 py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent [&.active]:bg-custom-500 dar:[&.active]:bg-custom-500 [&.active]:text-white dark:[&.active]:text-white hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500 -mb-[1px]*/}
-										{/*     ${activeTab === 5 && "active"}`} onClick={() => toggleTab(5, "personal")}>Personal</Link>*/}
-										{/*</li>*/}
 									</ul>
 								</div>
 								
@@ -368,14 +440,20 @@ const Index = () => {
 											<div className="flex flex-col h-full card-body">
 												<div>
 													<Dropdown className="relative ltr:float-right rtl:float-left">
-														<Dropdown.Trigger className="flex items-center justify-center size-[30px] p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20"
-														                  id="categoryNotes1" data-bs-toggle="dropdown">
+														<Dropdown.Trigger className="flex items-center justify-center size-[30px] p-0 text-slate-500 btn bg-slate-100
+														hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100
+														 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20
+														  dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500
+														  dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20"
+							                  id="categoryNotes1" data-bs-toggle="dropdown">
 															<MoreHorizontal className="size-3" />
 														</Dropdown.Trigger>
-														<Dropdown.Content placement="right-end" className="absolute z-50 py-2 mt-1 text-left list-none bg-white rounded-md shadow-md min-w-[10rem] dark:bg-zink-600" aria-labelledby="categoryNotes1">
-															<li>
-																<Link to="#" data-modal-target="overviewNotesModal"
-																      className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600
+														<Dropdown.Content placement="right-end" className=" absolute z-50 py-2 mt-1 text-left list-none
+														bg-white rounded-md shadow-md min-w-[6.5rem] dark:bg-zink-600" aria-labelledby="categoryNotes1">
+															{/* DETALLES DE LA NOTA */}
+															<li >
+																<button data-modal-target="overviewNotesModal"
+																      className="block w-full px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600
                                              hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200
                                              "
 																      onClick={() => {
@@ -384,23 +462,27 @@ const Index = () => {
 																>
 																	<Eye className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
 																	<span className="align-middle">Detalles</span>
-																</Link>
+																</button>
 															</li>
+															{/*EDITAR NOTA */}
 															<li>
-																<Link to="#" data-modal-target="addNotesModal" className="edit-item-btn block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+																<button data-modal-target="addNotesModal"
+																        className="edit-item-btn block w-full
+																         px-4 py-1.5 text-base transition-all  duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
 																      onClick={() => {
 																	      handleUpdateDataClick(item);
 																      }}>
 																	<FileEdit className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
 																	<span className="align-middle">Editar</span>
-																</Link>
+																</button>
 															</li>
+															{/*BORRAR NOTA */}
 															<li>
-																<Link to="#" className="remove-item-btn block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+																<button className="remove-item-btn block px-4 w-full py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
 																      onClick={() => onClickDelete(item)}>
 																	<Trash2 className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
 																	<span className="align-middle">Borrar</span>
-																</Link>
+																</button>
 															</li>
 														</Dropdown.Content>
 													</Dropdown>
@@ -413,20 +495,56 @@ const Index = () => {
 																className="absolute z-50 py-2 mt-1 text-left list-none bg-white rounded-md shadow-md dropdown-menu min-w-[10rem] dark:bg-zink-600"
 																aria-labelledby="notesAction1">
 																<li>
-																	<Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-																	      to="#!">Automóviles</Link>
+																	<Link
+																		className={`block px-4 py-1.5 text-base transition-all duration-200
+																		ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500
+																	focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100
+																	dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500
+																	dark:focus:text-zink-200 ${activeTab === 6 ? "active" : ""}`}
+														      to="?filter=automovil"
+																	data-filter="automovil"
+																	onClick={() => toggleTab(6, "automovil")}
+																	>Automóviles
+																	</Link>
 																</li>
 																<li>
-																	<Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-																	      to="#!">Urgentes</Link>
+																	<Link
+																		className={`block px-4 py-1.5 text-base transition-all duration-200
+																		ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500
+																	focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100
+																	dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500
+																	dark:focus:text-zink-200 ${activeTab === 7 ? "active" : ""}`}
+																		to="?filter=urgentes"
+																		data-filter="urgentes"
+																		onClick={() => toggleTab(7, "urgentes")}
+																	>Urgentes
+																	</Link>
 																</li>
 																<li>
-																	<Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-																	      to="#!">Empleados</Link>
+																	<Link
+																		className={`block px-4 py-1.5 text-base transition-all duration-200
+																		ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500
+																	focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100
+																	dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500
+																	dark:focus:text-zink-200 ${activeTab === 8 ? "active" : ""}`}
+																		to="?filter=empleados"
+																		data-filter="empleados"
+																		onClick={() => toggleTab(8, "empleados")}
+																	>Empleados
+																	</Link>
 																</li>
 																<li>
-																	<Link className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-																	      to="#!">Pendientes</Link>
+																	<Link
+																		className={`block px-4 py-1.5 text-base transition-all duration-200
+																		ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500
+																	focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100
+																	dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500
+																	dark:focus:text-zink-200 ${activeTab === 9 ? "active" : ""}`}
+																		to="?filter=pendientes"
+																		data-filter="pendientes"
+																		onClick={() => toggleTab(9, "pendientes")}
+																	>Pendientes
+																	</Link>
 																</li>
 															</Dropdown.Content>
 														</Dropdown>
@@ -455,9 +573,21 @@ const Index = () => {
 												}
 												<div className="flex items-center justify-between gap-3 pt-4 mt-auto">
 													<div className="shrink-0">
-														<Link to="#!" className={`group/item toggle-button group/item toggle-button ${item.isActive && "active"}`}>
-															<Star className={"size-5 text-slate-500 dark:text-zink-200 dark:fill-zink-600 fill-slate-200 transition-all duration-150 ease-linear group-[.active]/item:text-yellow-500 dark:group-[.active]/item:text-yellow-500 group-[.active]/item:fill-yellow-200 dark:group-[.active]/item:fill-yellow-500/50 group-hover/item:text-yellow-500 dark:group-hover/item:text-yellow-500 group-hover/item:fill-yellow-200 dark:group-hover/item:fill-yellow-500/50"} />
-														</Link>
+														<a
+															// to="#!"
+															className={`group/item toggle-button group/item toggle-button  ${(item.fav_flag ? 'active' : " ")}`}
+															onClick={() => {
+																handleMakeredAsFavorite(item.id,item.fav_flag);
+															}}
+														>
+															<Star className={"size-5 text-slate-500 dark:text-zink-200 dark:fill-zink-600" +
+																" fill-slate-200 transition-all duration-150 ease-linear cursor-pointer " +
+																"group-[.active]/item:text-yellow-500 dark:group-[.active]/item:text-yellow-500" +
+																" group-[.active]/item:fill-yellow-200 dark:group-[.active]/item:fill-yellow-500/50 " +
+																"group-hover/item:text-yellow-500 dark:group-hover/item:text-yellow-500 " +
+																"group-hover/item:fill-yellow-200 dark:group-hover/item:fill-yellow-500/50"}
+															/>
+														</a>
 													</div>
 													<p className="text-slate-500 dark:text-zink-200 shrink-0">{item.create_date ? item.create_date : ' '}</p>
 												</div>

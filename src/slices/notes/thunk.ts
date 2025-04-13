@@ -4,11 +4,22 @@ import {
     getNotes as getNotesApi,
     addNotes as addNotesApi,
     updateNotes as updateNotesApi,
-    deleteNotes as deleteNotesApi
+    deleteNotes as deleteNotesApi,
+    noteFlagUpdate as noteFlagUpdate,
 } from "../../helpers/fakebackend_helper";
 
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+
+const showToast = (message: string, status: 'info' | 'success' | 'error') => {
+    if (!toast.isActive('unique-toast')) { // Verifica si no hay un toast activo con este id
+        toast[status](message, {
+            toastId: 'unique-toast', // Usa un ID único para controlar
+            autoClose: 1500
+        });
+    }
+};
+
 
 export const getNotes = createAsyncThunk("notes/getNotes", async () => {
     try {
@@ -39,7 +50,7 @@ export const updateNotes = createAsyncThunk("notes/updateNotes", async (event: a
         const response = updateNotesApi(event);
         const data = await response;
         if(data){
-            toast.success("Nota actualizada con exito!", { autoClose: 2000 });
+            showToast("Nota actualizada con exito!",'success');
             return event;
         }else{
             toast.error("La nota no se actualizo!", { autoClose: 2000 });
@@ -55,10 +66,29 @@ export const deleteNotes = createAsyncThunk("notes/deleteNotes", async (event: a
         const response = deleteNotesApi(event);
         const data = await response;
         if(data){
-            toast.success("Nota borrada con exito!", { autoClose: 2000 });
+            showToast("Nota borrada con exito!",'success');
             return event;
         }else{
             toast.error("Hubo un error al eliminar la nota!", { autoClose: 2000 });
+            return response;
+        }
+    } catch (error) {
+        toast.error("Hubo un error al eliminar la nota!", { autoClose: 2000 });
+        return error;
+    }
+});
+
+export const flagUpdate = createAsyncThunk("/notes/update-note-flag", async (event: {id:number, flag:number}) => {
+    try {
+        const response = await noteFlagUpdate(event);
+        
+        const data = response.data;
+        if(data){
+            if(event.flag === 1) showToast("Nota agregada a favoritos con exito!",'success');
+            else showToast("Nota eliminada de favoritos con exito!",'success');
+            return event;
+        }else{
+            toast.error("Hubo un error en la nota!", { autoClose: 2000 });
             return response;
         }
     } catch (error) {
