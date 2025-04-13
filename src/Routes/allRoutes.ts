@@ -4,6 +4,7 @@
 import CashRegister from "pages/CashRegister/main";
 // tickets viewer
 import TicketsViewer from "pages/Tickets/TicketsViewer";
+import EmployeeTicketsViewer from "pages/Tickets/EmployeeTicketViewer";
 
 // dashboard
 import Analytics from "pages/Dashboards/Analytics";
@@ -241,6 +242,7 @@ const authProtectedRoutes: Array<RouteObject> = [
 
   // TICKET Management
   { path: "/apps-tk-ticket", component: TicketsViewer },
+  { path: "/apps-tk-employee-ticket", component: EmployeeTicketsViewer },
   { path: "/apps-tk-auth", component: OrderOverview },
 
   // CUSTOMER Management
