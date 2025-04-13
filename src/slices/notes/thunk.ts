@@ -5,7 +5,7 @@ import {
     addNotes as addNotesApi,
     updateNotes as updateNotesApi,
     deleteNotes as deleteNotesApi,
-    noteFlagUpdate as noteFlagUpdate,
+    noteFlagUpdate,
 } from "../../helpers/fakebackend_helper";
 
 import { toast } from "react-toastify";

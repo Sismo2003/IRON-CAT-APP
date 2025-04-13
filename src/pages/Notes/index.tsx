@@ -573,8 +573,7 @@ const Index = () => {
 												}
 												<div className="flex items-center justify-between gap-3 pt-4 mt-auto">
 													<div className="shrink-0">
-														<a
-															// to="#!"
+														<button
 															className={`group/item toggle-button group/item toggle-button  ${(item.fav_flag ? 'active' : " ")}`}
 															onClick={() => {
 																handleMakeredAsFavorite(item.id,item.fav_flag);
@@ -587,7 +586,7 @@ const Index = () => {
 																"group-hover/item:text-yellow-500 dark:group-hover/item:text-yellow-500 " +
 																"group-hover/item:fill-yellow-200 dark:group-hover/item:fill-yellow-500/50"}
 															/>
-														</a>
+														</button>
 													</div>
 													<p className="text-slate-500 dark:text-zink-200 shrink-0">{item.create_date ? item.create_date : ' '}</p>
 												</div>

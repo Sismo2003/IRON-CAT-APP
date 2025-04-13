@@ -6,9 +6,7 @@ import {
     deleteNotes,
     flagUpdate
 } from './thunk';
-import {toast} from "react-toastify";
-import loading = toast.loading;
-import {addTicket} from "../ticketManagement/thunk";
+
 
 export const initialState = {
     notes: [],
