@@ -2,22 +2,19 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
     Eye, Boxes, TicketX, Loader, Search, 
-    TicketCheck, PackageX, MoreHorizontal, 
-    Trash2, FileEdit, Ticket, BarChart2,
+    TicketCheck, PackageX, Ticket, BarChart2,
     Calendar, CreditCard, Tag, CheckCircle, XCircle, Clock
 } from 'lucide-react';
 import CountUp from 'react-countup';
 import moment from "moment";
 import BreadCrumb from "Common/BreadCrumb";
 import TableContainer from "Common/TableContainer";
-import { Dropdown } from "Common/Components/Dropdown";
-import DeleteModal from "Common/DeleteModal";
 import Modal from "Common/Components/Modal";
 import { ToastContainer } from "react-toastify";
 import filterDataBySearch from "Common/filterDataBySearch";
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { getTicket as getTickets, deleteTicket as onDeleteTicket, updateStatus } from 'slices/thunk';
+import { getTicket as getTickets, updateStatus } from 'slices/thunk';
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
@@ -40,7 +37,6 @@ const EmployeeTicketsDashboard = () => {
     const [displayData, setDisplayData] = useState<any>([]); 
     const [eventData, setEventData] = useState<any>();
     const [show, setShow] = useState<boolean>(false);
-    const [deleteModal, setDeleteModal] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState("1");
     
     // Obtener tickets
@@ -59,22 +55,6 @@ const EmployeeTicketsDashboard = () => {
         setFilteredData(tickets);
         setDisplayData(tickets); // Inicialmente mostrar todos los tickets filtrados
     }, [dataList, employeeData]);
-    
-    // Modal de eliminación
-    const deleteToggle = () => setDeleteModal(!deleteModal);
-    const onClickDelete = (cell: any) => {
-        setDeleteModal(true);
-        if (cell.ticket_id) {
-            setEventData(cell);
-        }
-    };
-    
-    const handleDelete = () => {
-        if (eventData) {
-            dispatch(onDeleteTicket(eventData.ticket_id));
-            setDeleteModal(false);
-        }
-    };
     
     // Actualizar datos
     const handleUpdateDataClick = (ele: any) => {
@@ -176,6 +156,30 @@ const EmployeeTicketsDashboard = () => {
                 );
         }
     };
+
+    // Type de ticket
+    const TicketType = ({ type }: { type: string }) => {
+        switch (type) {
+            case "sale":
+                return (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-200">
+                        Venta
+                    </span>
+                );
+            case "shop":
+                return (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-200">
+                        Compra
+                    </span>
+                );
+            default:
+                return (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-500/20 dark:text-gray-200">
+                        {type}
+                    </span>
+                );
+        }
+    };
     
     // Columnas de la tabla
     const columns = useMemo(() => [
@@ -224,6 +228,14 @@ const EmployeeTicketsDashboard = () => {
             ),
         },
         {
+            header: "Tipo",
+            accessorKey: "ticket_type",
+            enableColumnFilter: false,
+            cell: (cell: any) => (
+                <TicketType type={cell.getValue()} />
+            ),
+        },
+        {
             header: "Estatus",
             accessorKey: "ticket_status",
             enableColumnFilter: false,
@@ -244,25 +256,6 @@ const EmployeeTicketsDashboard = () => {
                     >
                         <Eye className="inline-block size-3" />
                     </button>
-                    <Dropdown className="relative">
-                        <Dropdown.Trigger className="flex items-center justify-center size-8 p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20">
-                            <MoreHorizontal className="size-3" />
-                        </Dropdown.Trigger>
-                        <Dropdown.Content placement={cell.row.index ? "top-end" : "right-end"} className="absolute z-50 py-2 mt-1 ltr:text-left rtl:text-right list-none bg-white rounded-md shadow-md min-w-[10rem] dark:bg-zink-600" aria-labelledby="orderAction1">
-                            <li>
-                                <Link to="#!" className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" onClick={() => handleUpdateDataClick(cell.row.original)}>
-                                    <FileEdit className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
-                                    <span className="align-middle">Detalles</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#!" className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" onClick={() => onClickDelete(cell.row.original)}>
-                                    <Trash2 className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
-                                    <span className="align-middle">Eliminar</span>
-                                </Link>
-                            </li>
-                        </Dropdown.Content>
-                    </Dropdown>
                 </div>
             ),
         }
@@ -316,26 +309,59 @@ const EmployeeTicketsDashboard = () => {
             ) : (
                 <div className="relative w-full h-full">
                     {/* Breadcrumb y título */}
-                    {/* <div className="flex flex-col gap-2 mb-6 md:flex-row md:items-center md:justify-between"> */}
-                        <BreadCrumb 
-                            title={`Tickets de ${employeeData?.fullname || 'Empleado'}`} 
-                            pageTitle='Dashboard' 
-                        />
-                        
-                        {/* {employeeData && (
-                            <div className="flex items-center gap-3 p-3 bg-white rounded-md shadow-sm dark:bg-zink-600">
-                                <div className="flex items-center justify-center size-10 rounded-full bg-custom-50 text-custom-500 dark:bg-custom-500/20 shrink-0">
-                                    <User className="size-5" />
+                    <BreadCrumb 
+                        title={`Tickets de ${employeeData?.fullname || 'Empleado'}`} 
+                        pageTitle='Dashboard' 
+                    />
+                    
+                    {employeeData && (
+                        <div className="flex flex-col gap-4 mb-6">
+                            <div className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm dark:bg-zink-600">
+                                {/* Contenedor del avatar */}
+                                <div className="relative flex items-center justify-center size-12 rounded-full bg-custom-50 text-custom-500 dark:bg-custom-500/20 shrink-0 overflow-hidden">
+                                    {employeeData.img ? (
+                                        <img 
+                                            src={employeeData.img}
+                                            alt={`Foto de ${employeeData.fullname}`}
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                            onError={(e) => {
+                                                // Fallback si la imagen no se carga
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = 'none';
+                                            }}
+                                        />
+                                    ) : (
+                                        <span className="text-lg font-semibold">
+                                            {employeeData.fullname.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                                        </span>
+                                    )}
                                 </div>
-                                <div>
-                                    <h5 className="text-sm font-medium">{employeeData.fullname}</h5>
-                                    <p className="text-xs text-slate-500 dark:text-zink-200">{employeeData.email}</p>
+                                
+                                {/* Información del usuario */}
+                                <div className="flex-1 min-w-0">
+                                    <h5 className="text-base font-semibold truncate text-slate-700 dark:text-zink-100">
+                                        {employeeData.fullname}
+                                    </h5>
+                                    <p className="text-sm truncate text-slate-500 dark:text-zink-300">
+                                        {employeeData.email}
+                                    </p>
+                                </div>
+                                
+                                {/* Rol e ID */}
+                                <div className="flex flex-col items-end">
+                                    <span className="px-2 py-1 text-xs font-medium rounded-full bg-slate-100 text-slate-600 dark:bg-zink-500 dark:text-zink-200">
+                                        {employeeData.type === 'admin' ? 'Administrador' : 
+                                        employeeData.type === 'user' ? 'Usuario' : 
+                                        employeeData.type || 'Usuario'}
+                                    </span>
+                                    <span className="mt-1 text-xs text-slate-500 dark:text-zink-300">
+                                        ID: {employeeData.user_id}
+                                    </span>
                                 </div>
                             </div>
-                        )} */}
-                    {/* </div> */}
+                        </div>
+                    )}
                     
-                    <DeleteModal show={deleteModal} onHide={deleteToggle} onDelete={handleDelete} />
                     <ToastContainer closeButton={false} limit={1} />
                     
                     {/* Tarjetas resumen */}
@@ -673,16 +699,12 @@ const EmployeeTicketsDashboard = () => {
                                                     </div>
                                                     <div>
                                                         <label className="inline-block mb-2 text-sm font-medium">Estado</label>
-                                                        <select
-                                                            name="ticket_status"
-                                                            className="form-select border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-700 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                                            value={validation.values.ticket_status}
-                                                            onChange={validation.handleChange}
-                                                        >
-                                                            <option value="pending">Por Autorizar</option>
-                                                            <option value="deleted">Cancelado</option>
-                                                            <option value="authorized">Autorizado</option>
-                                                        </select>
+                                                        <input 
+                                                            type="text" 
+                                                            className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                            disabled 
+                                                            value={validation.values.ticket_status} 
+                                                        />
                                                     </div>
                                                     <div>
                                                         <label className="inline-block mb-2 text-sm font-medium">Total</label>
@@ -793,7 +815,9 @@ const EmployeeTicketsDashboard = () => {
                                                                         {product.waste || '0.00'}
                                                                         <span className="text-xs text-gray-500"> kg</span>
                                                                     </td>
-                                                                    <td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{product.type || "N/A"}</td>
+                                                                    <td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
+                                                                        {product.type === 'wholesale' ? 'Mayoreo' : product.type === 'retail' ? 'Menudeo' : product.type || "N/A"}
+                                                                    </td>
                                                                     <td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
                                                                         <span className="text-xs text-gray-500"> $</span>{product.unit_price}
                                                                     </td>
@@ -813,22 +837,6 @@ const EmployeeTicketsDashboard = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div className="flex justify-end gap-2 mt-4">
-                                    <button 
-                                        type="button" 
-                                        className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-600 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10"
-                                        onClick={toggle}
-                                    >
-                                        Cerrar
-                                    </button>
-                                    <button 
-                                        type="submit" 
-                                        className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"
-                                    >
-                                        Actualizar Estado
-                                    </button>
                                 </div>
                             </form>
                         </Modal.Body>

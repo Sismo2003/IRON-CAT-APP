@@ -109,11 +109,6 @@ const ShoppingCart = () => {
   const { clientlList } = useSelector(clientDataList);
   const { wasteList } = useSelector(selectWasteList);
 
-  const clients = clientlList.map((client: any) => ({
-    value: client.id,
-    label: client.name,
-  }));
-
   const [materials, setMaterials] = useState<MaterialOption[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientOption | null>(null);
   const [transactionType, setTransactionType] = useState<'compra' | 'venta' | null>(null);
@@ -121,6 +116,7 @@ const ShoppingCart = () => {
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
   const [wasteOptions, setWasteOptions] = useState<WasteOption[]>([]);
+  const [clientSearch, setClientSearch] = useState('');
   const [selectedPriceTypes, setSelectedPriceTypes] = useState<{
     [key: number]: 'wholesale' | 'retail';
   }>({});
@@ -224,6 +220,19 @@ const ShoppingCart = () => {
     setSelectedPriceTypes({});
     setCart([]);
   };
+
+  const filteredClients = clientlList
+  .filter((client: any) => 
+    client.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
+    (client.fullname && client.fullname.toLowerCase().includes(clientSearch.toLowerCase()))
+  )
+  .slice(0, 100)
+  .map((client: any) => ({
+    value: client.id,
+    label: client.fullname ? `${client.name} (${client.fullname})` : client.name, 
+    originalLabel: client.name, 
+    fullname: client.fullname 
+  }));
 
   // Función para mostrar alertas controladas
   const showToast = (message: string) => {
@@ -390,11 +399,13 @@ const ShoppingCart = () => {
           <h5 className="underline text-16 mb-5">Basculas</h5>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
             <Select
-              options={clients}
+              options={filteredClients}
               isSearchable={true}
               placeholder="Seleccionar cliente"
               value={selectedClient}
               onChange={handleClientChange}
+              onInputChange={setClientSearch} // Actualiza el filtro al escribir
+              filterOption={null} // Desactiva el filtro interno
               classNames={{
                 control: ({ isFocused }) =>
                   `border ${
