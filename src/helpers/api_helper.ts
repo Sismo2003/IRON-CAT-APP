@@ -1,8 +1,18 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-axios.defaults.baseURL = "http://thegrid.myddns.me:3000"; // production
-// axios.defaults.baseURL = "http://localhost:3000"; // development
+const ENV_MODE : any = process.env.REACT_APP_MODE;
+
+if(ENV_MODE === "dev") {
+  axios.defaults.baseURL = process.env.REACT_APP_API_DEV;
+}else if(ENV_MODE === "production") {
+  axios.defaults.baseURL = process.env.REACT_APP_API_PROD;
+}else {
+  axios.defaults.baseURL = process.env.REACT_APP_API_LOCAL;
+}
+
+console.log("MODO: " ,ENV_MODE);
+
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
 // Obtener token del localStorage

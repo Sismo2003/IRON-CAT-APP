@@ -353,7 +353,7 @@ const ShoppingCart = () => {
 
     // Primero despacha la acción y espera su resolución
     const result = await dispatch(onAddTicket(payload));
-    console.log('Resultado del thunk:', result); // Verifica esto en consola
+    console.log('Payload: ', payload); // Verifica esto en consola
 
     // Limpiar estados después de éxito
     setCart([]);
@@ -363,8 +363,9 @@ const ShoppingCart = () => {
     setSelectedPriceTypes({});
     setWeights({});
 
+    
     try {
-      const response = await fetch('http://192.168.100.77:8000/src/printer.php', {
+      const response = await fetch('http://0.0.0.0:8009/printer.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

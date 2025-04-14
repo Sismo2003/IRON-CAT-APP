@@ -84,8 +84,8 @@ export const flagUpdate = createAsyncThunk("/notes/update-note-flag", async (eve
         
         const data = response.data;
         if(data){
-            if(event.flag === 1) showToast("Nota agregada a favoritos con exito!",'success');
-            else showToast("Nota eliminada de favoritos con exito!",'success');
+            // if(event.flag === 1) showToast("Nota agregada a favoritos con exito!",'success');
+            // else showToast("Nota eliminada de favoritos con exito!",'success');
             return event;
         }else{
             toast.error("Hubo un error en la nota!", { autoClose: 2000 });
