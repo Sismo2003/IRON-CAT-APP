@@ -79,14 +79,12 @@ const Login = (props: any) => {
                             <img 
                                 src={logoLight} 
                                 alt="" 
-                                className="hidden mx-auto dark:block" 
-                                style={{ height: "30%" }} 
+                                className="hidden mx-auto dark:block h-10 xl:h-14"
                             />
                             <img 
                                 src={logoDark} 
                                 alt="" 
-                                className="block mx-auto dark:hidden" 
-                                style={{ height: "30%" }} 
+                                className="block mx-auto dark:hidden h-10 xl:h-14"
                             />
                         </Link>
 
@@ -115,7 +113,7 @@ const Login = (props: any) => {
                                     id="email"
                                     name="email"
                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                    placeholder="Enter username or email"
+                                    placeholder="Ingrese el correo o el usuario"
                                     onChange={validation.handleChange}
                                     onBlur={validation.handleBlur}
 
@@ -132,7 +130,7 @@ const Login = (props: any) => {
                                     id="Contraseña"
                                     name="password"
                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                    placeholder="Enter password"
+                                    placeholder="Contraseña del usuario"
                                     onChange={validation.handleChange}
                                     onBlur={validation.handleBlur}
 

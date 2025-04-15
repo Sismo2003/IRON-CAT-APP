@@ -15,8 +15,16 @@ import { ToastContainer } from 'react-toastify';
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-const ws_ip = "ws://thegrid.myddns.me:3001";
+const appMode : any = process.env.REACT_APP_MODE;
+let ws_ip : any;
 
+
+if(appMode === 'production'){
+  ws_ip = process.env.REACT_APP_WS_URL_PROD;
+  
+}else{
+  ws_ip = process.env.REACT_APP_WS_URL_DEV;
+}
 const scales = [
   { id: 1, name: "Bascula 1", img: scale },
   { id: 3, name: "Bascula 2", img: scale },

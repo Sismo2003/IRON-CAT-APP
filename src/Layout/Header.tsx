@@ -175,11 +175,12 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
 							<div className="flex items-center gap-1.5">
 								<Link to="/">
 									<span className="flex group-data-[topbar=dark]:hidden group-data-[topbar=brand]:hidden">
-										<img src={nimbus_cloud_logo_bk} alt="" className="h-10 mx-auto" />
+										<img src={nimbus_cloud_logo_bk} alt="" className="h-7 md:h-10 mx-auto" />
+										
 									</span>
 														
 									<span className="hidden group-data-[topbar=dark]:flex group-data-[topbar=brand]:block">
-										<img src={nimbus_cloud_logo_wh} alt="" className="h-10 mx-auto" />
+										<img src={nimbus_cloud_logo_wh} alt="" className="h-7 md:h-10 mx-auto" />
 									</span>
 								</Link>
 							</div>

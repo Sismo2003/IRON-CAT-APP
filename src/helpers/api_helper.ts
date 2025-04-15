@@ -11,8 +11,6 @@ if(ENV_MODE === "dev") {
   axios.defaults.baseURL = process.env.REACT_APP_API_LOCAL;
 }
 
-console.log("MODO: " ,ENV_MODE);
-
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
 // Obtener token del localStorage

@@ -297,7 +297,7 @@ const menuData: any = [
         subItems: [
             {
                 id: 'waste_list',
-                label: 'Lisa de merma',
+                label: 'Lista de merma',
                 link: '/apps-waste',
                 parentId: 'waste'
             }
