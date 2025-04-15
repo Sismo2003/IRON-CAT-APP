@@ -27,7 +27,7 @@ const DistributedChart = ({ chartId }: any) => {
 	let type;
 	let options : any;
 	
-	if(!loading){
+	if(!loading && productsSaleCharts.length > 0){
 		TicketType === 'sale' ? type = productsSaleCharts?.sale : type = productsSaleCharts?.shop ;
 		
 		
