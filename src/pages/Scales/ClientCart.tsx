@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import BreadCrumb from "Common/BreadCrumb";
 import Select from 'react-select';
-// import { Link } from "react-router-dom";
 import scale from "assets/images/scale.png";
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { 
-  getMaterialsAssignedByClient as onGetMaterialsAssignedByClient, // Acción para obtener materiales asignados por cliente
-  getCustomer as onGetCustomer, // Acción para obtener la lista de clientes
-  addTicket as onAddTicket, // Acción para agregar un ticket
-  getWasteRecords as onGetWasteRecords, // Acción para obtener la lista de merma
+  getMaterialsAssignedByClient as onGetMaterialsAssignedByClient,
+  getCustomer as onGetCustomer,
+  addTicket as onAddTicket,
+  getWasteRecords as onGetWasteRecords,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
@@ -43,6 +42,7 @@ interface CartItem {
   id: number;
   product_id: number;
   material: string;
+  originalWeight: number;
   weight: number;
   price: number;
   total: number;
@@ -52,28 +52,35 @@ interface CartItem {
 }
 
 interface WasteOption {
-  value: number; // weight como número
-  label: string; // name de la merma
-  wasteId: string; // waste_id para referencia
-  img?: string; // Imagen opcional
+  value: number;
+  label: string;
+  wasteId: string;
+  img?: string;
 }
 
-// Componente personalizado para mostrar opciones con imágenes
 const CustomOption = ({ innerProps, label, data }: any) => (
   <div {...innerProps} className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-zink-600 cursor-pointer">
     {data.img && (
       <img src={data.img} alt={label} className="w-8 h-8 mr-2 rounded-full" />
     )}
-    <span className="text-slate-700 dark:text-zink-100">{`${label} - (${data.value}kg)`}</span>
+    <span className="text-slate-700 dark:text-zink-100 whitespace-nowrap overflow-hidden text-ellipsis">
+      {`${label} - (${data.value}kg)`}
+    </span>
   </div>
 );
 
 const CustomSingleValue = ({ data }: any) => (
-  <div className="flex items-center">
+  <div className="flex items-center -mt-7 max-w-full gap-1">
     {data.img && (
-      <img src={data.img} alt={data.label} className="w-6 h-6 mr-2 rounded-full" />
+      <img 
+        src={data.img} 
+        alt={data.label} 
+        className="w-5 h-5 rounded-full flex-shrink-0" // Imagen más pequeña
+      />
     )}
-    <span className="text-slate-700 dark:text-zink-100">{`${data.label} - (${data.value}kg)`}</span>
+    <span className="text-slate-700 dark:text-zink-100 truncate text-sm">
+      {data.value}kg {/* Mostrar solo el peso para ahorrar espacio */}
+    </span>
   </div>
 );
 
@@ -81,7 +88,6 @@ const ShoppingCart = () => {
   const dispatch = useDispatch<any>();
   const navigate = useNavigate();
   
-
   const selectDataList = createSelector(
     (state: any) => state.AssignedMaterials,
     (state) => ({
@@ -124,37 +130,32 @@ const ShoppingCart = () => {
     JSON.parse(localStorage.getItem('authUser') || '{}')
   );
 
-  // Obtener clientes y datos de usuario
   useEffect(() => {
     dispatch(onGetCustomer());
     dispatch(onGetWasteRecords());
     setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
 
-  // Obtener materiales ligados al cliente seleccionado
   useEffect(() => {
     if (selectedClient && transactionType) {
       dispatch(onGetMaterialsAssignedByClient({ clientId: selectedClient.value }));
     }
   }, [dispatch, selectedClient, transactionType]);
 
-  // Transformar los datos de la lista de merma
   useEffect(() => {
     if (wasteList && wasteList.length > 0) {
       const formattedWasteOptions = wasteList.map((waste: any) => ({
-        value: parseFloat(waste.weight), // Convertir el peso a número
+        value: parseFloat(waste.weight),
         label: waste.name,
         wasteId: waste.waste_id,
-        img: waste.img, // Incluir la imagen si está disponible
+        img: waste.img,
       }));
       setWasteOptions(formattedWasteOptions);
     }
   }, [wasteList]);
 
-  // Transformar los datos de los materiales
   useEffect(() => {
     if (materialList && materialList.length > 0) {
-
       const formattedMaterials = materialList.map((material: any) => ({
         value: material.value,
         label: material.label,
@@ -169,13 +170,11 @@ const ShoppingCart = () => {
     }
   }, [materialList]);
 
-  // WebSocket para obtener pesos
   useEffect(() => {
     const ws = new WebSocket(ws_ip);
 
     ws.onmessage = (event) => {
-      const jsonObject = JSON.parse(event.data);
-      const data = eval(`(${jsonObject})`);
+      const data = JSON.parse(event.data);
 
       if (Array.isArray(data)) {
         data.forEach(item => {
@@ -213,7 +212,6 @@ const ShoppingCart = () => {
     return () => ws.close();
   }, []);
 
-  // Limpiar selecciones cuando cambia el cliente
   const handleClientChange = (selectedOption: ClientOption | null) => {
     setSelectedClient(selectedOption);
     setSelectedMaterials({});
@@ -234,7 +232,6 @@ const ShoppingCart = () => {
     fullname: client.fullname 
   }));
 
-  // Función para mostrar alertas controladas
   const showToast = (message: string) => {
     if (!toast.isActive('unique-toast')) {
       toast.info(message, { 
@@ -244,7 +241,6 @@ const ShoppingCart = () => {
     }
   };
 
-  // Función para agregar al carrito
   const handleAddToCart = (scaleId: number) => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
     if (!material) return;
@@ -252,7 +248,6 @@ const ShoppingCart = () => {
     const weight = weights[scaleId] || 0;
     const priceType = selectedPriceTypes[scaleId] || 'wholesale';
     
-    // Seleccionar el precio correcto en función del tipo de transacción
     let price = 0;
     if (transactionType === 'compra') {
       price = priceType === 'wholesale' ? material.wholesale_price_buy : material.retail_price_buy;
@@ -261,72 +256,61 @@ const ShoppingCart = () => {
     }
 
     const total = weight * price;
-    const waste = 0; // Inicializar la merma en 0
 
     setCart([...cart, {
       id: scaleId,
       product_id: material.value,
       material: material.label,
-      weight: weight - waste,
+      originalWeight: weight,
+      weight: weight,
       price,
       total,
-      waste,
+      waste: 0,
       type: priceType,
       usePredefinedMerma: false,
     }]);
   };
 
-  // Función para eliminar un elemento del carrito
   const handleDeleteItem = (index: number) => {
     setCart((prevCart) => prevCart.filter((_, i) => i !== index));
   };
 
-  // Función para actualizar la merma de un producto en el carrito
   const handleMermaChange = (index: number, value: number) => {
     const updatedCart = [...cart];
-    const weight = weights[updatedCart[index].id] || 0;
+    const originalWeight = updatedCart[index].originalWeight;
 
-    if (value > weight) {
+    if (value > originalWeight) {
       showToast("La merma no puede ser mayor que el peso registrado.");
       updatedCart[index].waste = 0;
+      updatedCart[index].weight = originalWeight;
       setCart(updatedCart);
       return;
     }
 
     if (value < 0) {
       updatedCart[index].waste = 0;
+      updatedCart[index].weight = originalWeight;
       setCart(updatedCart);
       return;
     }
 
     updatedCart[index].waste = value;
-    updatedCart[index].weight = weight - value;
+    updatedCart[index].weight = originalWeight - value;
+    updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
     setCart(updatedCart);
   };
 
-  // Función para cambiar entre merma manual y predefinida
   const togglePredefinedMerma = (index: number, usePredefined: boolean) => {
     const updatedCart = [...cart];
-    const weight = weights[updatedCart[index].id] || 0;
-
     updatedCart[index].usePredefinedMerma = usePredefined;
-
-    if (usePredefined) {
-      updatedCart[index].waste = 0;
-    } else {
-      updatedCart[index].waste = updatedCart[index].waste || 0;
-    }
-
-    if (updatedCart[index].waste > weight) {
-      showToast("La merma no puede ser mayor que el peso registrado.");
-      return;
-    }
-
-    updatedCart[index].weight = weight - updatedCart[index].waste;
+    
+    // No resetear el valor de waste al cambiar entre modos
+    updatedCart[index].weight = updatedCart[index].originalWeight - updatedCart[index].waste;
+    updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
+    
     setCart(updatedCart);
   };
 
-  // Función para realizar el checkout
   const handleCheckout = async () => {
     if (cart.length === 0) {
       showToast("El carrito está vacío.");
@@ -351,11 +335,9 @@ const ShoppingCart = () => {
       }))
     };
 
-    // Primero despacha la acción y espera su resolución
     const result = await dispatch(onAddTicket(payload));
-    console.log('Payload: ', payload); // Verifica esto en consola
+    console.log('Payload: ', payload);
 
-    // Limpiar estados después de éxito
     setCart([]);
     setSelectedClient(null);
     setTransactionType(null);
@@ -363,7 +345,6 @@ const ShoppingCart = () => {
     setSelectedPriceTypes({});
     setWeights({});
 
-    
     try {
       const response = await fetch('http://0.0.0.0:8009/printer.php', {
         method: 'POST',
@@ -405,8 +386,8 @@ const ShoppingCart = () => {
               placeholder="Seleccionar cliente"
               value={selectedClient}
               onChange={handleClientChange}
-              onInputChange={setClientSearch} // Actualiza el filtro al escribir
-              filterOption={null} // Desactiva el filtro interno
+              onInputChange={setClientSearch}
+              filterOption={null}
               classNames={{
                 control: ({ isFocused }) =>
                   `border ${
@@ -570,7 +551,7 @@ const ShoppingCart = () => {
                           Option: CustomOption,
                           SingleValue: CustomSingleValue
                         }}
-                        className="w-1/2"
+                        className="w-1/2 min-w-[120px]" // Añadido min-w para evitar compresión extrema
                         classNames={{
                           control: ({ isFocused }) =>
                             `border h-10 ${
@@ -579,22 +560,24 @@ const ShoppingCart = () => {
                                 : 'border-slate-200 dark:border-zink-500'
                             } bg-white dark:bg-zink-700`,
                           placeholder: () => 'text-slate-400 dark:text-zink-200',
-                          singleValue: () => 'dark:text-zink-100',
-                          menu: () => 'dark:bg-zink-700 w-1/2',
+                          singleValue: () => 'dark:text-zink-100 text-sm truncate', // Texto más pequeño y truncado
+                          input: () => 'text-sm', // Tamaño de texto reducido
+                          valueContainer: () => 'px-2 py-0.5 gap-1', // Espaciado interno ajustado
+                          menu: () => 'dark:bg-zink-700 min-w-[180px] text-sm', // Menú más compacto
                           option: ({ isFocused, isSelected }) =>
-                            `cursor-pointer px-3 py-2 ${
+                            `cursor-pointer px-2 py-1.5 text-sm ${
                               isFocused
                                 ? 'bg-custom-500 text-white'
                                 : isSelected
                                 ? 'bg-custom-600 text-white'
                                 : 'text-slate-800 dark:text-zink-100'
-                            }`,
+                            } truncate`, // Opciones truncadas
                         }}
                       />
                     ) : (
                       <input
                         type="number"
-                        placeholder="50kg"
+                        placeholder="0kg"
                         className="border rounded-md px-2 py-1 w-1/2 h-10 border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                         value={item.waste || ''}
                         onChange={(e) => handleMermaChange(index, parseFloat(e.target.value) || 0)}

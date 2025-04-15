@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import BreadCrumb from "Common/BreadCrumb";
 import Select from 'react-select';
-// import { Link } from "react-router-dom";
 import scale from "assets/images/scale.png";
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import {
-  getShopProductList as onGetProductList, // Acción para obtener la lista de productos  
-  addTicket as onAddTicket, // Acción para agregar un ticket
-  getWasteRecords as onGetWasteRecords, // Acción para obtener la lista de desperdicios
+  getShopProductList as onGetProductList,
+  addTicket as onAddTicket,
+  getWasteRecords as onGetWasteRecords,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
@@ -36,37 +35,45 @@ interface CartItem {
   id: number;
   product_id: number;
   material: string;
+  originalWeight: number;
   weight: number;
   price: number;
   total: number;
-  waste: number; // Merma siempre presente, inicializada en 0
-  type: 'wholesale' | 'retail'; // Tipo de precio
-  usePredefinedMerma: boolean; // Indica si se usa merma predefinida
+  waste: number;
+  type: 'wholesale' | 'retail';
+  usePredefinedMerma: boolean;
 }
 
 interface WasteOption {
-  value: number; // weight como número
-  label: string; // name de la merma
-  wasteId: string; // waste_id para referencia
-  img?: string; // Imagen opcional
+  value: number;
+  label: string;
+  wasteId: string;
+  img?: string;
 }
 
-// Componente personalizado para mostrar opciones con imágenes
 const CustomOption = ({ innerProps, label, data }: any) => (
   <div {...innerProps} className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-zink-600 cursor-pointer">
     {data.img && (
       <img src={data.img} alt={label} className="w-8 h-8 mr-2 rounded-full" />
     )}
-    <span className="text-slate-700 dark:text-zink-100">{`${label} - (${data.value}kg)`}</span>
+    <span className="text-slate-700 dark:text-zink-100 whitespace-nowrap overflow-hidden text-ellipsis">
+      {`${label} - (${data.value}kg)`}
+    </span>
   </div>
 );
 
 const CustomSingleValue = ({ data }: any) => (
-  <div className="flex items-center">
+  <div className="flex items-center -mt-7 max-w-full gap-1">
     {data.img && (
-      <img src={data.img} alt={data.label} className="w-6 h-6 mr-2 rounded-full" />
+      <img 
+        src={data.img} 
+        alt={data.label} 
+        className="w-5 h-5 rounded-full flex-shrink-0" // Imagen más pequeña
+      />
     )}
-    <span className="text-slate-700 dark:text-zink-100">{`${data.label} - (${data.value}kg)`}</span>
+    <span className="text-slate-700 dark:text-zink-100 truncate text-sm">
+      {data.value}kg {/* Mostrar solo el peso para ahorrar espacio */}
+    </span>
   </div>
 );
 
@@ -112,14 +119,12 @@ const ShoppingCart = () => {
     JSON.parse(localStorage.getItem('authUser') || '{}')
   );
 
-  // Obtener datos de los materiales de la base de datos y usuario logeado
   useEffect(() => {
     dispatch(onGetProductList());
     dispatch(onGetWasteRecords());
     setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
 
-  // Transformar los datos de la base de datos
   useEffect(() => {
     if (materialList && materialList.length > 0) {
       const formattedMaterials = materialList.map((product: any) => ({
@@ -132,14 +137,13 @@ const ShoppingCart = () => {
     }
   }, [materialList]);
 
-  // Transformar los datos de la lista de merma
   useEffect(() => {
     if (wasteList && wasteList.length > 0) {
       const formattedWasteOptions = wasteList.map((waste: any) => ({
-        value: parseFloat(waste.weight), // Convertir el peso a número
+        value: parseFloat(waste.weight),
         label: waste.name,
         wasteId: waste.waste_id,
-        img: waste.img, // Incluir la imagen si está disponible
+        img: waste.img,
       }));
       setWasteOptions(formattedWasteOptions);
     }
@@ -149,8 +153,7 @@ const ShoppingCart = () => {
     const ws = new WebSocket(ws_ip);
 
     ws.onmessage = (event) => {
-      const jsonObject = JSON.parse(event.data);
-      const data = eval(`(${jsonObject})`);
+      const data = JSON.parse(event.data);
 
       if (Array.isArray(data)) {
         data.forEach(item => {
@@ -188,17 +191,15 @@ const ShoppingCart = () => {
     return () => ws.close();
   }, []);
 
-  // Función para mostrar alertas controladas
   const showToast = (message: string) => {
-    if (!toast.isActive('unique-toast')) { // Verifica si no hay un toast activo con este id
+    if (!toast.isActive('unique-toast')) {
       toast.info(message, { 
-        toastId: 'unique-toast', // Usa un ID único para controlar
+        toastId: 'unique-toast',
         autoClose: 2000 
       });
     }
   };
 
-  // Función para agregar al carrito
   const handleAddToCart = (scaleId: number) => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
     if (!material) return;
@@ -208,78 +209,62 @@ const ShoppingCart = () => {
     const price = priceType === 'wholesale' ? material.wholesale_price : material.retail_price;
     const total = weight * price;
 
-    // Validar que la merma no sea mayor que el peso
-    const waste = 0; // Inicializar la merma en 0
-
     setCart([...cart, {
       id: scaleId,
       material: material.label,
       product_id: material.value,
-      weight: weight - waste, // Restar la merma al peso
+      originalWeight: weight, // Guardamos el peso original
+      weight: weight, // Inicialmente el peso ajustado es igual al original
       price,
       total,
-      waste,
+      waste: 0,
       type: priceType,
-      usePredefinedMerma: false, // Por defecto no usa merma predefinida
+      usePredefinedMerma: false,
     }]);
   };
 
-  // Función para eliminar un elemento del carrito
   const handleDeleteItem = (index: number) => {
     setCart((prevCart) => prevCart.filter((_, i) => i !== index));
   };
 
-  // Función para actualizar la merma de un producto en el carrito
   const handleMermaChange = (index: number, value: number) => {
     const updatedCart = [...cart];
-    const weight = weights[updatedCart[index].id] || 0; // Obtener el peso original
+    const originalWeight = updatedCart[index].originalWeight;
 
-    // Validar que la merma no sea mayor que el peso
-    if (value > weight) {
+    if (value > originalWeight) {
       showToast("La merma no puede ser mayor que el peso registrado.");
-      // Limpiar el valor del Select específicamente
       updatedCart[index].waste = 0;
+      updatedCart[index].weight = originalWeight;
       setCart(updatedCart);
       return;
     }
 
     if (value < 0) {
       updatedCart[index].waste = 0;
+      updatedCart[index].weight = originalWeight;
       setCart(updatedCart);
       return;
     }
 
     updatedCart[index].waste = value;
-    updatedCart[index].weight = weight - value; // Restar la merma al peso
+    updatedCart[index].weight = originalWeight - value;
+    updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
     setCart(updatedCart);
   };
 
-  // Función para cambiar entre merma manual y predefinida
   const togglePredefinedMerma = (index: number, usePredefined: boolean) => {
     const updatedCart = [...cart];
-    const weight = weights[updatedCart[index].id] || 0; // Obtener el peso original
-
     updatedCart[index].usePredefinedMerma = usePredefined;
 
     if (usePredefined) {
-      // Si se activa la merma predefinida, establecer la merma en 0
       updatedCart[index].waste = 0;
-    } else {
-      // Si se desactiva, mantener la merma actual
-      updatedCart[index].waste = updatedCart[index].waste || 0;
+      updatedCart[index].weight = updatedCart[index].originalWeight;
     }
-
-    // Validar que la merma no sea mayor que el peso
-    if (updatedCart[index].waste > weight) {
-      showToast("La merma no puede ser mayor que el peso registrado.");
-      return;
-    }
-
-    updatedCart[index].weight = weight - updatedCart[index].waste; // Restar la merma al peso
+    
+    updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
     setCart(updatedCart);
   };
 
-  // Función para realizar el checkout
   const handleCheckout = async () => {
     if (!customerName.trim()) {
       showToast("Por favor ingrese el nombre del cliente");
@@ -293,7 +278,7 @@ const ShoppingCart = () => {
 
     const payload = {
       total: cart.reduce((sum, item) => sum + item.total, 0),
-      user_id: authUser.id, // ID del usuario logeado
+      user_id: authUser.id,
       type: "shop",
       customer_name: customerName,
       cart: cart.map((item) => ({
@@ -308,18 +293,15 @@ const ShoppingCart = () => {
       }))
     };
 
-    // Primero despacha la acción y espera su resolución
     const result = await dispatch(onAddTicket(payload));
-    console.log('Resultado del thunk:', result); // Verifica esto en consola
+    console.log('Resultado del thunk:', result);
 
-    setCart([]); // Vacía el carrito
-    setCustomerName(""); // Limpia el nombre del cliente
-    setSelectedMaterials({}); // Resetea materiales seleccionados
-    setSelectedPriceTypes({}); // Resetea tipos de precio
-    setWeights({}); // Limpia los pesos registrados
+    setCart([]);
+    setCustomerName("");
+    setSelectedMaterials({});
+    setSelectedPriceTypes({});
+    setWeights({});
 
-    
-    
     try {
       const response = await fetch('http://192.168.100.77:8000/src/printer.php', {
         method: 'POST',
@@ -444,7 +426,7 @@ const ShoppingCart = () => {
               cart.map((item: CartItem, index: number) => (
                 <div key={index} className="p-2 border-b">
                   <div className="flex items-center justify-between">
-                    <span>{item.material} ({item.weight}kg)</span> {/* Mostrar el peso ajustado */}
+                    <span>{item.material} ({item.weight}kg)</span>
                     <div className="flex items-center gap-2">
                       <span>${item.total.toFixed(2)}</span>
                       <button
@@ -484,7 +466,7 @@ const ShoppingCart = () => {
                           Option: CustomOption,
                           SingleValue: CustomSingleValue
                         }}
-                        className="w-1/2"
+                        className="w-1/2 min-w-[120px]" // Añadido min-w para evitar compresión extrema
                         classNames={{
                           control: ({ isFocused }) =>
                             `border h-10 ${
@@ -493,16 +475,18 @@ const ShoppingCart = () => {
                                 : 'border-slate-200 dark:border-zink-500'
                             } bg-white dark:bg-zink-700`,
                           placeholder: () => 'text-slate-400 dark:text-zink-200',
-                          singleValue: () => 'dark:text-zink-100',
-                          menu: () => 'dark:bg-zink-700 w-1/2',
+                          singleValue: () => 'dark:text-zink-100 text-sm truncate', // Texto más pequeño y truncado
+                          input: () => 'text-sm', // Tamaño de texto reducido
+                          valueContainer: () => 'px-2 py-0.5 gap-1', // Espaciado interno ajustado
+                          menu: () => 'dark:bg-zink-700 min-w-[180px] text-sm', // Menú más compacto
                           option: ({ isFocused, isSelected }) =>
-                            `cursor-pointer px-3 py-2 ${
+                            `cursor-pointer px-2 py-1.5 text-sm ${
                               isFocused
                                 ? 'bg-custom-500 text-white'
                                 : isSelected
                                 ? 'bg-custom-600 text-white'
                                 : 'text-slate-800 dark:text-zink-100'
-                            }`,
+                            } truncate`, // Opciones truncadas
                         }}
                       />
                     ) : (
@@ -526,7 +510,6 @@ const ShoppingCart = () => {
                 Total: ${cart.reduce((sum, item) => sum + item.total, 0).toFixed(2)}
               </h6>
 
-              {/* Nuevo input para el cliente */}
               <div className="my-3 border-t pt-3">
                 <label htmlFor="customerName" className="inline-block mb-2 text-base font-medium">
                   Nombre del Cliente
