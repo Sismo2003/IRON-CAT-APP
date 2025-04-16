@@ -1,35 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
-// import Flatpickr from 'react-flatpickr';
 import BreadCrumb from "Common/BreadCrumb";
-// import Select from 'react-select';
-
-// react-redux
-import { useDispatch /*, useSelector */} from 'react-redux';
-// import { createSelector } from 'reselect';
-
-// Icon
-import { /*Penci, l*/ UploadCloud } from 'lucide-react';
-
-// Dropzone
+import { UploadCloud } from 'lucide-react';
 import Dropzone from "react-dropzone";
-
-// Formik
 import * as Yup from "yup";
 import { useFormik } from "formik";
-
 import {
     addShopProductList as onAddProductList,
     updateShopProductList as onUpdateProductList
 } from 'slices/thunk';
-
-// const codigo_producto : string = "CODIGO_AQUI_DB";
+import { useDispatch } from 'react-redux';
 
 const AddNew = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { mode, data } = location.state || { mode: "create", data: null };
+    const dispatch = useDispatch<any>();
+    const dataRef = useRef(location.state?.data || null);
+    const modeRef = useRef(location.state?.mode || "create");
+
     interface FileWithPreview {
         name: string;
         size: number;
@@ -38,11 +27,7 @@ const AddNew = () => {
         formattedSize: string;
     }
 
-    const dispatch = useDispatch<any>();
-
     const [selectfiles, setSelectfiles] = useState<FileWithPreview[]>([]);
-    const [eventData, setEventData] = useState<any>(mode === "edit" ? data : null);
-
 
     const formatBytes = (bytes: any, decimals = 2) => {
         if (bytes === 0) return "0 Bytes";
@@ -55,13 +40,12 @@ const AddNew = () => {
     };
 
     const handleAcceptfiles = (files: File[]) => {
-        const file = files[0]; // Solo tomamos el primer archivo
+        const file = files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = (e: any) => {
-                const base64 = reader.result as string; // Convertir a base64
-    
-                // Crear el objeto con la estructura correcta
+                const base64 = reader.result as string;
+
                 const fileWithPreview: FileWithPreview = {
                     ...file,
                     priview: base64,
@@ -69,39 +53,36 @@ const AddNew = () => {
                 };
 
                 validation.setFieldValue('img', e.target.result);
-
-                // Actualizar el estado con la imagen en base64
                 setSelectfiles([fileWithPreview]);
-                
             };
-            reader.readAsDataURL(file); // Leer el archivo como base64
+            reader.readAsDataURL(file);
         }
     };
 
     useEffect(() => {
-        if (mode === "edit" && data.img) {
+        if (modeRef.current === "edit" && dataRef.current?.img) {
             const fileWithPreview = {
                 name: "imagen.jpg",
                 size: 0,
                 type: "image/jpeg",
-                priview: data.img,
+                priview: dataRef.current.img,
                 formattedSize: "0 Bytes",
             };
             setSelectfiles([fileWithPreview]);
         }
-    }, [mode, data]);
+    }, []);
 
     // validation
     const validation: any = useFormik({
         enableReinitialize: true,
         initialValues: {
-            material: (eventData && eventData.material) || '',
-            wholesale_price_buy: (eventData && eventData.wholesale_price_buy) || '',
-            wholesale_price_sell: (eventData && eventData.wholesale_price_sell) || '',
-            retail_price_buy: (eventData && eventData.retail_price_buy) || '',
-            retail_price_sell: (eventData && eventData.retail_price_sell) || '',
-            client_id: (eventData && eventData.client_id) || '',
-            img: (eventData && eventData.img) || null, // Incluir la imagen en los valores iniciales
+            material: dataRef.current?.material || '',
+            wholesale_price_buy: dataRef.current?.wholesale_price_buy || '',
+            wholesale_price_sell: dataRef.current?.wholesale_price_sell || '',
+            retail_price_buy: dataRef.current?.retail_price_buy || '',
+            retail_price_sell: dataRef.current?.retail_price_sell || '',
+            client_id: dataRef.current?.client_id || '',
+            img: dataRef.current?.img || null,
         },
         validationSchema: Yup.object({
             material: Yup.string().required("Por favor ingresa el nombre del material"),
@@ -113,43 +94,36 @@ const AddNew = () => {
                 .required("Por favor selecciona una imagen")
                 .test("fileSize", "La imagen es demasiado grande", (value) => {
                     if (typeof value === "string") {
-                        // Calcular el tamaño en bytes de la cadena base64
                         const base64Length = value.length - (value.indexOf(",") + 1);
                         const padding = value.charAt(value.length - 2) === "=" ? 2 : value.charAt(value.length - 1) === "=" ? 1 : 0;
                         const sizeInBytes = (base64Length * 3) / 4 - padding;
-        
-                        // Limitar el tamaño a 5MB (en bytes)
                         return sizeInBytes <= 5 * 1024 * 1024;
                     }
-                    return false; // Si no es una cadena base64, no es válido
+                    return false;
                 })
                 .test("fileType", "Formato de imagen no válido", (value) => {
                     if (typeof value === "string") {
-                        // Verificar el tipo de imagen basado en el prefijo de la cadena base64
                         const validTypes = ["image/jpeg", "image/png", "image/jpg"];
                         const prefix = value.split(";")[0].split(":")[1];
                         return validTypes.includes(prefix);
                     }
-                    return false; // Si no es una cadena base64, no es válido
+                    return false;
                 }),
         }),
         onSubmit: (values) => {
             const newData = {
                 ...values,
-                wholesale_price_buy: parseFloat(values.wholesale_price_buy),
-                retail_price_buy: parseFloat(values.retail_price_buy),
-                wholesale_price_sell: parseFloat(values.wholesale_price_sell),
-                retail_price_sell: parseFloat(values.retail_price_sell),
+                wholesale_price_buy: parseFloat(values.wholesale_price_buy || 0).toFixed(2),
+                retail_price_buy: parseFloat(values.retail_price_buy || 0).toFixed(2),
+                wholesale_price_sell: parseFloat(values.wholesale_price_sell || 0).toFixed(2),
+                retail_price_sell: parseFloat(values.retail_price_sell || 0).toFixed(2),
             };
 
-            if (mode === "edit") {
-                console.log("Actualizando producto:", newData);
-                dispatch(onUpdateProductList({ id: data.id, ...newData })).then(() => {
-                    console.log("data: ", newData);
+            if (modeRef.current === "edit") {
+                dispatch(onUpdateProductList({ id: dataRef.current.id, ...newData })).then(() => {
                     navigate("/apps-materials-product-list");
                 });
             } else {
-                console.log("Creando nuevo producto:", newData);
                 dispatch(onAddProductList(newData)).then(() => {
                     navigate("/apps-materials-product-list");
                 });
@@ -159,13 +133,12 @@ const AddNew = () => {
 
     return (
         <React.Fragment>
-            <BreadCrumb title={ mode === "edit" ? "Producto" : "Nuevo Producto" } pageTitle='Productos' />
-            {/* <ToastContainer closeButton={false} limit={1} /> */}
+            <BreadCrumb title={ modeRef.current === "edit" ? "Producto" : "Nuevo Producto" } pageTitle='Productos' />
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
                 <div className="xl:col-span-12">
                     <div className="card">
                         <div className="card-body">
-                            <h6 className="mb-4 text-15">{ mode === "edit" ? "Editar Producto" : "Crear Producto" }</h6>
+                            <h6 className="mb-4 text-15">{ modeRef.current === "edit" ? "Editar Producto" : "Crear Producto" }</h6>
 
                             <form className="create-form" id="create-form"
                                 onSubmit={(e) => {
@@ -175,37 +148,23 @@ const AddNew = () => {
                                 }}
                             >
                                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-12">
-                                    <div className="xl:col-span-6">
+                                    <div className="xl:col-span-12">
                                         <label htmlFor="materialNameInput" className="inline-block mb-2 text-base font-medium">Nombre del Material*</label>
                                         <input type="text" id="materialNameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Nombre del material" 
                                             name="material"
                                             onChange={validation.handleChange}
                                             value={validation.values.material || ""}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    e.preventDefault();
+                                                }
+                                            }}
                                         />
                                         {validation.touched.material && validation.errors.material ? (
                                             <p className="text-red-400">{validation.errors.material}</p>
                                         ) : null}
                                         <p className="mt-1 text-sm text-slate-400 dark:text-zink-200">No se exceda de los 50 caracteres.</p>
                                     </div>
-
-                                    <div className="xl:col-span-6">
-                                        <label htmlFor="productVisibility" className="inline-block mb-2 text-base font-medium">Cliente Asociado</label>
-                                        <select className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" data-choices data-choices-search-false id="productVisibility"
-                                            name="client_id"
-                                            onChange={validation.handleChange}
-                                            value={validation.values.client_id || ""}
-                                        >
-                                            <option value="" defaultChecked>Ninguno - Por Defecto</option>
-                                            <option value="1">juan perez</option>
-                                            <option value="2">iker cobbi</option>
-                                            <option value="3">Famosin chkilin</option>
-                                            <option value="4">votanta</option>
-                                        </select>
-                                        {validation.touched.client_id && validation.errors.client_id ? (
-                                            <p className="text-red-400">{validation.errors.client_id}</p>
-                                        ) : null}
-                                    </div>
-                                
                                     
                                     {/* Sección de Precios en Compra */}
                                     <div className="xl:col-span-12 p-4 bg-slate-50 dark:bg-zink-600 rounded-md">
@@ -219,10 +178,17 @@ const AddNew = () => {
                                                     type="number"
                                                     id="wholesale_price_buy"
                                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                                    placeholder="$ 10.2"
+                                                    placeholder="$ 10.20"
                                                     name="wholesale_price_buy"
                                                     onChange={validation.handleChange}
                                                     value={validation.values.wholesale_price_buy || ""}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") {
+                                                            e.preventDefault();
+                                                        }
+                                                    }}
+                                                    step="0.01"
+                                                    min="0"
                                                 />
                                                 {validation.touched.wholesale_price_buy && validation.errors.wholesale_price_buy ? (
                                                     <p className="text-red-400">{validation.errors.wholesale_price_buy}</p>
@@ -235,11 +201,18 @@ const AddNew = () => {
                                                 <input
                                                     type="number"
                                                     id="retail_price_buy"
-                                                    placeholder="$ 13.2"
+                                                    placeholder="$ 13.20"
                                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                                     name="retail_price_buy"
                                                     onChange={validation.handleChange}
                                                     value={validation.values.retail_price_buy || ""}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") {
+                                                            e.preventDefault();
+                                                        }
+                                                    }}
+                                                    step="0.01"
+                                                    min="0"
                                                 />
                                                 {validation.touched.retail_price_buy && validation.errors.retail_price_buy ? (
                                                     <p className="text-red-400">{validation.errors.retail_price_buy}</p>
@@ -259,11 +232,18 @@ const AddNew = () => {
                                                 <input
                                                     type="number"
                                                     id="wholesale_price_sell"
-                                                    placeholder="$ 13.2"
+                                                    placeholder="$ 13.20"
                                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                                     name="wholesale_price_sell"
                                                     onChange={validation.handleChange}
                                                     value={validation.values.wholesale_price_sell || ""}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") {
+                                                            e.preventDefault();
+                                                        }
+                                                    }}
+                                                    step="0.01"
+                                                    min="0"
                                                 />
                                                 {validation.touched.wholesale_price_sell && validation.errors.wholesale_price_sell ? (
                                                     <p className="text-red-400">{validation.errors.wholesale_price_sell}</p>
@@ -276,11 +256,18 @@ const AddNew = () => {
                                                 <input
                                                     type="number"
                                                     id="retail_price_sell"
-                                                    placeholder="$ 13.2"
+                                                    placeholder="$ 13.20"
                                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                                     name="retail_price_sell"
                                                     onChange={validation.handleChange}
                                                     value={validation.values.retail_price_sell || ""}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") {
+                                                            e.preventDefault();
+                                                        }
+                                                    }}
+                                                    step="0.01"
+                                                    min="0"
                                                 />
                                                 {validation.touched.retail_price_sell && validation.errors.retail_price_sell ? (
                                                     <p className="text-red-400">{validation.errors.retail_price_sell}</p>
@@ -295,7 +282,7 @@ const AddNew = () => {
                                         <Dropzone
                                             onDrop={(acceptedFiles: File[]) => {
                                                 if (acceptedFiles.length > 0) {
-                                                    handleAcceptfiles([acceptedFiles[0]]); // Solo toma el primer archivo
+                                                    handleAcceptfiles([acceptedFiles[0]]);
                                                 }
                                             }}
                                             accept={{
@@ -303,7 +290,7 @@ const AddNew = () => {
                                                 "image/jpeg": [],
                                                 "image/jpg": [],
                                             }}
-                                            maxFiles={1} // Solo permite un archivo
+                                            maxFiles={1}
                                         >
                                             {({ getRootProps, getInputProps }) => (
                                                 <div 
@@ -347,10 +334,7 @@ const AddNew = () => {
                                                                             const newImages = [...selectfiles];
                                                                             newImages.splice(index, 1);
                                                                             setSelectfiles(newImages);
-                                                                            setEventData((prevData: any) => ({
-                                                                                ...prevData,
-                                                                                img: null, // Limpiar la imagen en eventData
-                                                                            }));
+                                                                            validation.setFieldValue('img', null);
                                                                         }}>Eliminar</button>
                                                                     </div>
                                                                 </div>
@@ -365,8 +349,7 @@ const AddNew = () => {
                                 </div>
                                 <div className="flex justify-end gap-2 mt-4">
                                     <button type="reset" onClick={ () => navigate("/apps-materials-product-list")} className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-700 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10">Cancelar</button>
-                                    <button type="submit" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">{ mode === "edit" ? "Editar Producto" : "Crear Producto" }</button>
-                                    {/* <button type="button" className="text-white bg-green-500 border-green-500 btn hover:text-white hover:bg-green-600 hover:border-green-600 focus:text-white focus:bg-green-600 focus:border-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:border-green-600 active:ring active:ring-green-100 dark:ring-green-400/10">Draft & Preview</button> */}
+                                    <button type="submit" className="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">{ modeRef.current === "edit" ? "Editar Producto" : "Crear Producto" }</button>
                                 </div>
                             </form>
                         </div>
