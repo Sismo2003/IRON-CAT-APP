@@ -2,8 +2,7 @@ import React from 'react';
 
 import { Dropdown } from 'Common/Components/SideBarDropdown';
 import { Link } from 'react-router-dom';
-
-import { menuData } from "../LayoutMenuData";
+import { getMenuByRole } from "../LayoutMenuData";
 import withRouter from 'Common/withRouter';
 
 //i18n
@@ -13,6 +12,15 @@ import { Network } from 'lucide-react';
 const HorizontalLayout = (props: any) => {
     const path = props.router.location.pathname;
 
+    const [authUser, setAuthUser] = React.useState(() => 
+        JSON.parse(localStorage.getItem('authUser') || '{}')
+    );
+
+    React.useEffect(() => {
+        setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
+    }, []);
+
+    const menuData = getMenuByRole(authUser.role);
     const [menuItems, setMenuItems] = React.useState<any>(menuData);
 
     React.useEffect(() => {
