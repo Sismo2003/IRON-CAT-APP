@@ -86,6 +86,7 @@ export const productImage = (data: any) => api.get(`${url.GET_IMG_BY_ID}/${data}
 
 // Waste
 export const getWaste = () => api.get(url.GET_WASTE, null);
+export const getActiveWaste = () => api.get(url.GET_ACTIVE_WASTE, null);
 export const addWaste = (data: any) => api.create(url.ADD_WASTE, data);
 export const updateWaste = (data: any) => api.update(url.UPDATE_WASTE + '/' + data.id, data);
 export const deleteWaste = (data: any) => api.delete(url.DELETE_WASTE + '/' + data, { headers: { data } });

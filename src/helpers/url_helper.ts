@@ -7,6 +7,7 @@ export const POST_FAKE_REGISTER = "/auth/signup";
 
 // Waste
 export const GET_WASTE = "/waste/get-waste";
+export const GET_ACTIVE_WASTE = "/waste/get-active-waste";
 export const ADD_WASTE = "/waste/add-waste";
 export const UPDATE_WASTE = "/waste/edit-waste";
 export const DELETE_WASTE = "/waste/delete-waste";

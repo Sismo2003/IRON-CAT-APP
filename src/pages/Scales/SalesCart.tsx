@@ -7,7 +7,7 @@ import { createSelector } from 'reselect';
 import { 
   getShopProductList as onGetProductList,
   addTicket as onAddTicket,
-  getWasteRecords as onGetWasteRecords,
+  getActiveWasteRecords as onGetWasteRecords,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";

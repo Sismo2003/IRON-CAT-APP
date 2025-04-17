@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DateTime } from "luxon";
 import {
     getWaste as getWasteApi,
+    getActiveWaste as getActiveWasteApi,
     addWaste as addWasteApi,
     updateWaste as updateWasteApi,
     deleteWaste as deleteWasteApi,
@@ -13,6 +14,14 @@ import { now } from "moment";
 export const getWasteRecords = createAsyncThunk("WasteManagement/getWaste", async () => {
     try {
         const response = getWasteApi();
+        return (await response).data;
+    } catch (error) {
+        return error;
+    }
+});
+export const getActiveWasteRecords = createAsyncThunk("WasteManagement/getActiveWaste", async () => {
+    try {
+        const response = getActiveWasteApi();
         return (await response).data;
     } catch (error) {
         return error;

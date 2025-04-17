@@ -8,7 +8,7 @@ import {
   getMaterialsAssignedByClient as onGetMaterialsAssignedByClient,
   getCustomer as onGetCustomer,
   addTicket as onAddTicket,
-  getWasteRecords as onGetWasteRecords,
+  getActiveWasteRecords as onGetWasteRecords,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";

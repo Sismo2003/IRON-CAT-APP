@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
     getWasteRecords,
+    getActiveWasteRecords,
     addWasteRecord,
     updateWasteRecord,
     deleteWasteRecord
@@ -26,6 +27,18 @@ const WasteManagementSlice = createSlice({
             state.loading = true;
         });
         builder.addCase(getWasteRecords.rejected, (state: any, action: any) => {
+            state.loading = false;
+            state.error = action.payload.error || null;
+        });
+
+        builder.addCase(getActiveWasteRecords.fulfilled, (state: any, action: any) => {
+            state.loading = false;
+            state.wastelist = action.payload;
+        });
+        builder.addCase(getActiveWasteRecords.pending, (state: any) => {
+            state.loading = true;
+        });
+        builder.addCase(getActiveWasteRecords.rejected, (state: any, action: any) => {
             state.loading = false;
             state.error = action.payload.error || null;
         });
