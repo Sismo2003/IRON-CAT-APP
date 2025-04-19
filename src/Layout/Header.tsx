@@ -11,14 +11,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
 
-import icon_bk from "assets/images/iron-cat-logo-tmp-svg/black_icon.svg";
-import icon_wh from "assets/images/iron-cat-logo-tmp-svg/white_icon.svg";
+import icon_bk from "assets/images/iron-cat-logo-tmp-svg/black_icon.png";
+import icon_wh from "assets/images/iron-cat-logo-tmp-svg/white_icon.png";
 
-import logo_bk from "assets/images/iron-cat-logo-tmp-svg/black_logo.svg";
-import logo_wh from "assets/images/iron-cat-logo-tmp-svg/white_logo.svg";
+import logo_bk from "assets/images/iron-cat-logo-tmp-svg/black_logo.png";
+import logo_wh from "assets/images/iron-cat-logo-tmp-svg/white_logo.png";
 
 import nimbus_cloud_logo_wh from "assets/images/nimbus-cloud/logo_nimbus_cloud_white.png"; // Ajusta la ruta
-import  nimbus_cloud_logo_bk from "assets/images/nimbus-cloud/logo_nimbus_cloud_black.png";
+import nimbus_cloud_logo_bk from "assets/images/nimbus-cloud/logo_nimbus_cloud_black.png";
 
 //import components
 import LanguageDropdown from 'Common/LanguageDropdown';
@@ -150,7 +150,7 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
 								
 								<Link to="/">
 									<span className="hidden">
-										<img src={icon_bk} alt="" className="h-6 mx-auto" />
+										<img src={icon_bk} alt="" className="h-10" />
 									</span>
 														<span className="group-data-[topbar=dark]:hidden group-data-[topbar=brand]:hidden">
 										<img src={logo_bk} alt="" className="h-6 mx-auto" />

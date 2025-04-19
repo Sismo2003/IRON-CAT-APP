@@ -6,8 +6,12 @@ import * as Yup from "yup";
 import { useFormik as useFormic } from "formik";
 
 // Image
-import logoLight from "assets/images/LOGOINICIOV1.png";
-import logoDark from "assets/images/LOGOINICIOV1.png";
+import logoDark from "assets/images/iron-cat-logo-tmp-svg/black_logo.png";
+import logoLight from "assets/images/iron-cat-logo-tmp-svg/white_logo.png";
+
+// import logoLight from "assets/images/LOGOINICIOV1.png";
+// import logoDark from "assets/images/LOGOINICIOV1.png";
+
 import { loginUser/*, socialLogin*/ } from "slices/thunk";
 import { useDispatch, useSelector } from "react-redux";
 import withRouter from "Common/withRouter";
@@ -79,12 +83,12 @@ const Login = (props: any) => {
                             <img 
                                 src={logoLight} 
                                 alt="" 
-                                className="hidden mx-auto dark:block h-10 xl:h-14"
+                                className="hidden mx-auto dark:block h-16 xl:h-14"
                             />
                             <img 
                                 src={logoDark} 
                                 alt="" 
-                                className="block mx-auto dark:hidden h-10 xl:h-14"
+                                className="block mx-auto dark:hidden h-16 xl:h-14"
                             />
                         </Link>
 
