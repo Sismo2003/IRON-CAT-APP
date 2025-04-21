@@ -34,8 +34,18 @@ export const ModalContextProvider: React.FC<ModalContextProviderProps> = ({ show
   const bodyElement = document.body;
 
   React.useEffect(() => {
-    bodyElement.classList.toggle('overflow-hidden');
-  }, [isModal, show, bodyElement])
+    if (isModal || show) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+  
+    // Limpieza adicional por si el componente se desmonta
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [isModal, show]);
+  
 
   return (
     <ModalContext.Provider value={{ isModal, setIsModal, handleModalToggle, show, onHide }}>
