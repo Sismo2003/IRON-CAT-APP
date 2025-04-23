@@ -52,8 +52,13 @@ const EmployeeTicketsDashboard = () => {
                 ticket.responsible?.id === employeeData.id
             );
         }
+        // Convertir ticket_id a string si no lo es
+        tickets = tickets.map((ticket: any) => ({
+            ...ticket,
+            ticket_id: ticket.ticket_id?.toString() || ""
+        }));
         setFilteredData(tickets);
-        setDisplayData(tickets); // Inicialmente mostrar todos los tickets filtrados
+        setDisplayData(tickets);
     }, [dataList, employeeData]);
     
     // Actualizar datos
@@ -106,9 +111,26 @@ const EmployeeTicketsDashboard = () => {
     
     // Búsqueda de datos
     const filterSearchData = (e: any) => {
-        const search = e.target.value;
+        const search = e.target.value.toString().toLowerCase();
         const keysToSearch = ['ticket_id'];
-        filterDataBySearch(displayData, search, keysToSearch, setDisplayData);
+        
+        // Obtener los datos filtrados por la pestaña activa
+        let dataToFilter = filteredData;
+        if (activeTab === "2") {
+            dataToFilter = filteredData.filter((order: any) => order.ticket_status === "Autorizados");
+        } else if (activeTab === "3") {
+            dataToFilter = filteredData.filter((order: any) => order.ticket_status === "Por autorizar");
+        } else if (activeTab === "4") {
+            dataToFilter = filteredData.filter((order: any) => order.ticket_status === "Cancelados");
+        }
+        
+        if (search === "") {
+            // Si no hay búsqueda, mostrar los datos filtrados por la pestaña
+            setDisplayData(dataToFilter);
+        } else {
+            // Filtrar los datos ya filtrados por pestaña
+            filterDataBySearch(dataToFilter, search, keysToSearch, setDisplayData);
+        }
     };
     
     // Cambiar pestaña y filtrar por estado

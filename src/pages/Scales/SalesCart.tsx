@@ -288,6 +288,7 @@ const ShoppingCart = () => {
     const payload = {
       total: cart.reduce((sum, item) => sum + item.total, 0),
       user_id: authUser.id,
+      user_name: authUser.name + " " + authUser.last_name,
       type: "sale",
       customer_name: customerName,
       cart: cart.map((item) => ({
@@ -305,6 +306,11 @@ const ShoppingCart = () => {
     const result = await dispatch(onAddTicket(payload));
     console.log('Resultado del thunk:', result);
 
+    const payloadToPrintTicket = {
+      ...payload,
+      ticket_id : result.payload.ticketId
+    }
+
     setCart([]);
     setCustomerName("");
     setSelectedMaterials({});
@@ -317,7 +323,7 @@ const ShoppingCart = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payloadToPrintTicket),
       });
   
       if (!response.ok) {

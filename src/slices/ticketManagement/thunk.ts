@@ -47,7 +47,8 @@ export const getImage = createAsyncThunk("ticketManagement/getImageId", async (i
 export const addTicket = createAsyncThunk("ticketManagement/addTicket", async (event: any) => {
     try {
         const response = newTicket(event);
-        await response;
+        const ticketId = (await response).data;
+        event.ticketId = ticketId;
         toast.success("Ticket creado con éxito", { autoClose: 2000 });
         return event;
     } catch (error) {
