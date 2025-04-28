@@ -38,6 +38,8 @@ const ListView = () => {
     const [data, setData] = useState<any>([]);
     const [eventData, setEventData] = useState<any>();
 
+    console.log("data: ", data);
+
     // Get Data
     useEffect(() => {
         dispatch(onGetProductList());
@@ -69,7 +71,7 @@ const ListView = () => {
     // Search Data
     const filterSearchData = (e: any) => {
         const search = e.target.value;
-        const keysToSearch = ['material', 'wholesale_price', 'retail_price'];
+        const keysToSearch = ['material', 'wholesale_price', 'retail_price', 'existence'];
         filterDataBySearch(dataList, search, keysToSearch, setData);
     };
 
@@ -130,6 +132,29 @@ const ListView = () => {
             cell: (cell: any) => (
                 <span className="category px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-slate-100 border-slate-200 text-slate-500 dark:bg-slate-500/20 dark:border-slate-500/20 dark:text-zink-200">{cell.getValue()}</span>
             ),
+        },
+        {
+            header: "Existencia (kg)",
+            accessorKey: "existence",
+            enableColumnFilter: false,
+            cell: (cell: any) => {
+                const value = parseFloat(cell.getValue());
+                let colorClass = "";
+                
+                if (value < 0) {
+                    colorClass = "bg-red-100 border-transparent text-red-500 dark:bg-red-500/20";
+                } else if (value >= 0 && value < 50) {
+                    colorClass = "bg-blue-100 border-transparent text-blue-500 dark:bg-blue-500/20";
+                } else {
+                    colorClass = "bg-green-100 border-transparent text-green-500 dark:bg-green-500/20";
+                }
+                
+                return (
+                    <span className={`px-2.5 py-0.5 text-xs inline-block font-medium rounded border ${colorClass}`}>
+                        {value.toFixed(2)}
+                    </span>
+                );
+            },
         },
         // {
         //     header: "Stock",

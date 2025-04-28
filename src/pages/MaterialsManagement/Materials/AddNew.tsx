@@ -83,6 +83,7 @@ const AddNew = () => {
             retail_price_sell: dataRef.current?.retail_price_sell || '',
             client_id: dataRef.current?.client_id || '',
             img: dataRef.current?.img || null,
+            existence: dataRef.current?.existence || 0,
         },
         validationSchema: Yup.object({
             material: Yup.string().required("Por favor ingresa el nombre del material"),
@@ -90,6 +91,9 @@ const AddNew = () => {
             wholesale_price_sell: Yup.number(),
             retail_price_buy: Yup.number(),
             retail_price_sell: Yup.number(),
+            existence: Yup.number()
+                .required("Por favor ingresa la existencia")
+                .min(0, "La existencia no puede ser negativa"),
             img: Yup.mixed()
                 .required("Por favor selecciona una imagen")
                 .test("fileSize", "La imagen es demasiado grande", (value) => {
@@ -117,6 +121,7 @@ const AddNew = () => {
                 retail_price_buy: parseFloat(values.retail_price_buy || 0).toFixed(2),
                 wholesale_price_sell: parseFloat(values.wholesale_price_sell || 0).toFixed(2),
                 retail_price_sell: parseFloat(values.retail_price_sell || 0).toFixed(2),
+                existence: parseFloat(values.existence || 0).toFixed(2),
             };
 
             if (modeRef.current === "edit") {
@@ -147,8 +152,8 @@ const AddNew = () => {
                             }}
                         >
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                {/* Campo principal - Ocupa todo el ancho */}
-                                <div className="md:col-span-2 lg:col-span-3">
+                                {/* Campo de Nombre del Material */}
+                                <div className="md:col-span-1 lg:col-span-2">
                                     <label htmlFor="materialNameInput" className="inline-block mb-2 text-base font-medium">Nombre del Material*</label>
                                     <input
                                         type="text"
@@ -168,6 +173,32 @@ const AddNew = () => {
                                         <p className="text-red-400">{validation.errors.material}</p>
                                     ) : null}
                                     <p className="mt-1 text-sm text-slate-400 dark:text-zink-200">No se exceda de los 50 caracteres.</p>
+                                </div>
+
+                                {/* Campo de Existencia */}
+                                <div>
+                                    <label htmlFor="existence" className="inline-block mb-2 text-base font-medium">
+                                        Cantidad en Kg*
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="existence"
+                                        className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                        placeholder="0.00"
+                                        name="existence"
+                                        onChange={validation.handleChange}
+                                        value={validation.values.existence || ""}
+                                        step="0.01"
+                                        min="0"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                    />
+                                    {validation.touched.existence && validation.errors.existence ? (
+                                        <p className="text-red-400">{validation.errors.existence}</p>
+                                    ) : null}
                                 </div>
 
                                 {/* Sección de Precios en Compra */}

@@ -134,10 +134,10 @@ export const updateShopProductList = createAsyncThunk("ecommerce/updateProductLi
         const response = updateProductListApi(event);
         const data = await response;
         console.log("data update: ", data);
-        toast.success("Data updated Successfully", { autoClose: 2000 });
+        toast.success("Material actualizado con éxito", { autoClose: 2000 });
         return event;
     } catch (error) {
-        toast.error("Data updated Failed", { autoClose: 2000 });
+        toast.error("Material no actualizado", { autoClose: 2000 });
         return error;
     }
 });

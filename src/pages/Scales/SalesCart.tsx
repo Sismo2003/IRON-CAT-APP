@@ -213,7 +213,7 @@ const ShoppingCart = () => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
     if (!material) return;
 
-    const weight = weights[scaleId] || 0;
+    const weight = weights[scaleId] || 10;
     const priceType = selectedPriceTypes[scaleId] || 'wholesale';
     const price = priceType === 'wholesale' ? material.wholesale_price : material.retail_price;
     const total = weight * price;

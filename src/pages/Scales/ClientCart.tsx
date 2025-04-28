@@ -128,7 +128,7 @@ const ShoppingCart = () => {
 
   const [materials, setMaterials] = useState<MaterialOption[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientOption | null>(null);
-  const [transactionType, setTransactionType] = useState<'compra' | 'venta' | null>(null);
+  const [transactionType, setTransactionType] = useState<'shop' | 'sale' | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
@@ -256,13 +256,13 @@ const ShoppingCart = () => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
     if (!material) return;
 
-    const weight = weights[scaleId] || 0;
+    const weight = weights[scaleId] || 10;
     const priceType = selectedPriceTypes[scaleId] || 'wholesale';
     
     let price = 0;
-    if (transactionType === 'compra') {
+    if (transactionType === 'shop') {
       price = priceType === 'wholesale' ? material.wholesale_price_buy : material.retail_price_buy;
-    } else if (transactionType === 'venta') {
+    } else if (transactionType === 'sale') {
       price = priceType === 'wholesale' ? material.wholesale_price_sell : material.retail_price_sell;
     }
 
@@ -420,12 +420,12 @@ const ShoppingCart = () => {
             />
             <Select
               options={[
-                { value: 'compra', label: 'Compra' },
-                { value: 'venta', label: 'Venta' },
+                { value: 'shop', label: 'Compra' },
+                { value: 'sale', label: 'Venta' },
               ]}
               placeholder="Seleccionar tipo de transacción"
-              value={transactionType ? { value: transactionType, label: transactionType === 'compra' ? 'Compra' : 'Venta' } : null}
-              onChange={(selectedOption) => setTransactionType(selectedOption?.value as 'compra' | 'venta' | null)}
+              value={transactionType ? { value: transactionType, label: transactionType === 'shop' ? 'Compra' : 'Venta' } : null}
+              onChange={(selectedOption) => setTransactionType(selectedOption?.value as 'shop' | 'sale' | null)}
               classNames={{
                 control: ({ isFocused }) =>
                   `border ${
