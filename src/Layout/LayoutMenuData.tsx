@@ -5,7 +5,8 @@ import {
     House,
     ShoppingCart,
     Weight,
-    CookingPot
+    CookingPot,
+    Percent
   } from "lucide-react";
   
   const fullMenu = [
@@ -135,7 +136,7 @@ import {
     {
       id: "discountCodes",
       label: 'Codigos de descuento',
-      icon: <CookingPot />,
+      icon: <Percent />,
       link: "/#",
       subItems: [
         {
