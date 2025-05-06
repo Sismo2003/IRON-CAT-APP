@@ -14,14 +14,13 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import Modal from "Common/Components/Modal";
 
-const appMode : any = process.env.REACT_APP_MODE;
-let ws_ip : any;
-
+const appMode: any = process.env.REACT_APP_MODE;
+let ws_ip: any;
 
 if(appMode === 'production'){
   ws_ip = process.env.REACT_APP_WS_URL_PROD;
-  
 }else{
   ws_ip = process.env.REACT_APP_WS_URL_DEV;
 }
@@ -127,6 +126,16 @@ const ShoppingCart = () => {
   const [authUser, setAuthUser] = useState(() => 
     JSON.parse(localStorage.getItem('authUser') || '{}')
   );
+  const [largeModal, setLargeModal] = useState(false);
+  const [discountCode, setDiscountCode] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Datos de ejemplo para códigos de descuento
+  const discountOptions = [
+    { value: 'DESC10', label: 'DESC10 - 10% de descuento' },
+    { value: 'DESC20', label: 'DESC20 - 20% de descuento' },
+    { value: 'DESC30', label: 'DESC30 - 30% de descuento' },
+  ];
 
   useEffect(() => {
     dispatch(onGetProductList());
@@ -139,8 +148,8 @@ const ShoppingCart = () => {
       const formattedMaterials = materialList.map((product: any) => ({
         value: product.id,
         label: product.material,
-        wholesale_price: product.wholesale_price_sell,
-        retail_price: product.retail_price_sell,
+        wholesale_price: Number(product.wholesale_price_sell),
+        retail_price: Number(product.retail_price_sell),
       }));
       setMaterials(formattedMaterials);
     }
@@ -215,7 +224,7 @@ const ShoppingCart = () => {
 
     const weight = weights[scaleId] || 10;
     const priceType = selectedPriceTypes[scaleId] || 'wholesale';
-    const price = priceType === 'wholesale' ? material.wholesale_price : material.retail_price;
+    const price = Number(priceType === 'wholesale' ? material.wholesale_price : material.retail_price);
     const total = weight * price;
 
     setCart([...cart, {
@@ -274,23 +283,47 @@ const ShoppingCart = () => {
     setCart(updatedCart);
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      showToast("No hay productos en el carrito");
+      return;
+    }
+    setLargeModal(true);
+  };
+
+  const calculateTotalWithDiscount = () => {
+    const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
+    let discount = 0;
+
+    if (discountCode === 'DESC10') discount = subtotal * 0.1;
+    else if (discountCode === 'DESC20') discount = subtotal * 0.2;
+    else if (discountCode === 'DESC30') discount = subtotal * 0.3;
+
+    return {
+      subtotal,
+      discount,
+      total: subtotal - discount
+    };
+  };
+
+  const confirmAndPrint = async () => {
     if (!customerName.trim()) {
       showToast("Por favor ingrese el nombre del cliente");
       return;
     }
 
-    if (cart.length === 0) {
-      showToast("El carrito está vacío");
-      return;
-    }
+    setIsSubmitting(true);
 
+    const totals = calculateTotalWithDiscount();
     const payload = {
-      total: cart.reduce((sum, item) => sum + item.total, 0),
+      total: totals.total,
       user_id: authUser.id,
       user_name: authUser.name + " " + authUser.last_name,
       type: "sale",
       customer_name: customerName,
+      discount_code: discountCode,
+      subtotal: totals.subtotal,
+      discount_amount: totals.discount,
       cart: cart.map((item) => ({
         id: item.id,
         product_id: item.product_id,
@@ -303,21 +336,23 @@ const ShoppingCart = () => {
       }))
     };
 
-    const result = await dispatch(onAddTicket(payload));
-    console.log('Resultado del thunk:', result);
-
-    const payloadToPrintTicket = {
-      ...payload,
-      ticket_id : result.payload.ticketId
-    }
-
-    setCart([]);
-    setCustomerName("");
-    setSelectedMaterials({});
-    setSelectedPriceTypes({});
-    setWeights({});
-
     try {
+      const result = await dispatch(onAddTicket(payload));
+      console.log('Resultado del thunk:', result);
+
+      const payloadToPrintTicket = {
+        ...payload,
+        ticket_id: result.payload.ticketId
+      };
+
+      setCart([]);
+      setCustomerName("");
+      setSelectedMaterials({});
+      setSelectedPriceTypes({});
+      setWeights({});
+      setDiscountCode(null);
+      setLargeModal(false);
+
       const response = await fetch('http://192.168.100.77:8000/src/printer.php', {
         method: 'POST',
         headers: {
@@ -325,19 +360,24 @@ const ShoppingCart = () => {
         },
         body: JSON.stringify(payloadToPrintTicket),
       });
-  
+
       if (!response.ok) {
         throw new Error('Error en la solicitud');
       }
-  
+
       const data = await response.json();
       console.log('Respuesta del servidor:', data);
-  
+
       navigate('/apps-materials-product-list');
     } catch (error) {
       console.error('Error:', error);
+      showToast("Ocurrió un error al procesar la compra");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const totals = calculateTotalWithDiscount();
 
   return (
     <>
@@ -348,6 +388,130 @@ const ShoppingCart = () => {
         autoClose={2000}
         newestOnTop
       />
+
+      {/* Large Modal para el resumen */}
+      <Modal show={largeModal} onHide={() => setLargeModal(false)} id="summaryModal" modal-center="true"
+        className="fixed flex flex-col transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4"
+        dialogClassName="w-screen md:w-[40rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
+        
+        <Modal.Header className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500"
+          closeButtonClass="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
+          <Modal.Title className="text-16">Resumen de Compra</Modal.Title>
+        </Modal.Header>
+        
+        <Modal.Body className="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
+          <div className="space-y-4">
+            {/* Lista de productos */}
+            <div className="border rounded-lg divide-y dark:divide-zink-500 dark:border-zink-500">
+              {cart.map((item, index) => (
+                <div key={index} className="p-3 flex justify-between items-center">
+                  <div>
+                    <h6 className="font-medium">{item.material}</h6>
+                    <p className="text-sm text-slate-500 dark:text-zink-200">
+                      {item.weight}kg × ${Number(item.price || 0).toFixed(2)} ({item.type === 'wholesale' ? 'Mayoreo' : 'Menudeo'})
+                    </p>
+                    {item.waste > 0 && (
+                      <p className="text-xs text-slate-400 dark:text-zink-300">
+                        Merma: {item.waste}kg
+                      </p>
+                    )}
+                  </div>
+                  <span className="font-semibold">${Number(item.total || 0).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Input para nombre del cliente */}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Nombre del Cliente <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                className={`form-input w-full ${!customerName.trim() ? 'border-red-500' : 'border-slate-200 dark:border-zink-500'}`}
+                placeholder="Ingrese nombre del cliente"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                required
+              />
+              {!customerName.trim() && (
+                <p className="text-sm text-red-500">Este campo es requerido</p>
+              )}
+            </div>
+
+            {/* Select para código de descuento */}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Código de Descuento (Opcional)</label>
+              <Select
+                options={discountOptions}
+                isClearable
+                placeholder="Seleccionar descuento..."
+                onChange={(selected) => setDiscountCode(selected?.value || null)}
+                className="react-select"
+                classNamePrefix="select"
+                classNames={{
+                  control: ({ isFocused }) =>
+                    `border h-10 ${
+                      isFocused
+                        ? 'focus:outline-none border-custom-500 dark:border-custom-800'
+                        : 'border-slate-200 dark:border-zink-500'
+                    } bg-white dark:bg-zink-700 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 disabled:text-slate-500 dark:disabled:text-zink-200 rounded-md`,
+                  placeholder: () => 'placeholder:text-slate-400 dark:placeholder:text-zink-200',
+                  singleValue: () => 'dark:text-zink-100',
+                  menu: () => 'bg-white dark:bg-zink-700 z-50',
+                  option: ({ isFocused, isSelected }) =>
+                    `cursor-pointer px-3 py-2 ${
+                      isSelected
+                        ? 'bg-custom-600 text-white'
+                        : isFocused
+                        ? 'bg-custom-500 text-white'
+                        : 'dark:text-zink-100'
+                    }`,
+                }}
+              />
+            </div>
+
+            {/* Totales */}
+            <div className="space-y-2 pt-2 border-t dark:border-zink-500">
+              <div className="flex justify-between">
+                <span>Subtotal:</span>
+                <span>${totals.subtotal.toFixed(2)}</span>
+              </div>
+              {totals.discount > 0 && (
+                <div className="flex justify-between text-green-500">
+                  <span>Descuento:</span>
+                  <span>-${totals.discount.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between font-semibold text-lg">
+                <span>Total:</span>
+                <span>${totals.total.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+        
+        <Modal.Footer className="flex items-center justify-between p-4 mt-auto border-t border-slate-200 dark:border-zink-500">
+          <button
+            onClick={() => setLargeModal(false)}
+            className="btn bg-slate-100 dark:bg-zink-600 text-slate-500 dark:text-zink-200 border-slate-200 dark:border-zink-500 hover:bg-slate-200 hover:dark:bg-zink-500 hover:dark:border-zink-400"
+          >
+            Volver
+          </button>
+          <button
+            onClick={confirmAndPrint}
+            disabled={!customerName.trim() || isSubmitting}
+            className={`btn text-white border-red-500 ${
+              !customerName.trim() || isSubmitting
+                ? 'bg-red-400 border-red-400 cursor-not-allowed'
+                : 'bg-red-500 hover:bg-red-600 hover:border-red-600'
+            }`}
+          >
+            {isSubmitting ? 'Procesando...' : 'Confirmar e Imprimir'}
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+
+      {/* Contenido principal */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
         <div className="xl:col-span-9">
           <h5 className="underline text-16 mb-5">Basculas</h5>
@@ -524,24 +688,6 @@ const ShoppingCart = () => {
               <h6 className="text-16">
                 Total: ${cart.reduce((sum, item) => sum + item.total, 0).toFixed(2)}
               </h6>
-
-              <div className="my-3 border-t pt-3">
-                <label htmlFor="customerName" className="inline-block mb-2 text-base font-medium">
-                  Nombre del Cliente
-                </label>
-                <input
-                  type="text"
-                  id="customerName"
-                  className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                  placeholder="Ingrese nombre del cliente"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  required
-                />
-                {!customerName.trim() && (
-                  <p className="mt-1 text-sm text-red-500">Este campo es requerido</p>
-                )}
-              </div>
 
               <button
                 onClick={handleCheckout}

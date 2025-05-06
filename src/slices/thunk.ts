@@ -47,3 +47,5 @@ export * from "./assignCustomerMaterial/thunk";
 export * from "./assignedMaterialsToClient/thunk";
 
 export * from "./wasteManagement/thunk";
+
+export * from "./discountCodes/thunk";

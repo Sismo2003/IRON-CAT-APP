@@ -43,7 +43,7 @@ const ListView = () => {
 	const [data, setData] = useState<any[]>([]);
 	const [eventData, setEventData] = useState<any>();
 	
-	console.log("data: ", data);
+	// console.log("data: ", data);
 	
 	// Get Data
 	useEffect(() => {

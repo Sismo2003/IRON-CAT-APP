@@ -69,9 +69,14 @@ export const postJwtForgetPwd = (data: any) => api.create(url.POST_FAKE_JWT_PASS
 export const postSocialLogin = (data: any) => api.create(url.SOCIAL_LOGIN, data);
 
 
+// Discount codes management
+export const getDiscountCodes = () => api.get(url.GET_DISCOUNT_CODES, null);
+export const addDiscountCode = (data: any) => api.create(url.ADD_DISCOUNT_CODES, data);
+export const updateDiscountCode = (data: any) => api.update(url.UPDATE_DISCOUNT_CODES + '/' + data.id, data);
+export const deleteDiscountCode = (data: any) => api.delete(url.DELETE_DISCOUNT_CODES + '/' + data, { headers: { data } });
+export const incrementUsesDiscountCode = (data: any) => api.update(url.INCREMENT_USES_DISCOUNT_CODES + '/' + data.id, data);
 
 // TICKET Management
-
 export const getAllTickets = () => api.get(url.GET_ALL_TICEKTS, null);
 export const addTicket = (data: any) => api.create(url.ADD_TICKET, data);
 export const getTicketById = (id: any) => api.get(url.GET_TICKET_BY_ID,  { id });

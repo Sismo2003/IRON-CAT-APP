@@ -1,9 +1,12 @@
-
-//  const servidor_ip : string = "http://thegrid.myddns.me:3000";
-//const servidor_ip : string = "http://localhost:3000"; // TEST
-
 // REGISTER
 export const POST_FAKE_REGISTER = "/auth/signup";
+
+// Discount Codes
+export const GET_DISCOUNT_CODES = "/discount-codes/get-discount-codes";
+export const ADD_DISCOUNT_CODES = "/discount-codes/add-discount-codes";
+export const UPDATE_DISCOUNT_CODES = "/discount-codes/edit-discount-codes";
+export const DELETE_DISCOUNT_CODES = "/discount-codes/delete-discount-codes";
+export const INCREMENT_USES_DISCOUNT_CODES = "/discount-codes/increment-uses";
 
 // Waste
 export const GET_WASTE = "/waste/get-waste";

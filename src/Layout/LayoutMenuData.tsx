@@ -133,6 +133,20 @@ import {
       ],
     },
     {
+      id: "discountCodes",
+      label: 'Codigos de descuento',
+      icon: <CookingPot />,
+      link: "/#",
+      subItems: [
+        {
+          id: 'discountCodes_list',
+          label: 'Lista de codigos',
+          link: '/apps-discount-codes',
+          parentId: 'discountCodes'
+        }
+      ],
+    },
+    {
       id: 'notes',
       label: 'Notes',
       icon: <ScrollText />,

@@ -1,18 +1,17 @@
 
 
-// caja
+// Caja
 import CashRegister from "pages/CashRegister/main";
 // tickets viewer
 import TicketsViewer from "pages/Tickets/TicketsViewer";
 import EmployeeTicketsViewer from "pages/Tickets/EmployeeTicketViewer";
 
-// dashboard
+// Dashboard
 import Analytics from "pages/Dashboards/Analytics";
 import Ecommerce from "pages/Dashboards/Ecommerce";
 import Email from "pages/Dashboards/Email";
 import HRDashboard from "pages/Dashboards/HR";
 import SocialMediaDashboard from "pages/Dashboards/SocialMedia";
-
 import DashboardIronCat from "pages/Dashboard"
 
 // Chat
@@ -65,6 +64,9 @@ import Notes from "pages/Notes";
 
 // Waste
 import WasteList from "pages/Waste/WasteList";
+
+// Discount Codes
+import DiscountCodes from "pages/DiscountCode/DiscountCodeList";
 
 // Social Media
 import Friends from "pages/SocialMedia/Friends";
@@ -234,6 +236,9 @@ const authProtectedRoutes: Array<RouteObject> = [
 
   // Cash Register - caja
   {path : "/CashRegister" , component: CashRegister },
+
+  // Discount Codes
+  { path: "/apps-discount-codes", component: DiscountCodes },
 
   // Scales
   { path: "/apps-scales-shopcart", component: ShoppingCart },

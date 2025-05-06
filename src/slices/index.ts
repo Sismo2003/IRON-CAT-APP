@@ -57,6 +57,9 @@ import AssignedMaterialReducer from "./assignedMaterialsToClient/reducer";
 // Waste Management
 import WasteManagementReducer from "./wasteManagement/reducer";
 
+// Discount Codes
+import DiscountCodesReducer from "./discountCodes/reducer";
+
 
 
 
@@ -79,7 +82,8 @@ const rootReducer = combineReducers({
     Users: UsersReducer,
     AssingMaterial: AssingMaterialReducer,
     AssignedMaterials: AssignedMaterialReducer,
-    WasteManagement: WasteManagementReducer
+    WasteManagement: WasteManagementReducer,
+    DiscountCodesManagement: DiscountCodesReducer,
 });
 
 

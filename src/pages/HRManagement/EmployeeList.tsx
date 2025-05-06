@@ -287,8 +287,7 @@ const EmployeeList = () => {
                 </div>
             ),
         }
-    ], []
-    );
+    ], []);
 
     return (
         <React.Fragment>
