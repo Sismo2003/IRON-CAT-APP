@@ -121,7 +121,13 @@ const Orders = () => {
 			ticket_date: (eventData && eventData.ticket_date) ||  "",
 			productos: (eventData && eventData.productos) || [],
 			responsible: (eventData && eventData.responsible) || [] ,
-			client: (eventData && eventData.client) || []
+			client: (eventData && eventData.client) || [] ,
+			
+			ticket_subtotal : (eventData && eventData.subtotal_ticket) || "",
+			discount_code : (eventData && eventData.discount_code) || "",
+			discount_total : (eventData && eventData.discount_amount) || "",
+
+			
 		},
 		validationSchema: Yup.object({
 			ticket_id: Yup.string().required("Es necesario el identificador del ticket!")
@@ -208,6 +214,14 @@ const Orders = () => {
 				header: "Cliente",
 				accessorFn: (row: any) => row.ticketCustomerName ? row.ticketCustomerName : row.client?.name,
 				enableColumnFilter: false
+			},
+			{
+				header: "Subtotal",
+				accessorKey: "subtotal_ticket",
+				enableColumnFilter: false,
+				cell: (cell: any) => (
+					<span>$ {cell.getValue()}</span>
+				),
 			},
 			{
 				header: "Total",
@@ -354,13 +368,13 @@ const Orders = () => {
 			//HEADER -> tipo
 			const type = row.ticket_type === 'shop' ? 'Compra' : 'Venta';
 			//HEADER -> Cliente
-			const client = row.ticketCustomerName ?? 'N\A';
+			const client = row.ticketCustomerName ?? 'Sin registro';
 			//HEADER -> Nombre del responsable
-			const responsible_name = row.responsible?.name ?? 'N\A';
+			const responsible_name = row.responsible?.name ?? 'Sin registro';
 			//HEADER -> Nombre del responsable
-			const responsible_email = row.responsible?.email ?? 'N\A';
+			const responsible_email = row.responsible?.email ?? 'Sin registro';
 			//HEADER -> Nombre del responsable
-			const responsible_rol = row.responsible?.role ?? 'N\A';
+			const responsible_rol = row.responsible?.role ?? 'Sin registro';
 			
 			//PUSH AL arreglo que devolvemos
 			values.push(
@@ -392,9 +406,6 @@ const Orders = () => {
 			// 4) Devuelvo el array completo
 			return [...values];
 		});
-		
-		console.log("headers: ",headerRow);
-		console.log("DataRows: ",dataRows[0]);
 		
 		const wsData = [headerRow, ...dataRows];
 
@@ -704,11 +715,40 @@ const Orders = () => {
 										<input type="text" id="responsableName" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
 										       disabled value={validation.values.responsible.name || "SIN REGISTRO"} required />
 									</div>
+									
+									{/* TERNARIA PARA CODIGOS DE DESCUENTO */}
+									{ validation.values.discount_code  ?
+										(
+											<>
+												{/* Discount Code */}
+												<div className="xl:col-span-6">
+													<label htmlFor="discount_code" className="inline-block mb-2 text-base font-medium">Código de Descuento</label>
+													<input type="text" id="discount_code" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+																 disabled value={validation.values.discount_code || "SIN REGISTRO"} required />
+												</div>
+												{/* Discount Amount */}
+												<div className="xl:col-span-6">
+													<label htmlFor="discount_total" className="inline-block mb-2 text-base font-medium">Total de Descuento</label>
+													<input type="text" id="discount_total" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+																 disabled value={ validation.values.discount_total ? "$ " + validation.values.discount_total : "SIN REGISTRO"} required />
+												</div>
+											</>
+										):
+										null
+									}
+									
+									{/* SubTotal del Ticket */}
+									<div className="xl:col-span-6">
+										<label htmlFor="ticket_subtotal" className="inline-block mb-2 text-base font-medium">Subtotal del Ticket</label>
+										<input type="text" id="ticket_subtotal" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+										       disabled value={validation.values.ticket_subtotal ?  "$ " + validation.values.ticket_subtotal: "SIN REGISTRO"} required />
+									</div>
+									
 									{/* Total del Ticket */}
 									<div className="xl:col-span-6">
-										<label htmlFor="responsableName" className="inline-block mb-2 text-base font-medium">Total del Ticket</label>
-										<input type="text" id="responsableName" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-										       disabled value={"$ " + validation.values.ticket_total || "SIN REGISTRO"} required />
+										<label htmlFor="ticket_total" className="inline-block mb-2 text-base font-medium">Total del Ticket</label>
+										<input type="text" id="ticket_total" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+										       disabled value={ validation.values.ticket_total ?  "$ " + validation.values.ticket_total : "SIN REGISTRO"} required />
 									</div>
 									
 									<div className="card xl:col-span-12">
