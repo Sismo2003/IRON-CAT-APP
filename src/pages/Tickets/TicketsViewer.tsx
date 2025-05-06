@@ -16,7 +16,7 @@ import {
 	MoreHorizontal,
 	Trash2,
 	FileEdit,
-	Ticket
+	Ticket, Download
 } from 'lucide-react';
 import { OrdersOverviewChart } from "./charts";
 import { Link } from "react-router-dom";
@@ -43,6 +43,9 @@ import { useFormik } from "formik";
 import { ToastContainer } from "react-toastify";
 import filterDataBySearch from "Common/filterDataBySearch";
 
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 
 
 const Orders = () => {
@@ -58,7 +61,7 @@ const Orders = () => {
 	);
 	
 	const { dataList,loader } = useSelector(selectDataList);
-	console.log(loader);
+	
 	
 	const [data, setData] = useState<any>([]);
 	
@@ -216,7 +219,8 @@ const Orders = () => {
 			},
 			{
 				header: "Creado por",
-				accessorKey: "responsible.name",
+				// accessorKey: "responsible.name",
+				accessorFn: row => row.responsible?.name ?? "",
 				enableColumnFilter: false,
 				
 			},
@@ -304,6 +308,106 @@ const Orders = () => {
 		});
 		return totals;
 	}, [dataList]);
+	
+	
+	interface ExportableColumn {
+		header: string;
+		accessorKey: string;
+	}
+	
+	const handleExport = () => {
+		// 1) Filter to only the columns that have accessorKey
+		const cols = columns.filter(
+			(c => c.accessorKey)
+		) as ExportableColumn[];
+		
+		const exportCols: ExportableColumn[] = cols.map(({ header, accessorKey }) => ({
+			header,
+			accessorKey
+		}));
+		
+		// Calcula el máximo de productos en cualquier ticket
+		let productFields = ['Producto','Peso','Merma','Precio unitario (kg)','Total','Tipo'];
+		const maxProducts : number = data.reduce((max : number, t : any) => Math.max(max, t.productos?.length || 0), 0);
+		
+		
+		// 2) Build the header and data rows
+		
+		const headerRow = [
+			...exportCols.map(c => c.header),
+			'Tipo',
+			'Cliente',
+			'Nombre Responsable',
+			'Email Responsable',
+			'Rol Responsable'
+		];
+		for (let i = 0; i < maxProducts; i++) {
+			productFields.forEach(f  =>
+				headerRow.push(f +" "+ (i + 1)));
+		}
+		
+		
+		const dataRows = data.map((row: any) => {
+			// valores de columns
+			const values = exportCols.map(c => row[c.accessorKey] ?? '');
+			
+			//HEADER -> tipo
+			const type = row.ticket_type === 'shop' ? 'Compra' : 'Venta';
+			//HEADER -> Cliente
+			const client = row.ticketCustomerName ?? 'N\A';
+			//HEADER -> Nombre del responsable
+			const responsible_name = row.responsible?.name ?? 'N\A';
+			//HEADER -> Nombre del responsable
+			const responsible_email = row.responsible?.email ?? 'N\A';
+			//HEADER -> Nombre del responsable
+			const responsible_rol = row.responsible?.role ?? 'N\A';
+			
+			//PUSH AL arreglo que devolvemos
+			values.push(
+				type,
+				client,
+				responsible_name,
+				responsible_email,
+				responsible_rol,
+			)
+			
+			productFields = ['product_name','weight','waste','unit_price','total','type'];
+			
+			
+			// 3) Aquí acoplo el for tal cual, empujando a base
+			for (let i = 0; i < maxProducts; i++) {
+				const p = row.productos[i] || {};
+				productFields.forEach(f => {
+					if(f === 'type' ){
+						let tmp;
+						if(p[f] === 'wholesale') tmp = 'Precio Especial';
+						else tmp = 'Precio regular';
+						values.push(tmp);
+					}else{
+						values.push(p[f] ?? '');
+					}
+				});
+			}
+			
+			// 4) Devuelvo el array completo
+			return [...values];
+		});
+		
+		console.log("headers: ",headerRow);
+		console.log("DataRows: ",dataRows[0]);
+		
+		const wsData = [headerRow, ...dataRows];
+
+		// 3) SheetJS boilerplate
+		const ws = XLSX.utils.aoa_to_sheet(wsData);
+		const wb = XLSX.utils.book_new();
+		XLSX.utils.book_append_sheet(wb, ws, 'Productos');
+		const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+		const date = new Date();
+		const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+		// console.log(formattedDate);
+		saveAs(new Blob([buf], { type: 'application/octet-stream' }), 'REPORTE DE TICKETS [' +formattedDate + '].xlsx');
+	};
 	
 	
 	return (
@@ -394,12 +498,28 @@ const Orders = () => {
 						{/* Table  */}
 						<div className="card" id="ticketsTable">
 							<div className="card-body">
-								<div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-									<div className="lg:col-span-3">
-										<div className="relative">
-											<input type="text" className="ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-											       placeholder="Buscar ..." autoComplete="off" onChange={(e) => filterSearchData(e)} />
-											<Search className="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600" />
+								<div className="xl:col-span-2 lg:col-span-1 card-header p-4">
+									<div className="w-full flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+										{/* Input de búsqueda con ancho limitado */}
+										<div className="w-full sm:w-auto sm:flex-1 max-w-md">
+											<div className="relative">
+												<input
+													type="text"
+													className="w-full ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+													placeholder="Buscar ..."
+													autoComplete="off"
+													onChange={(e) => filterSearchData(e)}
+												/>
+												<Search className="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600" />
+											</div>
+										</div>
+										
+										{/* Botones */}
+										<div className="flex flex-col gap-2 sm:flex-row sm:justify-end flex-shrink-0">
+											<button onClick={handleExport} type="button" className="whitespace-nowrap flex items-center justify-center gap-2 text-purple-500 bg-white border border-purple-500 border-dashed btn hover:text-purple-600 hover:bg-purple-50 hover:border-purple-600 focus:text-purple-600 focus:bg-purple-100 focus:border-purple-700 active:text-purple-700 active:bg-purple-200 active:border-purple-700 dark:bg-zink-700 dark:border-purple-400 dark:text-purple-300 dark:hover:bg-purple-800/20 dark:hover:text-purple-400 dark:focus:bg-purple-800/30 dark:focus:text-purple-400 dark:active:bg-purple-800/40 dark:active:text-purple-400">
+												<Download className="inline-block size-4" />
+												<span className="align-middle text-sm">Descargar Reporte</span>
+											</button>
 										</div>
 									</div>
 								</div>
