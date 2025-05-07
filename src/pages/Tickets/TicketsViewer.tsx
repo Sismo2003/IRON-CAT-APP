@@ -192,7 +192,7 @@ const Orders = () => {
 				return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-red-100 border-red-200 text-red-500 dark:bg-red-500/20 dark:border-red-500/20">Cancelados</span>);
 			case "Autorizados":
 			case 'authorized':
-				return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-green-100 border-green-200 text-green-500 dark:bg-green-500/20 dark:border-green-500/20">Autorizados</span>);
+				return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-green-100 border-green-200 text-green-500 dark:bg-green-500/20 dark:border-green-500/20">Pagados</span>);
 			default:
 				return (<span className="delivery_status px-2.5 py-0.5 text-xs inline-block font-medium rounded border bg-sky-100 border-sky-200 text-sky-500 dark:bg-sky-500/20 dark:border-sky-500/20">{item}</span>);
 		}
@@ -499,7 +499,7 @@ const Orders = () => {
 											<h5 className="mb-1 text-16">
 												<CountUp end={ticketTotals.Autorizados} separator="," className="counter-value" />
 											</h5>
-											<p className="text-slate-500 dark:text-zink-200">Tickets Autorizados</p>
+											<p className="text-slate-500 dark:text-zink-200">Tickets Pagados</p>
 										</div>
 									</div>
 								</div>
@@ -548,7 +548,7 @@ const Orders = () => {
                             hover:text-custom-500 dark:hover:text-custom-500 active:text-custom-500 dark:active:text-custom-500
                             -mb-[1px]" onClick={() => { toggleTab("2", "Autorizados"); }}>
 											<TicketCheck className="inline-block size-4 ltr:mr-1 rtl:ml-1" />
-											<span className="align-middle">Autorizados </span>
+											<span className="align-middle">Pagado </span>
 										</Link>
 									</li>
 									<li className={`group ${activeTab === "3" && "active"}`}>

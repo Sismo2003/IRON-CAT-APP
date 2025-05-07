@@ -37,7 +37,7 @@ const Checkout = () => {
 	);
 	const { ticketList, loading } = useSelector(selectTicket);
 	
-	
+	console.log(ticketList);
 	function handle_ticket(event: React.FormEvent) {
 		event.preventDefault(); // Evita que se recargue la página
 		const input = document.getElementById('idToFind') as HTMLInputElement;
@@ -255,7 +255,7 @@ const Checkout = () => {
 												onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'authorized', ticketList?.data?.ticket[0].type)}
 												className="text-green-500 bg-green-100 btn hover:text-white hover:bg-green-600 focus:text-white focus:bg-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:ring active:ring-green-100 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500 dark:hover:text-white dark:focus:bg-green-500 dark:focus:text-white dark:active:bg-green-500 dark:active:text-white dark:ring-green-400/20"
 											>
-												<span className="align-middle">Autorizar Ticket</span>
+												<span className="align-middle">Marcar como pagado</span>
 												<TicketCheck className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
 											</button>
 										) : (
@@ -303,14 +303,14 @@ const Checkout = () => {
 												switch(ticketList.data.ticket[0].status) {
 													case "Por autorizar":
 													case "pending":
-														return (<span className="px-2.5 py-0.5 text-xs font-medium rounded border bg-yellow-100 border-yellow-200 text-yellow-500 dark:bg-yellow-500/20 dark:border-yellow-500/20 uppercase">Por Autorizar</span>
+														return (<span className="px-2.5 py-0.5 text-xs font-medium rounded border bg-yellow-100 border-yellow-200 text-yellow-500 dark:bg-yellow-500/20 dark:border-yellow-500/20 uppercase">Por pagar</span>
 														);
 													case "Cancelados":
 													case "deleted":
 														return (
 															<span className="px-2.5 py-0.5 text-xs font-medium rounded border bg-red-100 border-red-200 text-red-500 dark:bg-red-500/20 dark:border-red-500/20 uppercase">Cancelado</span>);
 													default:
-														return (<span className="px-2.5 py-0.5 text-xs font-medium rounded border bg-green-100 border-green-200 text-green-500 dark:bg-green-500/20 dark:border-green-500/20 uppercase">Autorizado</span>);
+														return (<span className="px-2.5 py-0.5 text-xs font-medium rounded border bg-green-100 border-green-200 text-green-500 dark:bg-green-500/20 dark:border-green-500/20 uppercase">Pagado</span>);
 												}
 											})()}
 										</p>
