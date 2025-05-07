@@ -6,7 +6,8 @@ import {
     ShoppingCart,
     Weight,
     CookingPot,
-    Percent
+    Percent,
+    History,
   } from "lucide-react";
   
   const fullMenu = [
@@ -182,6 +183,13 @@ import {
           parentId: 'Scales'
         }
       ]
+    },
+    {
+      id: "ticket history",
+      label: 'Histórico Tickets',
+      icon: <History />,
+      link: "/apps-tk-ticket",
+      parentId: 2,
     },
     {
       id: "waste",
