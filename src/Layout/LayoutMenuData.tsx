@@ -183,6 +183,20 @@ import {
         }
       ]
     },
+    {
+      id: "waste",
+      label: 'Merma',
+      icon: <CookingPot />,
+      link: "/#",
+      subItems: [
+        {
+          id: 'waste_list',
+          label: 'Lista de merma',
+          link: '/apps-waste',
+          parentId: 'waste'
+        }
+      ],
+    },
 		{
       id: 'notes',
       label: 'Notes',

@@ -121,7 +121,7 @@ const DiscountCodeList = () => {
         discount_type: eventData?.discount_type || 'percentage',
         discount_value: eventData?.discount_value || 0,
         max_uses: eventData?.max_uses || 100,
-        end_date: eventData?.end_date || DateTime.now().plus({ days: 30 }).toISO(),
+        end_date: eventData?.end_date || DateTime.now().plus({ days: 30 }).endOf('day').toISO(),
         status: eventData?.status || 'active',
         uses: eventData?.uses || 0,
     }), [eventData]);
@@ -149,10 +149,14 @@ const DiscountCodeList = () => {
                 .min(DateTime.now().toISO(), "La fecha de fin no puede ser anterior a hoy"),
         }),
         onSubmit: (values) => {
+
+            const mysqlDate = DateTime.fromISO(values.end_date).toFormat("yyyy-MM-dd HH:mm:ss");
+
             if (isEdit && eventData && eventData.id) {
                 const updateData = {
                     id: eventData.id,
                     ...values,
+                    end_date: mysqlDate,
                     // Actualizar estado automáticamente basado en usos y fecha
                     status: DateTime.fromISO(values.end_date) < DateTime.now() ? 'inactive' : 
                         values.uses >= values.max_uses ? 'exhausted' : 
@@ -165,7 +169,8 @@ const DiscountCodeList = () => {
                     id: Math.floor(Math.random() * (30 - 20)) + 20,
                     code_id: values.code_id || "#IRON-DESC-" + uuidv4().split("-")[0].toUpperCase(),
                     uses: 0,
-                    status: 'active'
+                    status: 'active',
+                    end_date: mysqlDate
                 };
                 console.log("newData", newData);
                 dispatch(onAddDiscountCode(newData));
@@ -188,7 +193,7 @@ const DiscountCodeList = () => {
                 discount_value: 0,
                 max_uses: 100,
                 uses: 0,
-                end_date: DateTime.now().plus({ days: 30 }).toISO(),
+                end_date: DateTime.now().plus({ days: 30 }).set({ hour: 23, minute: 59, second: 59 }).toISO(),
                 status: 'active'
             });
             validation.resetForm();
@@ -482,16 +487,25 @@ const DiscountCodeList = () => {
                             <div className="xl:col-span-6">
                                 <label htmlFor="endDateInput" className="inline-block mb-2 text-base font-medium">Fecha de vencimiento</label>
                                 <input 
-                                    type="datetime-local" 
+                                    type="date"
                                     id="endDateInput" 
                                     className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" 
                                     name="end_date"
                                     onChange={(e) => {
-                                        const date = e.target.value ? DateTime.fromFormat(e.target.value, "yyyy-MM-dd'T'HH:mm").toISO() : '';
-                                        validation.setFieldValue("end_date", date);
+                                        if (e.target.value) {
+                                            // Crear fecha con hora límite (23:59:59)
+                                            const dateWithEndOfDay = DateTime.fromISO(e.target.value)
+                                                .set({ hour: 23, minute: 59, second: 59 })
+                                                .toISO();
+                                            validation.setFieldValue("end_date", dateWithEndOfDay);
+                                        } else {
+                                            validation.setFieldValue("end_date", '');
+                                        }
                                     }}
-                                    value={validation.values.end_date ? DateTime.fromISO(validation.values.end_date).toFormat("yyyy-MM-dd'T'HH:mm") : ""}
-                                    min={DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm")}
+                                    value={validation.values.end_date 
+                                        ? DateTime.fromISO(validation.values.end_date).toFormat("yyyy-MM-dd") 
+                                        : ""}
+                                    min={DateTime.now().toFormat("yyyy-MM-dd")}
                                 />
                                 {validation.touched.end_date && validation.errors.end_date ? (
                                     <p className="text-red-400">{validation.errors.end_date}</p>

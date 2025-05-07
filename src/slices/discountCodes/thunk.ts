@@ -8,6 +8,7 @@ import {
 } from "../../helpers/fakebackend_helper";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { DateTime } from "luxon";
 
 export const getDiscountCodes = createAsyncThunk("discountCodeManagement/getDiscountCodes", async () => {
     try {
@@ -19,9 +20,14 @@ export const getDiscountCodes = createAsyncThunk("discountCodeManagement/getDisc
 });
 export const addDiscountCode = createAsyncThunk("discountCodeManagement/addDiscountCodes", async (event: any) => {
     try {
+        console.log("event", event);
+
         const response = await addDiscountCodesApi(event);
         if (response.data) {
             event.id = response.data.DiscountCodesId;
+            const dateTimeLocal = DateTime.fromSQL(event.end_date);
+            const isoDateUTC = dateTimeLocal.toUTC().toISO();
+            event.end_date = isoDateUTC;
             toast.success("Código de descuento creado con éxito", { autoClose: 2000 });
             return event;
         } else {
@@ -36,6 +42,9 @@ export const addDiscountCode = createAsyncThunk("discountCodeManagement/addDisco
 export const updateDiscountCode = createAsyncThunk("discountCodeManagement/updateDiscountCodes", async (event: any) => {
     try {
         updateDiscountCodesApi(event);
+        const dateTimeLocal = DateTime.fromSQL(event.end_date);
+        const isoDateUTC = dateTimeLocal.toUTC().toISO();
+        event.end_date = isoDateUTC;
         toast.success("Código de descuento actualizado con éxito", { autoClose: 2000 });
         return event;
     } catch (error) {

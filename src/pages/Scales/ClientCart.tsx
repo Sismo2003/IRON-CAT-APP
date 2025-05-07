@@ -9,31 +9,43 @@ import {
   getCustomer as onGetCustomer,
   addTicket as onAddTicket,
   getActiveWasteRecords as onGetWasteRecords,
+  getDiscountCodes as onGetDiscountCodes,
+  incrementUsesDiscountCode as onUpdateDiscountCode,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-
+import Modal from "Common/Components/Modal";
 
 const appMode : any = process.env.REACT_APP_MODE;
 let ws_ip : any;
 
-
 if(appMode === 'production'){
   ws_ip = process.env.REACT_APP_WS_URL_PROD;
-  
-}else{
+} else {
   ws_ip = process.env.REACT_APP_WS_URL_DEV;
 }
 
-
 const scales = [
   { id: 1, name: "Bascula 1", img: scale },
-  { id: 2, name: "Bascula 2", img: scale },
-  { id: 3, name: "Bascula 3", img: scale },
+  { id: 3, name: "Bascula 2", img: scale },
+  { id: 4, name: "Bascula 3", img: scale },
+  { id: 2, name: "Bascula 4", img: scale },
 ];
+
+interface DiscountCode {
+  id: number;
+  code_id: string;
+  name: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  max_uses: number;
+  uses: number;
+  end_date: string;
+  status: 'active' | 'inactive' | 'exhausted';
+}
 
 interface MaterialOption {
   value: number;
@@ -86,11 +98,11 @@ const CustomSingleValue = ({ data }: any) => (
       <img 
         src={data.img} 
         alt={data.label} 
-        className="w-5 h-5 rounded-full flex-shrink-0" // Imagen más pequeña
+        className="w-5 h-5 rounded-full flex-shrink-0"
       />
     )}
     <span className="text-slate-700 dark:text-zink-100 truncate text-sm">
-      {data.value}kg {/* Mostrar solo el peso para ahorrar espacio */}
+      {data.value}kg
     </span>
   </div>
 );
@@ -122,9 +134,18 @@ const ShoppingCart = () => {
     })
   );
 
+  const selectDiscountCodeList = createSelector(
+    (state: any) => state.DiscountCodesManagement,
+    (state) => ({
+        dataList: state.discountCodeList,
+        loading: state.loading
+    })
+  );
+
   const { materialList } = useSelector(selectDataList);
   const { clientlList } = useSelector(clientDataList);
   const { wasteList } = useSelector(selectWasteList);
+  const { dataList } = useSelector(selectDiscountCodeList);
 
   const [materials, setMaterials] = useState<MaterialOption[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientOption | null>(null);
@@ -140,10 +161,14 @@ const ShoppingCart = () => {
   const [authUser, setAuthUser] = useState(() => 
     JSON.parse(localStorage.getItem('authUser') || '{}')
   );
+  const [largeModal, setLargeModal] = useState(false);
+  const [discountCode, setDiscountCode] = useState<DiscountCode | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     dispatch(onGetCustomer());
     dispatch(onGetWasteRecords());
+    dispatch(onGetDiscountCodes());
     setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
 
@@ -230,6 +255,19 @@ const ShoppingCart = () => {
     setCart([]);
   };
 
+  const handleTransactionTypeChange = (selectedOption: {value: 'shop' | 'sale'} | null) => {
+    const newTransactionType = selectedOption?.value || null;
+    
+    // Si el tipo de transacción cambia, limpiar el carrito
+    if (newTransactionType !== transactionType) {
+      setCart([]);
+      setSelectedMaterials({});
+      setSelectedPriceTypes({});
+    }
+    
+    setTransactionType(newTransactionType);
+  };
+
   const filteredClients = clientlList
   .filter((client: any) => 
     client.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
@@ -256,7 +294,7 @@ const ShoppingCart = () => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
     if (!material) return;
 
-    const weight = weights[scaleId] || 10;
+    const weight = weights[scaleId] || 0;
     const priceType = selectedPriceTypes[scaleId] || 'wholesale';
     
     let price = 0;
@@ -315,26 +353,81 @@ const ShoppingCart = () => {
     const updatedCart = [...cart];
     updatedCart[index].usePredefinedMerma = usePredefined;
     
-    // No resetear el valor de waste al cambiar entre modos
     updatedCart[index].weight = updatedCart[index].originalWeight - updatedCart[index].waste;
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
     
     setCart(updatedCart);
   };
 
-  const handleCheckout = async () => {
+  const calculateTotalWithDiscount = () => {
+    const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
+    let discount = 0;
+    let finalTotal = subtotal;
+  
+    if (discountCode) {
+      // Verificar si el código es válido
+      const now = new Date();
+      const endDate = new Date(discountCode.end_date);
+      const isExpired = endDate < now;
+      const isExhausted = discountCode.uses >= discountCode.max_uses;
+      const isInactive = discountCode.status === 'inactive';
+  
+      if (isExpired || isExhausted || isInactive) {
+        showToast("El código de descuento no es válido o ha expirado");
+        setDiscountCode(null);
+        return { subtotal, discount: 0, total: subtotal };
+      }
+  
+      // Aplicar descuento según el tipo
+      if (discountCode.discount_type === 'percentage') {
+        discount = subtotal * (discountCode.discount_value / 100);
+        finalTotal = subtotal - discount;
+      } else {
+        // Descuento fijo
+        discount = discountCode.discount_value;
+        finalTotal = Math.max(0, subtotal - discount); // No puede ser negativo
+      }
+    }
+  
+    return {
+      subtotal,
+      discount,
+      total: finalTotal,
+      isFixedDiscountExceedsTotal: discountCode?.discount_type === 'fixed' && discountCode.discount_value >= subtotal
+    };
+  };
+
+  const handleCheckout = () => {
     if (cart.length === 0) {
       showToast("El carrito está vacío.");
       return;
     }
+    if (!selectedClient) {
+      showToast("Por favor seleccione un cliente");
+      return;
+    }
+    if (!transactionType) {
+      showToast("Por favor seleccione un tipo de transacción");
+      return;
+    }
+    setLargeModal(true);
+  };
 
+  const confirmAndPrint = async () => {
+    setIsSubmitting(true);
+
+    const totals = calculateTotalWithDiscount();
     const payload = {
-      total: cart.reduce((sum, item) => sum + item.total, 0),
+      total: totals.total,
       user_id: authUser.id, 
       user_name: authUser.name + " " + authUser.last_name,
       type: transactionType,
       customer_name: selectedClient?.label,
       client_id: selectedClient?.value,
+      discount_code: discountCode?.code_id || null,
+      discount_code_id: discountCode?.id || null,
+      subtotal: totals.subtotal,
+      discount_amount: totals.discount,
       cart: cart.map((item) => ({
         id: item.id,
         product_id: item.product_id,
@@ -347,22 +440,37 @@ const ShoppingCart = () => {
       }))
     };
 
-    const result = await dispatch(onAddTicket(payload));
-
-    const payloadToPrintTicket = {
-      ...payload,
-      ticket_id : result.payload.ticketId
-    }
-
-    setCart([]);
-    setSelectedClient(null);
-    setTransactionType(null);
-    setSelectedMaterials({});
-    setSelectedPriceTypes({});
-    setWeights({});
-
     try {
-      const response = await fetch('http://0.0.0.0:8009/printer.php', {
+      console.log("Payload para agregar ticket:", payload);
+      const result = await dispatch(onAddTicket(payload));
+      
+      // Si hay un código de descuento, actualizar sus usos
+      if (discountCode) {
+        dispatch(onUpdateDiscountCode({ id: discountCode.id }));
+      }
+
+      const payloadToPrintTicket = {
+        ...payload,
+        ticket_id: result.payload.ticketId
+      };
+
+      setCart([]);
+      setSelectedClient(null);
+      setTransactionType(null);
+      setSelectedMaterials({});
+      setSelectedPriceTypes({});
+      setWeights({});
+      setDiscountCode(null);
+      setLargeModal(false);
+
+      const response1 = await fetch('http://192.168.100.59/src/printer.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payloadToPrintTicket),
+      });
+      const response2 = await fetch('http://192.168.100.59/src/printer.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -370,18 +478,23 @@ const ShoppingCart = () => {
         body: JSON.stringify(payloadToPrintTicket),
       });
   
-      if (!response.ok) {
-        throw new Error('Error en la solicitud');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Error en la solicitud');
+      // }
   
-      const data = await response.json();
-      console.log('Respuesta del servidor:', data);
+      // const data = await response.json();
+      // console.log('Respuesta del servidor:', data);
   
-      navigate('/apps-materials-product-list');
+      // navigate('/apps-materials-product-list');
     } catch (error) {
       console.error('Error:', error);
+      showToast("Ocurrió un error al procesar la compra");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const totals = calculateTotalWithDiscount();
 
   return (
     <>
@@ -392,6 +505,160 @@ const ShoppingCart = () => {
         autoClose={2000}
         newestOnTop
       />
+
+      {/* Large Modal para el resumen */}
+      <Modal show={largeModal} onHide={() => setLargeModal(false)} id="summaryModal" modal-center="true"
+        className="fixed flex flex-col transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4"
+        dialogClassName="w-screen md:w-[40rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
+        
+        <Modal.Header className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500"
+          closeButtonClass="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
+          <Modal.Title className="text-16">Resumen de Transacción</Modal.Title>
+        </Modal.Header>
+        
+        <Modal.Body className="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
+          <div className="space-y-4">
+            {/* Lista de productos */}
+            <div className="border rounded-lg divide-y dark:divide-zink-500 dark:border-zink-500">
+              {cart.map((item, index) => (
+                <div key={index} className="p-3 flex justify-between items-center">
+                  <div>
+                    <h6 className="font-medium">{item.material}</h6>
+                    <p className="text-sm text-slate-500 dark:text-zink-200">
+                      {item.weight}kg × ${Number(item.price || 0).toFixed(2)} ({item.type === 'wholesale' ? 'Mayoreo' : 'Menudeo'})
+                    </p>
+                    {item.waste > 0 && (
+                      <p className="text-xs text-slate-400 dark:text-zink-300">
+                        Merma: {item.waste}kg
+                      </p>
+                    )}
+                  </div>
+                  <span className="font-semibold">${Number(item.total || 0).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Información del cliente */}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Cliente</label>
+              <div className="p-2 border border-slate-200 dark:border-zink-500 rounded-md">
+                <p>{selectedClient?.label || 'No seleccionado'}</p>
+              </div>
+            </div>
+
+            {/* Tipo de transacción */}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Tipo de Transacción</label>
+              <div className="p-2 border border-slate-200 dark:border-zink-500 rounded-md">
+                <p>{transactionType === 'shop' ? 'Compra' : transactionType === 'sale' ? 'Venta' : 'No seleccionado'}</p>
+              </div>
+            </div>
+
+            {/* Select para código de descuento */}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Código de Descuento (Opcional)</label>
+              <Select
+                options={dataList.map((code: DiscountCode) => ({
+                  value: code,
+                  label: `${code.name} (${code.code_id}) - ${
+                    code.discount_type === 'percentage' 
+                      ? `${code.discount_value}%` 
+                      : `$${Number(code.discount_value).toFixed(2)}`
+                  }`,
+                  codeData: code
+                }))}
+                isClearable
+                placeholder="Seleccionar descuento..."
+                onChange={(selected) => {
+                  if (selected) {
+                    setDiscountCode(selected.codeData);
+                  } else {
+                    setDiscountCode(null);
+                  }
+                }}
+                value={discountCode ? {
+                  value: discountCode,
+                  label: `${discountCode.name} (${discountCode.code_id}) - ${
+                    discountCode.discount_type === 'percentage' 
+                      ? `${discountCode.discount_value}%` 
+                      : `$${Number(discountCode.discount_value).toFixed(2)}`
+                  }`,
+                  codeData: discountCode
+                } : null}
+                className="react-select"
+                classNamePrefix="select"
+                classNames={{
+                  control: ({ isFocused }) =>
+                    `border h-10 ${
+                      isFocused
+                        ? 'focus:outline-none border-custom-500 dark:border-custom-800'
+                        : 'border-slate-200 dark:border-zink-500'
+                    } bg-white dark:bg-zink-700 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 disabled:text-slate-500 dark:disabled:text-zink-200 rounded-md`,
+                  placeholder: () => 'placeholder:text-slate-400 dark:placeholder:text-zink-200',
+                  singleValue: () => 'dark:text-zink-100',
+                  menu: () => 'bg-white dark:bg-zink-700 z-50',
+                  option: ({ isFocused, isSelected }) =>
+                    `cursor-pointer px-3 py-2 ${
+                      isSelected
+                        ? 'bg-custom-600 text-white'
+                        : isFocused
+                        ? 'bg-custom-500 text-white'
+                        : 'dark:text-zink-100'
+                    }`,
+                }}
+              />
+            </div>
+
+            {/* Totales */}
+            <div className="space-y-2 pt-2 border-t dark:border-zink-500">
+              <div className="flex justify-between">
+                <span>Subtotal:</span>
+                <span>${totals.subtotal.toFixed(2)}</span>
+              </div>
+              {discountCode && (
+                <>
+                  <div className="flex justify-between text-green-500">
+                    <span>Descuento ({discountCode.discount_type === 'percentage' 
+                      ? `${discountCode.discount_value}%` 
+                      : `$${Number(discountCode.discount_value).toFixed(2)}`}):</span>
+                    <span>-${Number(totals.discount).toFixed(2)}</span>
+                  </div>
+                  {totals.isFixedDiscountExceedsTotal && (
+                    <div className="text-sm text-yellow-500">
+                      El descuento fijo cubre el total completo
+                    </div>
+                  )}
+                </>
+              )}
+              <div className="flex justify-between font-semibold text-lg">
+                <span>Total:</span>
+                <span>${Number(totals.total).toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+        
+        <Modal.Footer className="flex items-center justify-between p-4 mt-auto border-t border-slate-200 dark:border-zink-500">
+          <button
+            onClick={() => setLargeModal(false)}
+            className="btn bg-slate-100 dark:bg-zink-600 text-slate-500 dark:text-zink-200 border-slate-200 dark:border-zink-500 hover:bg-slate-200 hover:dark:bg-zink-500 hover:dark:border-zink-400"
+          >
+            Volver
+          </button>
+          <button
+            onClick={confirmAndPrint}
+            disabled={isSubmitting}
+            className={`btn text-white border-red-500 ${
+              isSubmitting
+                ? 'bg-red-400 border-red-400 cursor-not-allowed'
+                : 'bg-red-500 hover:bg-red-600 hover:border-red-600'
+            }`}
+          >
+            {isSubmitting ? 'Procesando...' : 'Confirmar e Imprimir'}
+          </button>
+        </Modal.Footer>
+      </Modal>
+
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
         <div className="xl:col-span-9">
           <h5 className="underline text-16 mb-5">Basculas</h5>
@@ -425,7 +692,7 @@ const ShoppingCart = () => {
               ]}
               placeholder="Seleccionar tipo de transacción"
               value={transactionType ? { value: transactionType, label: transactionType === 'shop' ? 'Compra' : 'Venta' } : null}
-              onChange={(selectedOption) => setTransactionType(selectedOption?.value as 'shop' | 'sale' | null)}
+              onChange={handleTransactionTypeChange}
               classNames={{
                 control: ({ isFocused }) =>
                   `border ${
@@ -567,7 +834,7 @@ const ShoppingCart = () => {
                           Option: CustomOption,
                           SingleValue: CustomSingleValue
                         }}
-                        className="w-1/2 min-w-[120px]" // Añadido min-w para evitar compresión extrema
+                        className="w-1/2 min-w-[120px]"
                         classNames={{
                           control: ({ isFocused }) =>
                             `border h-10 ${
@@ -576,10 +843,10 @@ const ShoppingCart = () => {
                                 : 'border-slate-200 dark:border-zink-500'
                             } bg-white dark:bg-zink-700`,
                           placeholder: () => 'text-slate-400 dark:text-zink-200',
-                          singleValue: () => 'dark:text-zink-100 text-sm truncate', // Texto más pequeño y truncado
-                          input: () => 'text-sm', // Tamaño de texto reducido
-                          valueContainer: () => 'px-2 py-0.5 gap-1', // Espaciado interno ajustado
-                          menu: () => 'dark:bg-zink-700 min-w-[180px] text-sm', // Menú más compacto
+                          singleValue: () => 'dark:text-zink-100 text-sm truncate',
+                          input: () => 'text-sm',
+                          valueContainer: () => 'px-2 py-0.5 gap-1',
+                          menu: () => 'dark:bg-zink-700 min-w-[180px] text-sm',
                           option: ({ isFocused, isSelected }) =>
                             `cursor-pointer px-2 py-1.5 text-sm ${
                               isFocused
@@ -587,7 +854,7 @@ const ShoppingCart = () => {
                                 : isSelected
                                 ? 'bg-custom-600 text-white'
                                 : 'text-slate-800 dark:text-zink-100'
-                            } truncate`, // Opciones truncadas
+                            } truncate`,
                         }}
                       />
                     ) : (
@@ -613,7 +880,12 @@ const ShoppingCart = () => {
 
               <button
                 onClick={handleCheckout}
-                className="w-full mt-3 text-white bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100 dark:ring-custom-400/20"
+                disabled={!selectedClient || !transactionType || cart.length === 0}
+                className={`w-full mt-3 text-white border-red-500 btn ${
+                  !selectedClient || !transactionType || cart.length === 0
+                    ? 'bg-red-400 border-red-400 cursor-not-allowed'
+                    : 'bg-red-500 hover:bg-red-600 hover:border-red-600'
+                }`}
               >
                 Imprimir
               </button>

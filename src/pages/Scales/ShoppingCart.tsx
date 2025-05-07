@@ -8,6 +8,8 @@ import {
   getShopProductList as onGetProductList,
   addTicket as onAddTicket,
   getActiveWasteRecords as onGetWasteRecords,
+  getDiscountCodes as onGetDiscountCodes,
+  incrementUsesDiscountCode as onUpdateDiscountCode,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
@@ -31,6 +33,18 @@ const scales = [
   { id: 4, name: "Bascula 3", img: scale },
   { id: 2, name: "Bascula 4", img: scale },
 ];
+
+interface DiscountCode {
+  id: number;
+  code_id: string;
+  name: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  max_uses: number;
+  uses: number;
+  end_date: string;
+  status: 'active' | 'inactive' | 'exhausted';
+}
 
 interface MaterialOption {
   value: number;
@@ -112,6 +126,15 @@ const ShoppingCart = () => {
     })
   );
 
+  const selectDiscountCodeList = createSelector(
+    (state: any) => state.DiscountCodesManagement,
+    (state) => ({
+        dataList: state.discountCodeList,
+        loading: state.loading
+    })
+);
+
+  const { dataList } = useSelector(selectDiscountCodeList);
   const { materialList } = useSelector(selectDataList);
   const { ticket_loading } = useSelector(ticketManagement);
   const { wasteList } = useSelector(selectWasteList);
@@ -127,7 +150,7 @@ const ShoppingCart = () => {
     JSON.parse(localStorage.getItem('authUser') || '{}')
   );
   const [largeModal, setLargeModal] = useState(false);
-  const [discountCode, setDiscountCode] = useState<string | null>(null);
+  const [discountCode, setDiscountCode] = useState<DiscountCode | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Datos de ejemplo para códigos de descuento
@@ -140,6 +163,7 @@ const ShoppingCart = () => {
   useEffect(() => {
     dispatch(onGetProductList());
     dispatch(onGetWasteRecords());
+    dispatch(onGetDiscountCodes());
     setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
 
@@ -222,7 +246,7 @@ const ShoppingCart = () => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
     if (!material) return;
 
-    const weight = weights[scaleId] || 15;
+    const weight = weights[scaleId] || 0;
     const priceType = selectedPriceTypes[scaleId] || 'wholesale';
     const price = Number(priceType === 'wholesale' ? material.wholesale_price : material.retail_price);
     const total = weight * price;
@@ -294,15 +318,38 @@ const ShoppingCart = () => {
   const calculateTotalWithDiscount = () => {
     const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
     let discount = 0;
-
-    if (discountCode === 'DESC10') discount = subtotal * 0.1;
-    else if (discountCode === 'DESC20') discount = subtotal * 0.2;
-    else if (discountCode === 'DESC30') discount = subtotal * 0.3;
-
+    let finalTotal = subtotal;
+  
+    if (discountCode) {
+      // Verificar si el código es válido
+      const now = new Date();
+      const endDate = new Date(discountCode.end_date);
+      const isExpired = endDate < now;
+      const isExhausted = discountCode.uses >= discountCode.max_uses;
+      const isInactive = discountCode.status === 'inactive';
+  
+      if (isExpired || isExhausted || isInactive) {
+        showToast("El código de descuento no es válido o ha expirado");
+        setDiscountCode(null);
+        return { subtotal, discount: 0, total: subtotal };
+      }
+  
+      // Aplicar descuento según el tipo
+      if (discountCode.discount_type === 'percentage') {
+        discount = subtotal * (discountCode.discount_value / 100);
+        finalTotal = subtotal - discount;
+      } else {
+        // Descuento fijo
+        discount = discountCode.discount_value;
+        finalTotal = Math.max(0, subtotal - discount); // No puede ser negativo
+      }
+    }
+  
     return {
       subtotal,
       discount,
-      total: subtotal - discount
+      total: finalTotal,
+      isFixedDiscountExceedsTotal: discountCode?.discount_type === 'fixed' && discountCode.discount_value >= subtotal
     };
   };
 
@@ -311,9 +358,9 @@ const ShoppingCart = () => {
       showToast("Por favor ingrese el nombre del cliente");
       return;
     }
-
+  
     setIsSubmitting(true);
-
+  
     const totals = calculateTotalWithDiscount();
     const payload = {
       total: totals.total,
@@ -321,7 +368,8 @@ const ShoppingCart = () => {
       user_name: authUser.name + " " + authUser.last_name,
       type: "shop",
       customer_name: customerName,
-      discount_code: discountCode,
+      discount_code: discountCode?.code_id || null,
+      discount_code_id: discountCode?.id || null,
       subtotal: totals.subtotal,
       discount_amount: totals.discount,
       cart: cart.map((item) => ({
@@ -335,16 +383,23 @@ const ShoppingCart = () => {
         waste: item.waste,
       }))
     };
-
+  
     try {
-      const result = await dispatch(onAddTicket(payload));
-      console.log('Resultado del thunk:', result);
 
+      console.log("Payload para imprimir:", payload);
+
+      const result = await dispatch(onAddTicket(payload));
+      
+      // Si hay un código de descuento, actualizar sus usos
+      if (discountCode) {
+        dispatch(onUpdateDiscountCode({ id: discountCode.id }));
+      }
+  
       const payloadToPrintTicket = {
         ...payload,
         ticket_id: result.payload.ticketId
       };
-
+  
       setCart([]);
       setCustomerName("");
       setSelectedMaterials({});
@@ -352,23 +407,30 @@ const ShoppingCart = () => {
       setWeights({});
       setDiscountCode(null);
       setLargeModal(false);
-
-      const response = await fetch('http://192.168.100.77:8000/src/printer.php', {
+  
+      const response1 = await fetch('http://192.168.100.59/src/printer.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payloadToPrintTicket),
       });
-
-      if (!response.ok) {
-        throw new Error('Error en la solicitud');
-      }
-
-      const data = await response.json();
-      console.log('Respuesta del servidor:', data);
-
-      navigate('/apps-materials-product-list');
+      const response2 = await fetch('http://192.168.100.59/src/printer.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payloadToPrintTicket),
+      });
+  
+      // if (!response.ok) {
+      //   throw new Error('Error en la solicitud');
+      // }
+  
+      // const data = await response.text();
+      // console.log('Respuesta del servidor:', data);
+  
+      // navigate('/apps-materials-product-list');
     } catch (error) {
       console.error('Error:', error);
       showToast("Ocurrió un error al procesar la compra");
@@ -441,10 +503,33 @@ const ShoppingCart = () => {
             <div className="space-y-1">
               <label className="block text-sm font-medium">Código de Descuento (Opcional)</label>
               <Select
-                options={discountOptions}
+                options={dataList.map((code: DiscountCode) => ({
+                  value: code,
+                  label: `${code.name} (${code.code_id}) - ${
+                    code.discount_type === 'percentage' 
+                      ? `${code.discount_value}%` 
+                      : `$${Number(code.discount_value).toFixed(2)}`
+                  }`,
+                  codeData: code
+                }))}
                 isClearable
                 placeholder="Seleccionar descuento..."
-                onChange={(selected) => setDiscountCode(selected?.value || null)}
+                onChange={(selected) => {
+                  if (selected) {
+                    setDiscountCode(selected.codeData);
+                  } else {
+                    setDiscountCode(null);
+                  }
+                }}
+                value={discountCode ? {
+                  value: discountCode,
+                  label: `${discountCode.name} (${discountCode.code_id}) - ${
+                    discountCode.discount_type === 'percentage' 
+                      ? `${discountCode.discount_value}%` 
+                      : `$${Number(discountCode.discount_value).toFixed(2)}`
+                  }`,
+                  codeData: discountCode
+                } : null}
                 className="react-select"
                 classNamePrefix="select"
                 classNames={{
@@ -475,15 +560,24 @@ const ShoppingCart = () => {
                 <span>Subtotal:</span>
                 <span>${totals.subtotal.toFixed(2)}</span>
               </div>
-              {totals.discount > 0 && (
-                <div className="flex justify-between text-green-500">
-                  <span>Descuento:</span>
-                  <span>-${totals.discount.toFixed(2)}</span>
-                </div>
+              {discountCode && (
+                <>
+                  <div className="flex justify-between text-green-500">
+                    <span>Descuento ({discountCode.discount_type === 'percentage' 
+                      ? `${discountCode.discount_value}%` 
+                      : `$${Number(discountCode.discount_value).toFixed(2)}`}):</span>
+                    <span>-${Number(totals.discount).toFixed(2)}</span>
+                  </div>
+                  {totals.isFixedDiscountExceedsTotal && (
+                    <div className="text-sm text-yellow-500">
+                      El descuento fijo cubre el total completo
+                    </div>
+                  )}
+                </>
               )}
               <div className="flex justify-between font-semibold text-lg">
                 <span>Total:</span>
-                <span>${totals.total.toFixed(2)}</span>
+                <span>${Number(totals.total).toFixed(2)}</span>
               </div>
             </div>
           </div>
