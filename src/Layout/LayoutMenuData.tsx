@@ -184,13 +184,13 @@ import {
         }
       ]
     },
-    {
-      id: "ticket history",
-      label: 'Histórico Tickets',
-      icon: <History />,
-      link: "/apps-tk-ticket",
-      parentId: 2,
-    },
+    // {
+    //   id: "ticket history",
+    //   label: 'Histórico Tickets',
+    //   icon: <History />,
+    //   link: "/apps-tk-ticket",
+    //   parentId: 2,
+    // },
     {
       id: "waste",
       label: 'Merma',
