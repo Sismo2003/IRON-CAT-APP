@@ -790,7 +790,9 @@ const Orders = () => {
 																	{product.waste || '0.00'}
 																	<span className="text-xs text-gray-500"> kg</span>
 																</td>
-																<td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{product.type || "N/A"}</td>
+																<td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
+																	{product.type === 'wholesale' ? 'Mayoreo' : product.type === 'retail' ? 'Menudeo' : product.type || "N/A"}
+																</td>
 																<td className="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
 																	<span className="text-xs text-gray-500"> $</span>{product.unit_price}
 																</td>
