@@ -20,11 +20,10 @@ export const getDiscountCodes = createAsyncThunk("discountCodeManagement/getDisc
 });
 export const addDiscountCode = createAsyncThunk("discountCodeManagement/addDiscountCodes", async (event: any) => {
     try {
-        console.log("event", event);
 
         const response = await addDiscountCodesApi(event);
         if (response.data) {
-            event.id = response.data.DiscountCodesId;
+            event.id = response.data.discountCodeId;            ;
             const dateTimeLocal = DateTime.fromSQL(event.end_date);
             const isoDateUTC = dateTimeLocal.toUTC().toISO();
             event.end_date = isoDateUTC;
