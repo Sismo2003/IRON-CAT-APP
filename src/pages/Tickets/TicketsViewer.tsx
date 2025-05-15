@@ -5,6 +5,9 @@ import Flatpickr from "react-flatpickr";
 import moment from "moment";
 
 
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 // icons
 import {
 	Boxes,
@@ -16,7 +19,8 @@ import {
 	MoreHorizontal,
 	Trash2,
 	FileEdit,
-	Ticket, Download
+	Ticket, Download,
+	Printer
 } from 'lucide-react';
 import { OrdersOverviewChart } from "./charts";
 import { Link } from "react-router-dom";
@@ -47,6 +51,9 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
 
+const ENV_MODE : any = process.env.REACT_APP_MODE;
+const PRINTER_ROUTE_DEV : any = process.env.REACT_APP_PRINTER_DEV;
+const PRINTER_ROUTE_PROD : any = process.env.REACT_APP_PRINTER_PROD;
 
 const Orders = () => {
 	
@@ -109,6 +116,37 @@ const Orders = () => {
 	const handleUpdateDataClick = (ele: any) => {
 		setEventData({ ...ele });
 		setShow(true);
+	};
+	
+	// fetch to re print the ticket
+	const onClickPrint = (cell: any) => {
+		interface pos{
+			ticket_id : number ,
+			customer_name : string
+		}
+		// console.log(cell);
+		if (cell.ticket_id) {
+			//customer_name
+			const data : pos = {
+				ticket_id: cell.ticket_id,
+				customer_name: cell.ticketCustomerName
+			}
+			const route : string = ENV_MODE === 'production' ? PRINTER_ROUTE_PROD : PRINTER_ROUTE_DEV;
+			if(route !== undefined && route !== "") {
+				fetch(route, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(data)
+				});
+				toast.success("Ticket enviado a la impresora!", {autoClose : 2000});
+				return;
+			}
+			toast.error("Routa indefinida para la impresa!", {autoClose : 2000});
+			return;
+		}
+		toast.error("Error en la captura el folio del ticket!", {autoClose : 2000});
 	};
 	
 	// validation
@@ -271,25 +309,34 @@ const Orders = () => {
 						                  aria-labelledby="orderAction1">
 							<li>
 								<Link to="#!" data-modal-target="addOrderModal"
-								      className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-								      onClick={() => {
-									      const data = cell.row.original;
-									      handleUpdateDataClick(data);
-								      }}>
+									className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+									onClick={() => {const data = cell.row.original;handleUpdateDataClick(data);}}
+								>
 									<FileEdit className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
 									<span className="align-middle">Detalles</span>
 								</Link>
 							</li>
 							<li>
 								<Link to="#!" className="block px-4 py-1.5 text-base transition-all duration-200
-                                ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500
-                                focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500
-                                 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" onClick={() => {
-									const data = cell.row.original;
-									onClickDelete(data);
-								}}>
+									ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500
+								focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500
+								dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+									onClick={() => {const data = cell.row.original;onClickDelete(data);}}
+								>
 									<Trash2 className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
 									<span className="align-middle">Eliminar</span>
+								</Link>
+							</li>
+							<li>
+								<Link to="#!"
+									className="block px-4 py-1.5 text-base transition-all duration-200
+									ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500
+									focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500
+									dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
+									onClick={() => {const data = cell.row.original;onClickPrint(data);}}
+								>
+									<Printer  className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
+									<span className="align-middle">Imprimir</span>
 								</Link>
 							</li>
 						</Dropdown.Content>
