@@ -298,49 +298,47 @@ const Orders = () => {
 				),
 			},
 			{
-				header: "Action",
+				header: "Acciones",
 				enableColumnFilter: false,
 				enableSorting: true,
 				cell: (cell: any) => (
-					<Dropdown className="relative">
-						<Dropdown.Trigger id="orderAction1" data-bs-toggle="dropdown" className="flex items-center justify-center size-[30px] p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20">
-							<MoreHorizontal className="size-3" /></Dropdown.Trigger>
-						<Dropdown.Content placement={cell.row.index ? "top-end" : "right-end"} className="absolute z-50 py-2 mt-1 ltr:text-left rtl:text-right list-none bg-white rounded-md shadow-md min-w-[10rem] dark:bg-zink-600"
-						                  aria-labelledby="orderAction1">
-							<li>
-								<Link to="#!" data-modal-target="addOrderModal"
-									className="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-									onClick={() => {const data = cell.row.original;handleUpdateDataClick(data);}}
-								>
-									<FileEdit className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
-									<span className="align-middle">Detalles</span>
-								</Link>
-							</li>
-							<li>
-								<Link to="#!" className="block px-4 py-1.5 text-base transition-all duration-200
-									ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500
-								focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500
-								dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-									onClick={() => {const data = cell.row.original;onClickDelete(data);}}
-								>
-									<Trash2 className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
-									<span className="align-middle">Eliminar</span>
-								</Link>
-							</li>
-							<li>
-								<Link to="#!"
-									className="block px-4 py-1.5 text-base transition-all duration-200
-									ease-linear text-slate-600 hover:bg-slate-100 hover:text-slate-500
-									focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500
-									dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200"
-									onClick={() => {const data = cell.row.original;onClickPrint(data);}}
-								>
-									<Printer  className="inline-block size-3 ltr:mr-1 rtl:ml-1" />
-									<span className="align-middle">Imprimir</span>
-								</Link>
-							</li>
-						</Dropdown.Content>
-					</Dropdown>
+					<div className="flex items-center gap-2">
+						{/* Botón Detalles */}
+						<button
+							onClick={() => {
+								const data = cell.row.original;
+								handleUpdateDataClick(data);
+							}}
+							className="flex items-center justify-center size-8 p-0 transition-all duration-200 ease-linear text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white dark:ring-slate-400/20"
+							title="Detalles"
+						>
+							<FileEdit className="size-3" />
+						</button>
+			
+						{/* Botón Eliminar */}
+						<button
+							onClick={() => {
+								const data = cell.row.original;
+								onClickDelete(data);
+							}}
+							className="flex items-center justify-center size-8 p-0 transition-all duration-200 ease-linear text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 focus:text-white focus:bg-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:ring active:ring-red-100 dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500 dark:hover:text-white dark:focus:bg-red-500 dark:focus:text-white dark:active:bg-red-500 dark:active:text-white dark:ring-red-400/20"
+							title="Eliminar"
+						>
+							<Trash2 className="size-3" />
+						</button>
+			
+						{/* Botón Imprimir */}
+						<button
+							onClick={() => {
+								const data = cell.row.original;
+								onClickPrint(data);
+							}}
+							className="flex items-center justify-center size-8 p-0 transition-all duration-200 ease-linear text-blue-500 btn bg-blue-100 hover:text-white hover:bg-blue-600 focus:text-white focus:bg-blue-600 focus:ring focus:ring-blue-100 active:text-white active:bg-blue-600 active:ring active:ring-blue-100 dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500 dark:hover:text-white dark:focus:bg-blue-500 dark:focus:text-white dark:active:bg-blue-500 dark:active:text-white dark:ring-blue-400/20"
+							title="Imprimir"
+						>
+							<Printer className="size-3" />
+						</button>
+					</div>
 				),
 			}
 		], []

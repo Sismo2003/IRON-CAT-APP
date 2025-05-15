@@ -227,19 +227,51 @@ const CustomerList = () => {
             enableSorting: true,
             cell: (cell: any) => (
                 <div className="flex gap-3">
-                    <Link className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" to="/pages-account" state={{ data: cell.row.original }}><Eye className="inline-block size-3" /> </Link>
-                    <Link to="#!" data-modal-target="viewTicketModal" className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md edit-item-btn bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" onClick={() => {
-                        const data = cell.row.original;
-                        handleUpdateDataClick(data);
-                    }}>
-                        <Pencil className="size-4" /></Link>
-                    <Link to="#!" className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md remove-item-btn bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" onClick={() => {
-                        const data = cell.row.original;
-                        onClickDelete(data);
-                    }}><Trash2 className="size-4" /></Link>
+                    {/* Botón Ver (ojito) - amarillo */}
+                    <Link
+                        className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md bg-slate-100 text-slate-500
+                        hover:text-yellow-600 hover:bg-yellow-100
+                        dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-yellow-500/20 dark:hover:text-yellow-400"
+                        to="/pages-account"
+                        state={{ data: cell.row.original }}
+                        title="Ver"
+                    >
+                        <Eye className="inline-block size-3" />
+                    </Link>
+        
+                    {/* Botón Editar (lápiz) - azul */}
+                    <Link
+                        to="#!"
+                        data-modal-target="viewTicketModal"
+                        className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md edit-item-btn bg-slate-100 text-slate-500
+                        hover:text-blue-600 hover:bg-blue-100
+                        dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-blue-500/20 dark:hover:text-blue-400"
+                        onClick={() => {
+                            const data = cell.row.original;
+                            handleUpdateDataClick(data);
+                        }}
+                        title="Editar"
+                    >
+                        <Pencil className="size-4" />
+                    </Link>
+        
+                    {/* Botón Eliminar (basura) - rojo */}
+                    <Link
+                        to="#!"
+                        className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md remove-item-btn bg-slate-100 text-slate-500
+                        hover:text-red-600 hover:bg-red-100
+                        dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-red-500/20 dark:hover:text-red-400"
+                        onClick={() => {
+                            const data = cell.row.original;
+                            onClickDelete(data);
+                        }}
+                        title="Borrar"
+                    >
+                        <Trash2 className="size-4" />
+                    </Link>
                 </div>
             ),
-        }
+        }        
     ], []
     );
 

@@ -207,7 +207,7 @@ const DiscountCodeList = () => {
             accessorKey: "code_id",
             enableColumnFilter: false,
             cell: (cell: any) => (
-                <span className="font-semibold">{cell.getValue()}</span>
+                <span className="transition-all duration-150 ease-linear text-custom-500 hover:text-custom-600">{cell.getValue()}</span>
             ),
         },
         {
@@ -222,7 +222,10 @@ const DiscountCodeList = () => {
             cell: (cell: any) => {
                 const type = cell.getValue();
                 return (
-                    <span className={`px-2.5 py-0.5 text-xs inline-block font-medium rounded-full ${type === 'percentage' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
+                    <span className={`px-2.5 py-0.5 text-xs inline-block font-medium rounded-full 
+                        ${type === 'percentage' 
+                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-200' 
+                            : 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-200'}`}>
                         {type === 'percentage' ? 'Porcentaje' : 'Cantidad fija'}
                     </span>
                 );
@@ -263,7 +266,6 @@ const DiscountCodeList = () => {
                 const uses = cell.row.original.uses;
                 const maxUses = cell.row.original.max_uses;
                 
-                // Determinar estado real (puede ser diferente del almacenado)
                 let realStatus = status;
                 if (DateTime.fromISO(endDate) < DateTime.now()) {
                     realStatus = 'inactive';
@@ -274,22 +276,22 @@ const DiscountCodeList = () => {
                 let colorClass = '';
                 switch(realStatus) {
                     case 'active':
-                        colorClass = 'bg-green-100 text-green-800';
+                        colorClass = 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-200';
                         break;
                     case 'inactive':
-                        colorClass = 'bg-yellow-100 text-yellow-800';
+                        colorClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-200';
                         break;
                     case 'exhausted':
-                        colorClass = 'bg-red-100 text-red-800';
+                        colorClass = 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-200';
                         break;
                     default:
-                        colorClass = 'bg-gray-100 text-gray-800';
+                        colorClass = 'bg-gray-100 text-gray-800 dark:bg-zink-500/20 dark:text-zink-200';
                 }
                 
                 return (
                     <span className={`px-2.5 py-0.5 text-xs inline-block font-medium rounded-full ${colorClass}`}>
                         {realStatus === 'active' ? 'Activo' : 
-                         realStatus === 'inactive' ? 'Inactivo' : 'Agotado'}
+                            realStatus === 'inactive' ? 'Inactivo' : 'Agotado'}
                     </span>
                 );
             },
@@ -322,7 +324,7 @@ const DiscountCodeList = () => {
                     }}>
                         <Pencil className="size-4" />
                     </Link>
-                    <Link to="#!" className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md remove-item-btn bg-slate-100 text-slate-500 hover:text-custom-500 hover:bg-custom-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-custom-500/20 dark:hover:text-custom-500" onClick={() => {
+                    <Link to="#!" className="flex items-center justify-center size-8 transition-all duration-200 ease-linear rounded-md bg-slate-100 text-slate-500 hover:text-red-500 hover:bg-red-100 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-red-500/20 dark:hover:text-red-500" onClick={() => {
                         const data = cell.row.original;
                         onClickDelete(data);
                     }}>
