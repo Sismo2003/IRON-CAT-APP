@@ -68,6 +68,9 @@ const Orders = () => {
 	const [eventData, setEventData] = useState<any>();
 	
 	const [show, setShow] = useState<boolean>(false);
+
+	const [originalData, setOriginalData] = useState<any[]>([]);
+
 	
 	
 	
@@ -77,8 +80,9 @@ const Orders = () => {
 	
 	useEffect(() => {
 		const tickets = Object.values(dataList);
+		setOriginalData(tickets);
 		setData(tickets);
-	}, [dataList]);
+	}, [dataList]);	
 	
 	
 	// Delete Modal
@@ -162,9 +166,9 @@ const Orders = () => {
 	
 	// Search Data
 	const filterSearchData = (e: any) => {
-		const search = e.target.value;
+		const search: string = String(e.target.value).toLowerCase();
 		const keysToSearch = ['ticket_id'];
-		filterDataBySearch(dataList, search, keysToSearch, setData);
+		filterDataBySearch(originalData, search, keysToSearch, setData);
 	};
 	
 	const [activeTab, setActiveTab] = useState("1");
@@ -519,7 +523,7 @@ const Orders = () => {
 													className="w-full ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
 													placeholder="Buscar ..."
 													autoComplete="off"
-													onChange={(e) => filterSearchData(e)}
+													onChange={filterSearchData}
 												/>
 												<Search className="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600" />
 											</div>

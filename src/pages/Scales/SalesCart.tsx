@@ -12,7 +12,6 @@ import {
   incrementUsesDiscountCode as onUpdateDiscountCode,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -57,7 +56,7 @@ interface CartItem {
   id: number;
   product_id: number;
   material: string;
-  originalWeight: number; // Nuevo campo para guardar el peso original
+  originalWeight: number;
   weight: number;
   price: number;
   total: number;
@@ -90,18 +89,17 @@ const CustomSingleValue = ({ data }: any) => (
       <img 
         src={data.img} 
         alt={data.label} 
-        className="w-5 h-5 rounded-full flex-shrink-0" // Imagen más pequeña
+        className="w-5 h-5 rounded-full flex-shrink-0"
       />
     )}
     <span className="text-slate-700 dark:text-zink-100 truncate text-sm">
-      {data.value}kg {/* Mostrar solo el peso para ahorrar espacio */}
+      {data.value}kg
     </span>
   </div>
 );
 
-const ShoppingCart = () => {
+const SalesCart = () => {
   const dispatch = useDispatch<any>();
-  const navigate = useNavigate();
 
   const selectDataList = createSelector(
     (state: any) => state.MATERIALManagement,
@@ -132,7 +130,7 @@ const ShoppingCart = () => {
         dataList: state.discountCodeList,
         loading: state.loading
     })
-);
+  );
 
   const { dataList } = useSelector(selectDiscountCodeList);
   const { materialList } = useSelector(selectDataList);
@@ -144,7 +142,9 @@ const ShoppingCart = () => {
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
   const [selectedPriceTypes, setSelectedPriceTypes] = useState<{ [key: number]: 'wholesale' | 'retail' }>({});
-  const [customerName, setCustomerName] = useState<string>(""); 
+  const [customerName, setCustomerName] = useState<string>("");
+  const [vehiclePlate, setVehiclePlate] = useState<string>("");
+  const [vehicleModel, setVehicleModel] = useState<string>("");
   const [wasteOptions, setWasteOptions] = useState<WasteOption[]>([]);
   const [authUser, setAuthUser] = useState(() => 
     JSON.parse(localStorage.getItem('authUser') || '{}')
@@ -152,13 +152,6 @@ const ShoppingCart = () => {
   const [largeModal, setLargeModal] = useState(false);
   const [discountCode, setDiscountCode] = useState<DiscountCode | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Datos de ejemplo para códigos de descuento
-  const discountOptions = [
-    { value: 'DESC10', label: 'DESC10 - 10% de descuento' },
-    { value: 'DESC20', label: 'DESC20 - 20% de descuento' },
-    { value: 'DESC30', label: 'DESC30 - 30% de descuento' },
-  ];
 
   useEffect(() => {
     dispatch(onGetProductList());
@@ -255,8 +248,8 @@ const ShoppingCart = () => {
       id: scaleId,
       material: material.label,
       product_id: material.value,
-      originalWeight: weight, // Guardamos el peso original
-      weight: weight, // Inicialmente el peso ajustado es igual al original
+      originalWeight: weight,
+      weight: weight,
       price,
       total,
       waste: 0,
@@ -312,6 +305,10 @@ const ShoppingCart = () => {
       showToast("No hay productos en el carrito");
       return;
     }
+    if (!customerName.trim()) {
+      showToast("Por favor ingrese el nombre del cliente");
+      return;
+    }
     setLargeModal(true);
   };
 
@@ -321,7 +318,6 @@ const ShoppingCart = () => {
     let finalTotal = subtotal;
   
     if (discountCode) {
-      // Verificar si el código es válido
       const now = new Date();
       const endDate = new Date(discountCode.end_date);
       const isExpired = endDate < now;
@@ -334,14 +330,12 @@ const ShoppingCart = () => {
         return { subtotal, discount: 0, total: subtotal };
       }
   
-      // Aplicar descuento según el tipo
       if (discountCode.discount_type === 'percentage') {
         discount = subtotal * (discountCode.discount_value / 100);
         finalTotal = subtotal - discount;
       } else {
-        // Descuento fijo
         discount = discountCode.discount_value;
-        finalTotal = Math.max(0, subtotal - discount); // No puede ser negativo
+        finalTotal = Math.max(0, subtotal - discount);
       }
     }
   
@@ -354,11 +348,6 @@ const ShoppingCart = () => {
   };
 
   const confirmAndPrint = async () => {
-    if (!customerName.trim()) {
-      showToast("Por favor ingrese el nombre del cliente");
-      return;
-    }
-  
     setIsSubmitting(true);
   
     const totals = calculateTotalWithDiscount();
@@ -368,6 +357,8 @@ const ShoppingCart = () => {
       user_name: authUser.name + " " + authUser.last_name,
       type: "sale",
       customer_name: customerName,
+      vehicle_plate: vehiclePlate,
+      vehicle_model: vehicleModel,
       discount_code: discountCode?.code_id || null,
       discount_code_id: discountCode?.id || null,
       subtotal: totals.subtotal,
@@ -385,12 +376,10 @@ const ShoppingCart = () => {
     };
   
     try {
-
       console.log("Payload para imprimir:", payload);
 
       const result = await dispatch(onAddTicket(payload));
       
-      // Si hay un código de descuento, actualizar sus usos
       if (discountCode) {
         dispatch(onUpdateDiscountCode({ id: discountCode.id }));
       }
@@ -402,6 +391,8 @@ const ShoppingCart = () => {
   
       setCart([]);
       setCustomerName("");
+      setVehiclePlate("");
+      setVehicleModel("");
       setSelectedMaterials({});
       setSelectedPriceTypes({});
       setWeights({});
@@ -423,17 +414,9 @@ const ShoppingCart = () => {
         body: JSON.stringify(payloadToPrintTicket),
       });
   
-      // if (!response.ok) {
-      //   throw new Error('Error en la solicitud');
-      // }
-  
-      // const data = await response.json();
-      // console.log('Respuesta del servidor:', data);
-  
-      // navigate('/apps-materials-product-list');
     } catch (error) {
       console.error('Error:', error);
-      showToast("Ocurrió un error al procesar la compra");
+      showToast("Ocurrió un error al procesar la venta");
     } finally {
       setIsSubmitting(false);
     }
@@ -458,7 +441,7 @@ const ShoppingCart = () => {
         
         <Modal.Header className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500"
           closeButtonClass="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
-          <Modal.Title className="text-16">Resumen de Compra</Modal.Title>
+          <Modal.Title className="text-16">Resumen de Venta</Modal.Title>
         </Modal.Header>
         
         <Modal.Body className="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
@@ -483,37 +466,17 @@ const ShoppingCart = () => {
               ))}
             </div>
 
-            {/* Input para nombre del cliente */}
-            <div className="space-y-1">
-              <label className="block text-sm font-medium">Nombre del Cliente <span className="text-red-500">*</span></label>
-              <input
-                type="text"
-                className={`form-input w-full ${!customerName.trim() ? 'border-red-500' : 'border-slate-200 dark:border-zink-500'}`}
-                placeholder="Ingrese nombre del cliente"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                required
-              />
-              {!customerName.trim() && (
-                <p className="text-sm text-red-500">Este campo es requerido</p>
-              )}
-            </div>
-
             {/* Select para código de descuento */}
             <div className="space-y-1">
               <label className="block text-sm font-medium">Código de Descuento (Opcional)</label>
               <Select
                 options={dataList.map((code: DiscountCode) => ({
                   value: code,
-                  label: `${code.name} (${code.code_id}) - ${
-                    code.discount_type === 'percentage' 
-                      ? `${code.discount_value}%` 
-                      : `$${Number(code.discount_value).toFixed(2)}`
-                  }`,
+                  label: `${code.code_id} - ${code.discount_value}${code.discount_type === 'percentage' ? '%' : '$'}`,
                   codeData: code
                 }))}
                 isClearable
-                placeholder="Seleccionar descuento..."
+                placeholder="Buscar descuento..."
                 onChange={(selected) => {
                   if (selected) {
                     setDiscountCode(selected.codeData);
@@ -523,34 +486,49 @@ const ShoppingCart = () => {
                 }}
                 value={discountCode ? {
                   value: discountCode,
-                  label: `${discountCode.name} (${discountCode.code_id}) - ${
-                    discountCode.discount_type === 'percentage' 
-                      ? `${discountCode.discount_value}%` 
-                      : `$${Number(discountCode.discount_value).toFixed(2)}`
-                  }`,
+                  label: `${discountCode.code_id} - ${discountCode.discount_value}${discountCode.discount_type === 'percentage' ? '%' : '$'}`,
                   codeData: discountCode
                 } : null}
                 className="react-select"
                 classNamePrefix="select"
+                menuPlacement="auto"
+                maxMenuHeight={150}
+                menuShouldScrollIntoView={false}
+                menuPosition="absolute"
+                menuShouldBlockScroll={false}
+                menuPortalTarget={document.body}
+                styles={{
+                  menuPortal: base => ({ ...base, zIndex: 9999 }),
+                  menu: provided => ({ 
+                    ...provided, 
+                    position: 'relative',
+                    marginTop: '4px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                  })
+                }}
                 classNames={{
                   control: ({ isFocused }) =>
                     `border h-10 ${
                       isFocused
                         ? 'focus:outline-none border-custom-500 dark:border-custom-800'
                         : 'border-slate-200 dark:border-zink-500'
-                    } bg-white dark:bg-zink-700 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 disabled:text-slate-500 dark:disabled:text-zink-200 rounded-md`,
+                    } bg-white dark:bg-zink-700 rounded-md`,
                   placeholder: () => 'placeholder:text-slate-400 dark:placeholder:text-zink-200',
-                  singleValue: () => 'dark:text-zink-100',
-                  menu: () => 'bg-white dark:bg-zink-700 z-50',
+                  singleValue: () => 'dark:text-zink-100 text-sm truncate',
+                  menu: () => 'bg-white dark:bg-zink-700 shadow-lg rounded-md border border-slate-200 dark:border-zink-500',
+                  menuList: () => 'text-sm py-1 max-h-[150px] overflow-y-auto',
                   option: ({ isFocused, isSelected }) =>
-                    `cursor-pointer px-3 py-2 ${
+                    `px-3 py-1.5 ${
                       isSelected
                         ? 'bg-custom-600 text-white'
                         : isFocused
-                        ? 'bg-custom-500 text-white'
-                        : 'dark:text-zink-100'
+                        ? 'bg-custom-100 dark:bg-custom-900'
+                        : ''
                     }`,
                 }}
+                noOptionsMessage={({ inputValue }) => 
+                  inputValue ? 'No se encontraron descuentos' : 'No hay descuentos disponibles'
+                }
               />
             </div>
 
@@ -592,9 +570,9 @@ const ShoppingCart = () => {
           </button>
           <button
             onClick={confirmAndPrint}
-            disabled={!customerName.trim() || isSubmitting}
+            disabled={isSubmitting}
             className={`btn text-white border-red-500 ${
-              !customerName.trim() || isSubmitting
+              isSubmitting
                 ? 'bg-red-400 border-red-400 cursor-not-allowed'
                 : 'bg-red-500 hover:bg-red-600 hover:border-red-600'
             }`}
@@ -603,7 +581,6 @@ const ShoppingCart = () => {
           </button>
         </Modal.Footer>
       </Modal>
-
 
       {/* Contenido principal */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
@@ -690,6 +667,47 @@ const ShoppingCart = () => {
         <div className="xl:col-span-3">
           <div className="card p-4 bg-white shadow rounded-lg">
             <h6 className="mb-4 text-15">Carrito de ventas<span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{cart.length ? cart.length : 0}</span></h6>
+            
+            {/* Input para nombre del cliente */}
+            <div className="mb-4 space-y-1">
+              <label className="block text-sm font-medium text-slate-700 dark:text-zink-100">Nombre del Cliente <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                className={`form-input w-full ${!customerName.trim() ? 'border-red-500' : 'border-slate-200 dark:border-zink-500'} focus:border-custom-500 dark:focus:border-custom-800 focus:outline-none dark:bg-zink-700 dark:text-zink-100 placeholder:text-slate-400 dark:placeholder:text-zink-200`}
+                placeholder="Ingrese nombre del cliente"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                required
+              />
+              {!customerName.trim() && (
+                <p className="text-sm text-red-500">Este campo es requerido</p>
+              )}
+            </div>
+
+            {/* Input para placas de vehículo */}
+            <div className="mb-4 space-y-1">
+              <label className="block text-sm font-medium text-slate-700 dark:text-zink-100">Placas del Vehículo (Opcional)</label>
+              <input
+                type="text"
+                className="form-input w-full border-slate-200 dark:border-zink-500 focus:border-custom-500 dark:focus:border-custom-800 focus:outline-none dark:bg-zink-700 dark:text-zink-100 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                placeholder="Ingrese placas del vehículo"
+                value={vehiclePlate}
+                onChange={(e) => setVehiclePlate(e.target.value)}
+              />
+            </div>
+
+            {/* Input para modelo de vehículo */}
+            <div className="mb-4 space-y-1">
+              <label className="block text-sm font-medium text-slate-700 dark:text-zink-100">Modelo del Vehículo (Opcional)</label>
+              <input
+                type="text"
+                className="form-input w-full border-slate-200 dark:border-zink-500 focus:border-custom-500 dark:focus:border-custom-800 focus:outline-none dark:bg-zink-700 dark:text-zink-100 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                placeholder="Ingrese modelo del vehículo"
+                value={vehicleModel}
+                onChange={(e) => setVehicleModel(e.target.value)}
+              />
+            </div>
+
             {cart.length === 0 ? (
               <div className="flex flex-col items-center justify-center my-5">
                 <ShoppingBasket className="w-12 h-12 text-gray-500" />
@@ -739,7 +757,7 @@ const ShoppingCart = () => {
                           Option: CustomOption,
                           SingleValue: CustomSingleValue
                         }}
-                        className="w-1/2 min-w-[120px]" // Añadido min-w para evitar compresión extrema
+                        className="w-1/2 min-w-[120px]"
                         classNames={{
                           control: ({ isFocused }) =>
                             `border h-10 ${
@@ -748,10 +766,10 @@ const ShoppingCart = () => {
                                 : 'border-slate-200 dark:border-zink-500'
                             } bg-white dark:bg-zink-700`,
                           placeholder: () => 'text-slate-400 dark:text-zink-200',
-                          singleValue: () => 'dark:text-zink-100 text-sm truncate', // Texto más pequeño y truncado
-                          input: () => 'text-sm', // Tamaño de texto reducido
-                          valueContainer: () => 'px-2 py-0.5 gap-1', // Espaciado interno ajustado
-                          menu: () => 'dark:bg-zink-700 min-w-[180px] text-sm', // Menú más compacto
+                          singleValue: () => 'dark:text-zink-100 text-sm truncate',
+                          input: () => 'text-sm',
+                          valueContainer: () => 'px-2 py-0.5 gap-1',
+                          menu: () => 'dark:bg-zink-700 min-w-[180px] text-sm',
                           option: ({ isFocused, isSelected }) =>
                             `cursor-pointer px-2 py-1.5 text-sm ${
                               isFocused
@@ -759,7 +777,7 @@ const ShoppingCart = () => {
                                 : isSelected
                                 ? 'bg-custom-600 text-white'
                                 : 'text-slate-800 dark:text-zink-100'
-                            } truncate`, // Opciones truncadas
+                            } truncate`,
                         }}
                       />
                     ) : (
@@ -797,4 +815,4 @@ const ShoppingCart = () => {
   );
 };
 
-export default ShoppingCart;
+export default SalesCart;
