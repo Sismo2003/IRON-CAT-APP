@@ -331,6 +331,23 @@ const Checkout = () => {
 										</p>
 									</div>
 									
+									{ticketList?.data?.ticket[0].vehicle_model ? (
+										<div className="border-b border-slate-200 dark:border-zink-500 pb-2">
+											<p className="text-xs font-bold uppercase text-slate-700 dark:text-zink-200">Modelo del vehiculo</p>
+											<p className="text-base text-slate-500 dark:text-zink-200">
+												{ticketList?.data?.ticket[0].vehicle_model}
+											</p>
+										</div>
+									) : null}
+									{ticketList?.data?.ticket[0].vehicle_plate ? (
+										<div className="border-b border-slate-200 dark:border-zink-500 pb-2">
+											<p className="text-xs font-bold uppercase text-slate-700 dark:text-zink-200">Placas del vehiculo</p>
+											<p className="text-base text-slate-500 dark:text-zink-200">
+												{ticketList?.data?.ticket[0].vehicle_plate}
+											</p>
+										</div>
+									) : null}
+									
 									{/* Información del Cliente */}
 									{ticketList?.data?.client && ticketList?.data?.client.length > 0 ? (
 										<div className="space-y-4">

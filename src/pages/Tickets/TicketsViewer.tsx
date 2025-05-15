@@ -16,7 +16,6 @@ import {
 	Search,
 	TicketCheck,
 	PackageX,
-	MoreHorizontal,
 	Trash2,
 	FileEdit,
 	Ticket, Download,
@@ -92,6 +91,7 @@ const Orders = () => {
 	}, [dataList]);	
 	
 	
+	
 	// Delete Modal
 	const [deleteModal, setDeleteModal] = useState<boolean>(false);
 	const deleteToggle = () => setDeleteModal(!deleteModal);
@@ -131,9 +131,9 @@ const Orders = () => {
 				ticket_id: cell.ticket_id,
 				customer_name: cell.ticketCustomerName
 			}
-			const route : string = ENV_MODE === 'production' ? PRINTER_ROUTE_PROD : PRINTER_ROUTE_DEV;
+			let route : string = ENV_MODE === 'production' ? PRINTER_ROUTE_PROD : PRINTER_ROUTE_DEV;
 			if(route !== undefined && route !== "") {
-				fetch(route, {
+				fetch(route + '/src/printer.php', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -168,6 +168,9 @@ const Orders = () => {
 			ticket_subtotal : (eventData && eventData.subtotal_ticket) || "",
 			discount_code : (eventData && eventData.discount_code) || "",
 			discount_total : (eventData && eventData.discount_amount) || "",
+			
+			vehicle_model : (eventData && eventData.vehicle_model) || "",
+			vehicle_plate : (eventData && eventData.vehicle_plate) || "",
 
 			
 		},
@@ -784,6 +787,24 @@ const Orders = () => {
 											</>
 										):
 										null
+									}
+									{/* Ticket Vehicle licence plate */}
+									{validation.values.vehicle_plate ? (
+										<div className="xl:col-span-6">
+											<label htmlFor="vehicle_plate" className="inline-block mb-2 text-base font-medium">Placas del vehiculo</label>
+											<input type="text" id="vehicle_plate" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+														 disabled value={validation.values.vehicle_plate } required />
+										</div>
+									) : null
+									}
+									{/* Ticket Vehicle model */}
+									{validation.values.vehicle_model ? (
+										<div className="xl:col-span-6">
+											<label htmlFor="vehicle_model" className="inline-block mb-2 text-base font-medium">Modelo del vehiculo</label>
+											<input type="text" id="vehicle_model" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+														 disabled value={validation.values.vehicle_model } required />
+										</div>
+									) : null
 									}
 									
 									{/* SubTotal del Ticket */}

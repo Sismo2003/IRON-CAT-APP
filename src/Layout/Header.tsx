@@ -1,10 +1,14 @@
 import React, { useEffect } from 'react';
+import Swal from 'sweetalert2';
 import {
 	ChevronsLeft,
 	ChevronsRight,
 	LogOut,
 	User2,
-	Settings
+	Settings,
+	OctagonPause,
+	RotateCcw,
+	Power
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +29,7 @@ import LanguageDropdown from 'Common/LanguageDropdown';
 import LightDark from 'Common/LightDark';
 import { Dropdown } from 'Common/Components/Dropdown';
 import { changeLeftsidebarSizeType } from 'slices/thunk';
+// import {toast} from "react-toastify";
 
 
 function obtenerSaludo(): string {
@@ -38,6 +43,12 @@ function obtenerSaludo(): string {
 		return "¡Buenas noches!";
 	}
 }
+
+
+
+const ENV_MODE : any = process.env.REACT_APP_MODE;
+const PRINTER_ROUTE_DEV : any = process.env.REACT_APP_PRINTER_DEV;
+const PRINTER_ROUTE_PROD : any = process.env.REACT_APP_PRINTER_PROD;
 
 
 const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
@@ -139,6 +150,63 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
 	}, [layoutType, dispatch]);
 	
 	
+	
+const scaleService = (action: string) => {
+	let caso : string;
+	switch (action) {
+		case "stop":
+			caso = "detener las basculas";
+			break;
+		case "start":
+			caso = "encender las basculas";
+			break;
+		case "restart":
+			caso = "reiniciar las basculas";
+			break;
+		default:
+			caso = "INDEFINIDO";
+			return;
+	}
+	
+	
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: `Estás a punto de : ${caso}, tendrás que esperar unos segundos para que la acción se complete.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, continuar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      let route: string = ENV_MODE === 'production' ? PRINTER_ROUTE_PROD : PRINTER_ROUTE_DEV;
+      route += '/valves_controller/main.php';
+
+      fetch(route, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire('Completado', 'La acción se ejecutó correctamente.', 'success');
+        } else {
+          Swal.fire('Error', 'La acción no se completó correctamente.', 'error');
+        }
+      })
+      .catch(err => {
+        Swal.fire('Error', 'Ocurrió un error al ejecutar la acción.', 'error');
+      });
+    }
+  });
+};
+	
+	
+	
 	return (
 		<React.Fragment>
 			<header id="page-topbar" className="ltr:md:left-vertical-menu rtl:md:right-vertical-menu group-data-[sidebar-size=md]:ltr:md:left-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:right-vertical-menu-md group-data-[sidebar-size=sm]:ltr:md:left-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:md:right-vertical-menu-sm group-data-[layout=horizontal]:ltr:left-0 group-data-[layout=horizontal]:rtl:right-0 fixed right-0 z-[1000] left-0 print:hidden group-data-[navbar=bordered]:m-4 group-data-[navbar=bordered]:[&.is-sticky]:mt-0 transition-all ease-linear duration-300 group-data-[navbar=hidden]:hidden group-data-[navbar=scroll]:absolute group/topbar group-data-[layout=horizontal]:z-[1004]">
@@ -220,10 +288,47 @@ const Header = ({ handleToggleDrawer, handleDrawer }: any) => {
 										</a>
 										<ul>
 											<li>
-												<Link className="block ltr:pr-4 rtl:pl-4 py-1.5 text-base font-medium transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:text-custom-500 focus:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:focus:text-custom-500" to={process.env.PUBLIC_URL + "/user-profile"}><User2 className="inline-block size-4 ltr:mr-2 rtl:ml-2"></User2> Perfil</Link>
+												<Link className="block ltr:pr-4 rtl:pl-4 py-1.5 text-base font-medium transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:text-custom-500 focus:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:focus:text-custom-500"
+															to={process.env.PUBLIC_URL + "/user-profile"}>
+													<User2 className="inline-block size-4 ltr:mr-2 rtl:ml-2"></User2> Perfil
+												</Link>
 											</li>
+											{/*START SERVICE FOR SCALES*/}
+											<li onClick={() => {scaleService('start')}}>
+												<Link className="block ltr:pr-4 rtl:pl-4 py-1.5 text-base font-medium transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:text-custom-500 focus:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:focus:text-custom-500"
+															to={"#!"}>
+													<Power  className="inline-block size-4 ltr:mr-2 rtl:ml-2"></Power> Encender Basculas
+												</Link>
+											</li>
+											{/*RESTART SERVICE FOR SCALES*/}
+											<li onClick={() => {scaleService('restart')}}>
+												<Link
+													className="block ltr:pr-4 rtl:pl-4 py-1.5 text-base font-medium transition-all duration-200 ease-linear
+													 text-slate-600 dropdown-item hover:text-custom-500 focus:text-custom-500 dark:text-zink-200
+													 dark:hover:text-custom-500 dark:focus:text-custom-500"
+													to={"#!"}>
+													<RotateCcw
+														className="inline-block size-4 ltr:mr-2 rtl:ml-2">
+													</RotateCcw>
+													Reiniciar Basculas
+												</Link>
+											</li>
+											{/*STOP SERVICE FOR SCALES*/}
+											<li onClick={() => {scaleService('stop')}}>
+												<Link className="block ltr:pr-4 rtl:pl-4 py-1.5 text-base font-medium transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:text-custom-500 focus:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:focus:text-custom-500"
+															to={"#!"}>
+													<OctagonPause className="inline-block size-4 ltr:mr-2 rtl:ml-2"></OctagonPause> Detener Basculas
+												</Link>
+											</li>
+										
+											
+											
 											<li className="pt-2 mt-2 border-t border-slate-200 dark:border-zink-500">
-												<a className="block ltr:pr-4 rtl:pl-4 py-1.5 text-base font-medium transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:text-custom-500 focus:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:focus:text-custom-500" href={process.env.PUBLIC_URL + "/logout"}><LogOut className="inline-block size-4 ltr:mr-2 rtl:ml-2"></LogOut>Cerrar sesion</a>
+												<a className="block ltr:pr-4 rtl:pl-4 py-1.5 text-base font-medium transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:text-custom-500 focus:text-custom-500 dark:text-zink-200 dark:hover:text-custom-500 dark:focus:text-custom-500"
+													 href={process.env.PUBLIC_URL + "/logout"}>
+													<LogOut className="inline-block size-4 ltr:mr-2 rtl:ml-2"></LogOut>
+													Cerrar sesion
+												</a>
 											</li>
 										</ul>
 									</Dropdown.Content>
