@@ -92,8 +92,7 @@ const AddNew = () => {
             retail_price_buy: Yup.number(),
             retail_price_sell: Yup.number(),
             existence: Yup.number()
-                .required("Por favor ingresa la existencia")
-                .min(0, "La existencia no puede ser negativa"),
+                .required("Por favor ingresa la existencia"),
             img: Yup.mixed()
                 .required("Por favor selecciona una imagen")
                 .test("fileSize", "La imagen es demasiado grande", (value) => {
@@ -189,7 +188,6 @@ const AddNew = () => {
                                         onChange={validation.handleChange}
                                         value={validation.values.existence || ""}
                                         step="0.01"
-                                        min="0"
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter") {
                                                 e.preventDefault();
