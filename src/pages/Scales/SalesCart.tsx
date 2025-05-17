@@ -141,7 +141,7 @@ const SalesCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: string }>({});
-  const [selectedPriceTypes, setSelectedPriceTypes] = useState<{ [key: number]: 'wholesale' | 'retail' }>({});
+  const [selectedPriceType, setSelectedPriceType] = useState<'wholesale' | 'retail'>('wholesale');
   const [customerName, setCustomerName] = useState<string>("");
   const [vehiclePlate, setVehiclePlate] = useState<string>("");
   const [vehicleModel, setVehicleModel] = useState<string>("");
@@ -240,8 +240,7 @@ const SalesCart = () => {
     if (!material) return;
 
     const weight = weights[scaleId] || 0;
-    const priceType = selectedPriceTypes[scaleId] || 'wholesale';
-    const price = Number(priceType === 'wholesale' ? material.wholesale_price : material.retail_price);
+    const price = Number(selectedPriceType === 'wholesale' ? material.wholesale_price : material.retail_price);
     const total = weight * price;
 
     setCart([...cart, {
@@ -253,7 +252,7 @@ const SalesCart = () => {
       price,
       total,
       waste: 0,
-      type: priceType,
+      type: selectedPriceType,
       usePredefinedMerma: false,
     }]);
   };
@@ -394,7 +393,7 @@ const SalesCart = () => {
       setVehiclePlate("");
       setVehicleModel("");
       setSelectedMaterials({});
-      setSelectedPriceTypes({});
+      setSelectedPriceType('wholesale');
       setWeights({});
       setDiscountCode(null);
       setLargeModal(false);
@@ -627,14 +626,17 @@ const SalesCart = () => {
                       { value: 'retail', label: 'Precio de Menudeo' },
                     ]}
                     value={{
-                      value: selectedPriceTypes[scale.id] || 'wholesale',
-                      label: selectedPriceTypes[scale.id] === 'retail' ? 'Precio de Menudeo' : 'Precio de Mayoreo',
+                      value: selectedPriceType,
+                      label: selectedPriceType === 'retail' ? 'Precio de Menudeo' : 'Precio de Mayoreo',
                     }}
-                    onChange={(selectedOption) =>
-                      setSelectedPriceTypes({ ...selectedPriceTypes, [scale.id]: selectedOption?.value as 'wholesale' | 'retail' })
-                    }
+                    onChange={(selectedOption) => {
+                      if (cart.length === 0) {
+                        setSelectedPriceType(selectedOption?.value as 'wholesale' | 'retail');
+                      }
+                    }}
                     placeholder="Seleccionar tipo de precio"
                     className="w-full mt-2"
+                    isDisabled={cart.length > 0}
                     classNames={{
                       control: ({ isFocused }) =>
                         `${isFocused

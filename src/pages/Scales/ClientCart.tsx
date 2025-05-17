@@ -267,6 +267,17 @@ const ShoppingCart = () => {
     setTransactionType(newTransactionType);
   };
 
+  const handlePriceTypeChange = (priceType: 'wholesale' | 'retail') => {
+    // Solo permitir cambios si el carrito está vacío
+    if (cart.length === 0) {
+      const newPriceTypes: { [key: number]: 'wholesale' | 'retail' } = {};
+      scales.forEach(scale => {
+        newPriceTypes[scale.id] = priceType;
+      });
+      setSelectedPriceTypes(newPriceTypes);
+    }
+  };
+
   const filteredClients = clientlList
   .filter((client: any) => 
     client.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
@@ -753,9 +764,9 @@ const ShoppingCart = () => {
                       value: selectedPriceTypes[scale.id] || 'wholesale',
                       label: selectedPriceTypes[scale.id] === 'retail' ? 'Precio de Menudeo' : 'Precio de Mayoreo',
                     }}
-                    isDisabled={!selectedClient || !transactionType}
+                    isDisabled={!selectedClient || !transactionType || cart.length > 0}
                     onChange={(selectedOption) =>
-                      setSelectedPriceTypes({ ...selectedPriceTypes, [scale.id]: selectedOption?.value as 'wholesale' | 'retail' })
+                      handlePriceTypeChange(selectedOption?.value as 'wholesale' | 'retail')
                     }
                     placeholder="Seleccionar tipo de precio"
                     classNames={{
