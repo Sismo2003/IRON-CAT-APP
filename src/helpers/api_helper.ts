@@ -19,54 +19,11 @@ const getToken = () => {
   return authUser ? JSON.parse(authUser).token : null;
 };
 
-// Verificar si el token está expirado
-const isTokenExpired = (token: string) => {
-  try {
-    const decoded = jwtDecode(token);
-    if (!decoded.exp) return false;
-    const now = Date.now() / 1000;
-    return decoded.exp < now;
-  } catch (error) {
-    return true;
-  }
-};
-
-// Verificar si el token está cerca de expirar (5 minutos)
-const isTokenCloseToExpire = (token: string) => {
-  try {
-    const decoded = jwtDecode(token);
-    if (!decoded.exp) return false;
-    const now = Date.now() / 1000;
-    return decoded.exp < (now + 300); // 300 segundos = 5 minutos
-  } catch (error) {
-    return false;
-  }
-};
-
-// Función para renovar el token
-const renewToken = async () => {
-  const currentToken = getToken();
-  if (!currentToken) throw new Error('No token available');
-  
-  const response = await axios.post('/auth/refresh-token', {
-    token: currentToken,
-  });
-  
-  const newToken = response.data.token;
-  const authUser = localStorage.getItem('authUser');
-  const userData = authUser ? JSON.parse(authUser) : {};
-  
-  localStorage.setItem('authUser', JSON.stringify({ ...userData, token: newToken }));
-  setAuthorization(newToken);
-  return newToken;
-};
-
-// Redirigir al login
-const redirectToLogin = () => {
-  // Aquí puedes implementar tu lógica de redirección
-  localStorage.removeItem('authUser');
-  window.location.href = '/login'; // Ajusta según tu ruta de login
-};
+// // Redirigir al login
+// const redirectToLogin = () => {
+//   localStorage.removeItem('authUser');
+//   window.location.href = '/login';
+// };
 
 // Configurar el token inicial
 const token = getToken();
@@ -74,30 +31,13 @@ if (token) {
   axios.defaults.headers.common["Authorization"] = "Bearer " + token;
 }
 
-// Interceptor de solicitudes para manejar la renovación del token
+// Interceptor de solicitudes simplificado
 axios.interceptors.request.use(
-  async (config) => {
+  (config) => {
     const token = getToken();
-    
     if (token) {
-      if (isTokenExpired(token)) {
-        // Token expirado - redirigir al login
-        redirectToLogin();
-        return Promise.reject(new Error('Token expired'));
-      }
-      
-      if (isTokenCloseToExpire(token)) {
-        try {
-          const newToken = await renewToken();
-          config.headers.Authorization = `Bearer ${newToken}`;
-        } catch (error) {
-          // Si falla la renovación, redirigir al login
-          redirectToLogin();
-          return Promise.reject(error);
-        }
-      }
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    
     return config;
   },
   (error) => {
@@ -118,7 +58,6 @@ axios.interceptors.response.use(
         break;
       case 401:
         message = "Invalid credentials";
-        // Opcional: podrías redirigir al login aquí también
         break;
       case 404:
         message = "Sorry! the data you are looking for could not be found";
