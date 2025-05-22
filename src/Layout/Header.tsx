@@ -181,18 +181,18 @@ const scaleService = (action: string) => {
   }).then((result) => {
     if (result.isConfirmed) {
       let route: string = ENV_MODE === 'production' ? PRINTER_ROUTE_PROD : PRINTER_ROUTE_DEV;
-      route += '/valves_controller/main.php';
-
+      route += '/src/valves_controller/main.php';
+			console.log("Basculas servicio accion: ",action);
       fetch(route, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ action })
+				body: JSON.stringify({ action: action })
       })
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
+        if (data.status) {
           Swal.fire('Completado', 'La acción se ejecutó correctamente.', 'success');
         } else {
           Swal.fire('Error', 'La acción no se completó correctamente.', 'error');

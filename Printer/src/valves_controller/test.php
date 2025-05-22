@@ -1,0 +1,1 @@
+//sc query type= service state= all | findstr /I apache

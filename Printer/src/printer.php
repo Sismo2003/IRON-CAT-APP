@@ -3,7 +3,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
-
+date_default_timezone_set('America/Mexico_City');
 require '../vendor/autoload.php';
 
 use Mike42\Escpos\Printer;
@@ -101,10 +101,10 @@ try {
 		$ticketFetched   = fetchApiData($apiUrl)['data'];
 
 		// fechas de generacion de ticket
-		$date = new DateTime($ticketFetched['ticket'][0]['date'], new DateTimeZone('UTC'));
-		$date->setTimezone(new DateTimeZone('America/Mexico_City'));
-		$formattedDate = $date->format('d-m-Y H:i');
-		$ticketFetched['ticket'][0]['date'] = $formattedDate;
+		$fecha = new DateTime($ticketFetched['ticket'][0]['date']);
+		$formatted = $fecha->format("d/m/Y H:i");
+
+		$ticketFetched['ticket'][0]['date'] = $formatted;
 
 		// status de venta
 		if($ticketFetched['ticket'][0]['status'] == 'pending') {
@@ -120,6 +120,12 @@ try {
 		} else {
 			$ticketFetched['ticket'][0]['type'] = 'Compra';
 		}
+
+        if($ticketFetched['products_ticket'][0]['type'] == 'wholesale') {
+            $tipo_venta = 'Mayoreo';
+        }else{
+            $tipo_venta = 'Menudeo';
+        }
 
 		printLog(
 			$log,
@@ -174,17 +180,31 @@ try {
 ////		$printer->feed(1);
 ////	}
 
-	$printer->setJustification(Printer::JUSTIFY_CENTER);
-	$printer->setEmphasis(true);
-  $printer->text("IRON CAT RECICLADORA \n");
-	$printer->setEmphasis(false);
-
-	$printer->selectPrintMode(Printer::MODE_FONT_B);
-  $printer->text("C. Ignacio Bernal 3030, \nRancho Nuevo, 44240 Guadalajara, Jal. \n");
-  $printer->text("+52 33 3813 5688 \n");
-	$printer->selectPrintMode(Printer::MODE_FONT_A);
 
 
+// Centrar y escalar al 2×
+$printer->setJustification(Printer::JUSTIFY_CENTER);
+$printer->setTextSize(3,3);        // Ancho ×2, Alto ×2
+$printer->setEmphasis(true);
+$printer->text("IRON CAT\n");
+
+// $logopath = __DIR__ . '/logo-dark.png';
+// $logo = EscposImage::load($logopath, false);
+// $printer->setJustification(Printer::JUSTIFY_CENTER);
+// $printer->bitImage($logo);
+
+
+$printer->setTextSize(2, 2);
+$printer->text("RECYCLING CENTER\n");
+$printer->setEmphasis(false);
+// Reducir a Fuente B también centrada, pero normal tamaño
+$printer->selectPrintMode(Printer::MODE_FONT_B);
+$printer->setTextSize(1, 1);        // Vuelve a tamaño normal
+$printer->text("C. Ignacio Bernal 3030,\nRancho Nuevo, 44240 Guadalajara, Jal.\n");
+$printer->text("+52 33 3813 5688\n");
+
+// Y por si quieres volver a la fuente A habitual:
+$printer->selectPrintMode(Printer::MODE_FONT_A);
 
 	$printer->feed(2);
 
@@ -216,27 +236,43 @@ try {
 			$printer->text("TIPO DE TRANSACCION: " .$ticketFetched['ticket'][0]['type'] . "\n");
 		}
 
+        // TIPO DE VENTA
+        if(!empty($tipo_venta)) {
+            $printer->text("TIPO DE VENTA: " .$tipo_venta . "\n");
+        }
+
+		// PLACA DE VEHICULO
+		if(!empty($ticketFetched['ticket'][0]['vehicle_plate'])) {
+			$printer->text("PLACA DEL VEHICULO: " . $ticketFetched['ticket'][0]['vehicle_plate']  . "\n");
+		}
+		// MODELO DE VEHICULO
+		if(!empty($ticketFetched['ticket'][0]['vehicle_model'])) {
+			$printer->text("MODELO DE VEHICULO: " .$ticketFetched['ticket'][0]['vehicle_model'] . "\n");
+		}
+		
+
 	}
-	$printer->feed(1);
 
 
 	// -- INFORMACION DEL CLIENTE --
 //
-//	// NOMBRE DEL CLIENTE (sin registrar o registrado)
-//  if(isset($decoded['customer_name']) && !empty($decoded['customer_name'])) {
-//    $printer->text("CLIENTE: " . $decoded['customer_name'] . "\n");
-//  }
+	//	// NOMBRE DEL CLIENTE (sin registrar o registrado)
+	if (isset($decoded['customer_name']) && !empty($decoded['customer_name'])) {
+		// Convertir a mayúsculas respetando UTF-8
+		$nombreMayus = mb_strtoupper($decoded['customer_name'], 'UTF-8');
+		$printer->text("CLIENTE: " . $nombreMayus . "\n");
+	}
 
 
 	if(isset($ticketFetched['client'][0]) && !empty($ticketFetched['client'][0])) {
 		// NOMBRE DE CLIENTE REGISTRADO
-		if(!empty($ticketFetched['client'][0]['name'])) {
-			$name = $ticketFetched['client'][0]['name'];
-			if(!empty($ticketFetched['client'][0]['last_name'])) {
-				$name .= ' ' . $ticketFetched['client'][0]['last_name'];
-			}
-			$printer->text("CLIENTE: " . $name . "\n");
-		}
+		//if(!empty($ticketFetched['client'][0]['name'])) {
+		//	$name = $ticketFetched['client'][0]['name'];
+		//	if(!empty($ticketFetched['client'][0]['last_name'])) {
+		//		$name .= ' ' . $ticketFetched['client'][0]['last_name'];
+		//	}
+		//	$printer->text("CLIENTE: " . $name . "\n");
+		//}
 		//NUMERO DE CLIENTE
 		if(!empty($ticketFetched['client'][0]['customer_id'])) {
 			$printer->text("NUM. DE CLIENTE: " . $ticketFetched['client'][0]['customer_id'] . "\n");
@@ -274,61 +310,76 @@ try {
 	$printer->selectPrintMode(Printer::MODE_FONT_B);
 	// -- Tabla de productos --
   // Table header with additional “MRM” (merma) column, using abbreviations to keep width
-  $printer->text("ID  PRODUCTO                  PESO     MRM      PRECIO    TOTAL\n");
+  $printer->text("PRODUCTO                 PESO     MRM      PRECIO    TOTAL\n");
 	$printer->selectPrintMode(Printer::MODE_FONT_A);
   $printer->text("------------------------------------------------\n");
-	$printer->selectPrintMode(Printer::MODE_FONT_B);
+	//$printer->selectPrintMode(Printer::MODE_FONT_B);
 
   $precioFinal = 0;
   $numItems = 0;
   $totalKg = 0;
   $merma = 0;
   foreach ($ticketFetched['products_ticket'] as $item) {
-      // ID field: 3 chars
-      $idField     = str_pad($numItems, 3, ' ', STR_PAD_RIGHT);
-      // Product name: trim to 24 chars, then pad
-      $material       = mb_strimwidth($item['material'], 0, 24, '');
-      $productField   = str_pad($material, 24, ' ', STR_PAD_RIGHT);
-      // Weight: include 'Kg', trim to 6 chars, then pad left
-      $weightText     = $item['weight'] ;
-      $weightField    = str_pad(mb_strimwidth($weightText, 0, 6, ''), 6, ' ', STR_PAD_LEFT);
-      // Waste (merma): trim to 6 chars, pad left
-      $wasteField     = str_pad(mb_strimwidth((string)$item['waste'], 0, 6, ''), 6, ' ', STR_PAD_LEFT);
-      // Unit price: format, trim to 10 chars, pad left
-      $unitPrice      = '$' . number_format($item['unit_price'], 2);
-      $unitField      = str_pad(mb_strimwidth($unitPrice, 0, 10, ''), 10, ' ', STR_PAD_LEFT);
-      // Total price: format, trim to 10 chars, pad left
-      $totalPrice     = '$' . number_format($item['total'], 2);
-      $totalField     = str_pad(mb_strimwidth($totalPrice, 0, 10, ''), 10, ' ', STR_PAD_LEFT);
+    // Nombre del producto: trim a 24 chars, pad right
+    $productField = str_pad(mb_strimwidth($item['material'], 0, 15, ''), 15, ' ', STR_PAD_RIGHT);
 
-      $line = "{$idField} {$productField} {$weightField} {$wasteField} {$unitField} {$totalField}\n";
+    // Peso: trim a 6 chars, pad left
+    $weightField  = str_pad(mb_strimwidth($item['weight'], 0, 6, ''), 6, ' ', STR_PAD_LEFT);
 
-      $numItems++;
-      $totalKg += $item['weight'];
-      $merma    += $item['waste'];
-      $precioFinal += $item['total'];
-      $printer->text($line);
-  }
+    // Merma: trim a 6 chars, pad left
+    $wasteField   = str_pad(mb_strimwidth((string)$item['waste'], 0, 5, ''), 5, ' ', STR_PAD_LEFT);
+
+    // Precio unitario: formatear, trim a 10 chars, pad left
+    $unitText     = '$' . number_format($item['unit_price'], 2);
+    $unitField    = str_pad(mb_strimwidth($unitText, 0, 10, ''), 10, ' ', STR_PAD_LEFT);
+
+    // Precio total: formatear, trim a 10 chars, pad left
+    $totalText    = '$' . number_format($item['total'], 2);
+    $totalField   = str_pad(mb_strimwidth($totalText, 0, 7, ''), 7, ' ', STR_PAD_LEFT);
+
+    // Concatenar TODO en una sola línea para evitar saltos intermedios
+    $line = "{$productField} {$weightField} {$wasteField} {$unitField} {$totalField}\n";
+
+    // Actualizar totales...
+    $numItems++;
+    $totalKg     += $item['weight'];
+    $merma       += $item['waste'];
+    $precioFinal += $item['total'];
+
+    // Imprimir la línea completa
+    $printer->text($line);
+}
 
 
   $printer->selectPrintMode(Printer::MODE_FONT_A);
   $printer->setLineSpacing(); // reset to default
 	$printer->text("------------------------------------------------\n");
-  $printer->feed(2);
+  $printer->feed(1);
 
 	// Revert to standard font for totals
   $printer->setJustification(Printer::JUSTIFY_LEFT);
   // -- Totales --
-  $printer->text("CANTIDAD TOTAL: ". number_format($totalKg,2) . " KG\n");
-  $printer->text("MERMA TOTAL: ". number_format($merma,2) . " KG\n");
-  $printer->text("IMPORTE TOTAL: \$". number_format($precioFinal,2) ."\n");
+  $printer->text(number_format($totalKg,2) . " KG\n");
+
+  	$entero    = floor($precioFinal);
+	$decimal   = $precioFinal - $entero;
+
+	// 2) Aplica el umbral de 0.50
+	if ($decimal > 0.50) {
+		$redondeado = ceil($precioFinal);
+	} else {
+		$redondeado = floor($precioFinal);
+	}
+
+  
+  $printer->text("IMPORTE TOTAL: \$". number_format($redondeado,2) ."\n");
 
 
 
   $operationId = $ticketFetched['ticket'][0]['id'];
 
   // Espacio extra antes del código de barras
-  $printer->feed(3);
+  $printer->feed(1);
   // Centrar y configurar código de barras
   $printer->setJustification(Printer::JUSTIFY_CENTER);
   $printer->setBarcodeHeight(70);
@@ -337,7 +388,7 @@ try {
   // Usar Code128 set C para datos numéricos
   $barcodeData = '{A' . $operationId;
   $printer->barcode($barcodeData, Printer::BARCODE_CODE128);
-  $printer->feed(2);
+  $printer->feed(1);
 
 
   $printer->cut();
