@@ -35,6 +35,7 @@ import Orders from "pages/MaterialsManagement/Orders";
 import OrderOverview from "pages/MaterialsManagement/OrderOverview";
 
 // Scales
+import ScalesMenu from "pages/Scales/CartsMenu";
 import ShoppingCart from "pages/Scales/ShoppingCart";
 import SalesCart from "pages/Scales/SalesCart";
 import ClientCart from "pages/Scales/ClientCart";
@@ -241,9 +242,10 @@ const authProtectedRoutes: Array<RouteObject> = [
   { path: "/apps-discount-codes", component: DiscountCodes },
 
   // Scales
-  { path: "/apps-scales-shopcart", component: ShoppingCart },
-  { path: "/apps-scales-salecart", component: SalesCart },
-  { path: "/apps-scales-clientcart", component: ClientCart },
+  { path: "/apps-scales-menu", component: ScalesMenu },
+  { path: "/apps-scales-shopcart/:cartId", component: ShoppingCart },
+  { path: "/apps-scales-salecart/:cartId", component: SalesCart },
+  { path: "/apps-scales-clientcart/:cartId", component: ClientCart },
 
   // TICKET Management
   { path: "/apps-tk-ticket", component: TicketsViewer },

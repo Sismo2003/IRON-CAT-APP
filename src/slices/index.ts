@@ -60,6 +60,9 @@ import WasteManagementReducer from "./wasteManagement/reducer";
 // Discount Codes
 import DiscountCodesReducer from "./discountCodes/reducer";
 
+// Carts Management
+import CartManagementReducer from "./cartsManagement/reducer";
+
 
 
 
@@ -84,6 +87,7 @@ const rootReducer = combineReducers({
     AssignedMaterials: AssignedMaterialReducer,
     WasteManagement: WasteManagementReducer,
     DiscountCodesManagement: DiscountCodesReducer,
+    CartManagement: CartManagementReducer,
 });
 
 

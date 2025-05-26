@@ -88,6 +88,12 @@ import {
           label: 'Clientes especiales',
           link: '/apps-scales-clientcart',
           parentId: 'Scales'
+        },
+        {
+          id: 'scale-menu',
+          label: 'Menú basculas',
+          link: '/apps-scales-menu',
+          parentId: 'Scales'
         }
       ]
     },

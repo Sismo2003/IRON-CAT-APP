@@ -1,6 +1,14 @@
 // REGISTER
 export const POST_FAKE_REGISTER = "/auth/signup";
 
+// Carts
+export const GET_PENDING_CARTS = "/cart/all-carts";
+export const GET_CART = "/cart/get-cart";
+export const INSERT_PRODUCT = "/cart/insert-product";
+export const DELETE_PRODUCT = "/cart/delete-product";
+export const CREATE_CART = "/cart/new-cart";
+export const DELETE_CART = "/cart/delete-cart";
+
 // Discount Codes
 export const GET_DISCOUNT_CODES = "/discount-codes/get-discount-codes";
 export const ADD_DISCOUNT_CODES = "/discount-codes/add-discount-codes";

@@ -89,6 +89,14 @@ export const productImage = (data: any) => api.get(`${url.GET_IMG_BY_ID}/${data}
 // export const updateTicket = (data: any) => api.update(url.UPDATE_TICKET + '/' + data.id, data);
 
 
+// Carts
+export const getPendingCarts = () => api.get(url.GET_PENDING_CARTS, null);
+export const createCart = (data: any) => api.create(url.CREATE_CART, data);
+export const deleteCart = (data: any) => api.delete(url.DELETE_CART + '/' + data, { headers: { data } });
+export const getCart = (id: any) => api.get(`${url.GET_CART}/${id}`, { params: { id } });
+export const deleteProductInCart = (data: any) => api.delete(url.DELETE_PRODUCT + '/' + data.cart_product_id, { headers: { data } });
+export const insertProductInCart = (data: any) => api.create(url.INSERT_PRODUCT, data);
+
 // Waste
 export const getWaste = () => api.get(url.GET_WASTE, null);
 export const getActiveWaste = () => api.get(url.GET_ACTIVE_WASTE, null);
