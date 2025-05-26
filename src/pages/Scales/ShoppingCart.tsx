@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import BreadCrumb from "Common/BreadCrumb";
 import Select from 'react-select';
 import scale from "assets/images/scale.png";
@@ -10,6 +11,9 @@ import {
   getActiveWasteRecords as onGetWasteRecords,
   getDiscountCodes as onGetDiscountCodes,
   incrementUsesDiscountCode as onUpdateDiscountCode,
+  getCart as onGetCartById, // Para cargar carritos existentes,
+  insertProductInCart as onInsertProductInCart,
+  deleteProductInCart as onDeleteProductFromCart, // Asumiendo que existe este endpoint
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
@@ -63,6 +67,7 @@ interface CartItem {
   waste: number;
   type: 'wholesale' | 'retail';
   usePredefinedMerma: boolean;
+  cart_product_id?: number; // ID del producto en el carrito (para eliminación)
 }
 
 interface WasteOption {
@@ -71,6 +76,18 @@ interface WasteOption {
   wasteId: string;
   img?: string;
 }
+
+// interface PendingCart {
+//   id: number;
+//   client_id?: number;
+//   sale_type: 'shop' | 'sale';
+//   sale_mode: 'wholesale' | 'retail';
+//   customer_name: string;
+//   vehicle_plate: string;
+//   vehicle_model: string;
+//   total: number | null;
+//   cart_products: any[];
+// }
 
 const CustomOption = ({ innerProps, label, data }: any) => (
   <div {...innerProps} className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-zink-600 cursor-pointer">
@@ -100,6 +117,7 @@ const CustomSingleValue = ({ data }: any) => (
 
 const ShoppingCart = () => {
   const dispatch = useDispatch<any>();
+  const { cartId } = useParams<{ cartId: string }>();
 
   const selectDataList = createSelector(
     (state: any) => state.MATERIALManagement,
@@ -130,7 +148,7 @@ const ShoppingCart = () => {
         dataList: state.discountCodeList,
         loading: state.loading
     })
-);
+  );
 
   const { dataList } = useSelector(selectDiscountCodeList);
   const { materialList } = useSelector(selectDataList);
@@ -152,13 +170,9 @@ const ShoppingCart = () => {
   const [largeModal, setLargeModal] = useState(false);
   const [discountCode, setDiscountCode] = useState<DiscountCode | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Datos de ejemplo para códigos de descuento
-  const discountOptions = [
-    { value: 'DESC10', label: 'DESC10 - 10% de descuento' },
-    { value: 'DESC20', label: 'DESC20 - 20% de descuento' },
-    { value: 'DESC30', label: 'DESC30 - 30% de descuento' },
-  ];
+  const [isEditingExistingCart, setIsEditingExistingCart] = useState(false);
+  const [currentCartId, setCurrentCartId] = useState<number | null>(null);
+  const [transactionType, setTransactionType] = useState<'shop' | 'sale'>('shop');
 
   useEffect(() => {
     dispatch(onGetProductList());
@@ -166,6 +180,98 @@ const ShoppingCart = () => {
     dispatch(onGetDiscountCodes());
     setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
+
+  // Efecto separado para cargar el carrito cuando hay un cartId en la URL
+  useEffect(() => {
+    if (cartId) {
+      setIsEditingExistingCart(true);
+      setCurrentCartId(parseInt(cartId));
+      // Esperar a que materialList esté cargado antes de cargar el carrito
+      if (materialList && materialList.length > 0) {
+        loadExistingCart(parseInt(cartId));
+      }
+    }
+  }, [cartId, materialList]); // Agregar materialList como dependencia
+
+  const loadExistingCart = async (id: number) => {
+    try {
+      // Obtener los datos del carrito desde el backend
+      const result = await dispatch(onGetCartById(id));
+      
+      console.log("Cart API Response:", result.payload); // Para debugging
+      
+      if (result.payload && result.payload.data) {
+        // La estructura de respuesta tiene el carrito en result.payload.data
+        const responseData = result.payload.data;
+        const cartData = responseData["0"]; // Los datos del carrito están en la clave "0"
+        const cartProducts = responseData.cart_products || []; // Los productos están en cart_products
+        
+        console.log("Cart Data:", cartData); // Para debugging
+        console.log("Cart Products:", cartProducts); // Para debugging
+        
+        // Configurar el nombre del cliente
+        setCustomerName(cartData.customer_name);
+
+        // Configurar el tipo de transacción
+        setTransactionType(cartData.sale_type);
+
+        // Configurar el modo de precio
+        setSelectedPriceType(cartData.sale_mode);
+
+        // Configurar vehículo
+        setVehiclePlate(cartData.vehicle_plate || "");
+        setVehicleModel(cartData.vehicle_model || "");
+
+        // Si hay productos en el carrito, cargarlos
+        if (cartProducts && cartProducts.length > 0) {
+          const loadedCartItems = cartProducts.map((product: any, index: number) => {
+            // Buscar el material actual para obtener precios actualizados
+            const currentMaterial = materialList.find((material: any) => material.id === product.product_id);
+            
+            let currentPrice = product.price; // Precio por defecto del carrito
+            let currentTotal = product.total; // Total por defecto del carrito
+            
+            // Si encontramos el material, recalcular con precios actuales
+            if (currentMaterial) {
+              currentPrice = cartData.sale_mode === 'wholesale' 
+                ? Number(currentMaterial.wholesale_price_buy)
+                : Number(currentMaterial.retail_price_buy);
+              currentTotal = product.weight * currentPrice;
+            }
+
+            return {
+              id: product.scale_id || index + 1, // Usar scale_id si está disponible
+              product_id: product.product_id,
+              material: product.material_name || product.material,
+              originalWeight: product.original_weight || product.weight,
+              weight: product.weight,
+              price: currentPrice,
+              total: currentTotal,
+              waste: product.waste || 0,
+              type: cartData.sale_mode,
+              usePredefinedMerma: product.use_predefined_merma || false,
+              cart_product_id: product.id || product.cart_product_id, // ID del producto en el carrito
+            };
+          });
+          setCart(loadedCartItems);
+
+          // Configurar materiales seleccionados
+          const selectedMats: { [key: number]: string } = {};
+          loadedCartItems.forEach((item: CartItem) => {
+            selectedMats[item.id] = item.material;
+          });
+          setSelectedMaterials(selectedMats);
+        }
+
+        toast.success("Carrito cargado correctamente");
+      } else {
+        toast.error("Error al cargar el carrito - Datos no encontrados");
+      }
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      toast.error("Error al cargar el carrito");
+    }
+  };
 
   useEffect(() => {
     if (materialList && materialList.length > 0) {
@@ -242,33 +348,106 @@ const ShoppingCart = () => {
     }
   };
 
-  const handleAddToCart = (scaleId: number) => {
+  const handleAddToCart = async (scaleId: number) => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
-    if (!material) return;
+    if (!material) {
+      showToast("Por favor seleccione un material");
+      return;
+    }
 
     const weight = weights[scaleId] || 0;
+    // if (weight <= 0) {
+    //   showToast("El peso debe ser mayor a 0");
+    //   return;
+    // }
+
     const price = Number(selectedPriceType === 'wholesale' ? material.wholesale_price : material.retail_price);
     const total = weight * price;
 
-    setCart([...cart, {
-      id: scaleId,
-      material: material.label,
-      product_id: material.value,
-      originalWeight: weight,
-      weight: weight,
-      price,
-      total,
-      waste: 0,
-      type: selectedPriceType,
-      usePredefinedMerma: false,
-    }]);
+    // Si estamos editando un carrito existente, usar ese cart_id
+    // Si no, necesitamos crear un carrito temporal o usar un ID por defecto
+    let cartIdToUse = currentCartId;
+    
+    if (!isEditingExistingCart) {
+      // Para carritos nuevos, puedes crear un carrito temporal o usar un ID especial
+      // Esto depende de cómo manejes los carritos nuevos en tu backend
+      cartIdToUse = 0; // O el ID que uses para carritos temporales
+    }
+
+    try {
+      // Llamar al endpoint insertProductInCart
+      const insertPayload = {
+        cart_id: cartIdToUse,
+        product_id: material.value,
+        weight: weight,
+        waste: 0, // Inicialmente sin merma
+      };
+
+      const result = await dispatch(onInsertProductInCart(insertPayload));
+      
+      if (result.error) {
+        showToast("Error al agregar producto al carrito");
+        return;
+      }
+
+      // Crear el item para el estado local
+      const newItem: CartItem = {
+        id: scaleId,
+        material: material.label,
+        product_id: material.value,
+        originalWeight: weight,
+        weight: weight,
+        price,
+        total,
+        waste: 0,
+        type: selectedPriceType,
+        usePredefinedMerma: false,
+        cart_product_id: result.payload?.cart_product_id || result.payload?.id, // ID retornado por el backend
+      };
+
+      setCart([...cart, newItem]);
+
+      // Si es un carrito nuevo y obtuvimos un cart_id del backend, actualizarlo
+      if (!isEditingExistingCart && result.payload?.cart_id) {
+        setCurrentCartId(result.payload.cart_id);
+        setIsEditingExistingCart(true);
+      }
+
+      showToast("Producto agregado al carrito correctamente");
+      
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+      showToast("Error al agregar producto al carrito");
+    }
   };
 
-  const handleDeleteItem = (index: number) => {
-    setCart((prevCart) => prevCart.filter((_, i) => i !== index));
+  const handleDeleteItem = async (index: number) => {
+    const itemToDelete = cart[index];
+    
+    try {
+      // Si tenemos el ID del producto en el carrito, llamar al endpoint de eliminación
+      if (itemToDelete.cart_product_id && currentCartId) {
+        const deletePayload = {
+          cart_id: currentCartId,
+          cart_product_id: itemToDelete.id
+        };
+
+        await dispatch(onDeleteProductFromCart(deletePayload));
+      }
+
+      // Actualizar el estado local
+      const updatedCart = cart.filter((_, i) => i !== index);
+      setCart(updatedCart);
+
+      showToast("Producto eliminado del carrito");
+      
+    } catch (error) {
+      console.error("Error deleting product from cart:", error);
+      showToast("Error al eliminar producto del carrito");
+    }
   };
 
-  const handleMermaChange = (index: number, value: number) => {
+  const handleMermaChange = async (index: number, value: number) => {
     const updatedCart = [...cart];
     const originalWeight = updatedCart[index].originalWeight;
 
@@ -287,10 +466,36 @@ const ShoppingCart = () => {
       return;
     }
 
+    const previousWaste = updatedCart[index].waste;
     updatedCart[index].waste = value;
     updatedCart[index].weight = originalWeight - value;
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
+    
+    // Actualizar estado local inmediatamente para mejor UX
     setCart(updatedCart);
+
+    // Si tenemos cart_product_id, actualizar en el backend
+    if (updatedCart[index].cart_product_id && currentCartId) {
+      try {
+        const updatePayload = {
+          cart_id: currentCartId,
+          product_id: updatedCart[index].product_id,
+          weight: updatedCart[index].weight,
+          waste: value,
+        };
+
+        await dispatch(onInsertProductInCart(updatePayload)); // El mismo endpoint maneja la actualización
+        
+      } catch (error) {
+        console.error("Error updating product waste:", error);
+        // Revertir el cambio en caso de error
+        updatedCart[index].waste = previousWaste;
+        updatedCart[index].weight = originalWeight - previousWaste;
+        updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
+        setCart([...updatedCart]);
+        showToast("Error al actualizar la merma");
+      }
+    }
   };
 
   const togglePredefinedMerma = (index: number, usePredefined: boolean) => {
@@ -364,7 +569,7 @@ const ShoppingCart = () => {
       total: totals.total,
       user_id: authUser.id,
       user_name: authUser.name + " " + authUser.last_name,
-      type: "shop",
+      type: transactionType,
       customer_name: customerName,
       vehicle_plate: vehiclePlate,
       vehicle_model: vehicleModel,
@@ -372,6 +577,7 @@ const ShoppingCart = () => {
       discount_code_id: discountCode?.id || null,
       subtotal: totals.subtotal,
       discount_amount: totals.discount,
+      cart_id: isEditingExistingCart ? currentCartId : null,
       cart: cart.map((item) => ({
         id: item.id,
         product_id: item.product_id,
@@ -408,6 +614,8 @@ const ShoppingCart = () => {
       setWeights({});
       setDiscountCode(null);
       setLargeModal(false);
+      setIsEditingExistingCart(false);
+      setCurrentCartId(null);
   
       const response1 = await fetch('http://192.168.100.59/src/printer.php', {
         method: 'POST',
@@ -436,7 +644,10 @@ const ShoppingCart = () => {
 
   return (
     <>
-      <BreadCrumb title="Carrito de compras" pageTitle="Compras" />
+      <BreadCrumb 
+        title={isEditingExistingCart ? `Editando Carrito #${currentCartId}` : "Carrito de compras"} 
+        pageTitle={isEditingExistingCart ? "Editando Carrito" : "Compras"} 
+      />
       <ToastContainer
         closeButton={false}
         limit={1}
@@ -451,7 +662,7 @@ const ShoppingCart = () => {
         
         <Modal.Header className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500"
           closeButtonClass="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
-          <Modal.Title className="text-16">Resumen de Compra</Modal.Title>
+          <Modal.Title className="text-16">Resumen de {transactionType === 'shop' ? 'Compra' : 'Venta'}</Modal.Title>
         </Modal.Header>
         
         <Modal.Body className="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
@@ -475,6 +686,33 @@ const ShoppingCart = () => {
                 </div>
               ))}
             </div>
+
+            {/* Información del cliente */}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Cliente</label>
+              <div className="p-2 border border-slate-200 dark:border-zink-500 rounded-md">
+                <p>{customerName || 'No especificado'}</p>
+              </div>
+            </div>
+
+            {/* Tipo de transacción */}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Tipo de Transacción</label>
+              <div className="p-2 border border-slate-200 dark:border-zink-500 rounded-md">
+                <p>{transactionType === 'shop' ? 'Compra' : 'Venta'}</p>
+              </div>
+            </div>
+
+            {/* Información del vehículo */}
+            {(vehiclePlate || vehicleModel) && (
+              <div className="space-y-1">
+                <label className="block text-sm font-medium">Información del Vehículo</label>
+                <div className="p-2 border border-slate-200 dark:border-zink-500 rounded-md">
+                  {vehiclePlate && <p className="text-sm">Placa: {vehiclePlate}</p>}
+                  {vehicleModel && <p className="text-sm">Modelo: {vehicleModel}</p>}
+                </div>
+              </div>
+            )}
 
             {/* Select para código de descuento */}
             <div className="space-y-1">
@@ -553,7 +791,7 @@ const ShoppingCart = () => {
                   <div className="flex justify-between text-green-500">
                     <span>Descuento ({discountCode.discount_type === 'percentage' 
                       ? `${discountCode.discount_value}%` 
-                      : `$${Number(discountCode.discount_value).toFixed(2)}`}):</span>
+                      : `${Number(discountCode.discount_value).toFixed(2)}`}):</span>
                     <span>-${Number(totals.discount).toFixed(2)}</span>
                   </div>
                   {totals.isFixedDiscountExceedsTotal && (
@@ -592,10 +830,26 @@ const ShoppingCart = () => {
         </Modal.Footer>
       </Modal>
 
-
       {/* Contenido principal */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
         <div className="xl:col-span-9">
+          {isEditingExistingCart && (
+            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Estás editando el carrito #{currentCartId}. Los cambios se guardan automáticamente.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <h5 className="underline text-16 mb-5">Basculas</h5>
           {scales.map((scale) => (
             <div key={scale.id} className="card p-4 mb-4 bg-white shadow rounded-lg">
@@ -611,6 +865,9 @@ const ShoppingCart = () => {
                     id="materialTypeSelect"
                     onChange={(selectedOption) =>
                       setSelectedMaterials({ ...selectedMaterials, [scale.id]: selectedOption?.label || "" })
+                    }
+                    value={selectedMaterials[scale.id] ? 
+                      materials.find(m => m.label === selectedMaterials[scale.id]) : null
                     }
                     placeholder="Seleccionar"
                     className="w-full"
@@ -642,21 +899,25 @@ const ShoppingCart = () => {
                       label: selectedPriceType === 'retail' ? 'Precio de Menudeo' : 'Precio de Mayoreo',
                     }}
                     onChange={(selectedOption) => {
-                      if (cart.length === 0) {
+                      // Solo permitir cambio si no hay productos en el carrito O si no estamos editando un carrito existente
+                      if (cart.length === 0 && !isEditingExistingCart) {
                         setSelectedPriceType(selectedOption?.value as 'wholesale' | 'retail');
                       }
                     }}
                     placeholder="Seleccionar tipo de precio"
                     className="w-full mt-2"
-                    isDisabled={cart.length > 0}
+                    isDisabled={cart.length > 0 || isEditingExistingCart} // Deshabilitar si hay productos O si estamos editando un carrito existente
                     classNames={{
-                      control: ({ isFocused }) =>
-                        `${isFocused
+                      control: ({ isFocused, isDisabled }) =>
+                        `${isFocused && !isDisabled
                           ? 'focus:outline-none border-custom-500 dark:border-custom-800'
                           : 'border-slate-200 dark:border-zink-500'
-                        } bg-white dark:bg-zink-700 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 disabled:text-slate-500 dark:disabled:text-zink-200 rounded-md h-10`,
+                        } bg-white dark:bg-zink-700 ${isDisabled 
+                          ? 'disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 disabled:text-slate-500 dark:disabled:text-zink-200' 
+                          : ''
+                        } rounded-md h-10`,
                       placeholder: () => 'placeholder:text-slate-400 dark:placeholder:text-zink-200',
-                      singleValue: () => 'dark:text-zink-100',
+                      singleValue: ({ isDisabled }) => `${isDisabled ? 'text-slate-500 dark:text-zink-400' : 'dark:text-zink-100'}`,
                       menu: () => 'bg-white dark:bg-zink-700 z-50',
                       option: ({ isFocused, isSelected }) =>
                         `${isSelected
@@ -669,8 +930,9 @@ const ShoppingCart = () => {
                   />
                 </div>
                 <button
-                  className="bg-blue-500 text-white p-2 rounded-lg mt-4"
+                  className="bg-blue-500 text-white p-2 rounded-lg mt-4 hover:bg-blue-600 transition-colors duration-200"
                   onClick={() => handleAddToCart(scale.id)}
+                  disabled={!selectedMaterials[scale.id]}
                 >
                   Registrar al carrito
                 </button>
@@ -680,7 +942,12 @@ const ShoppingCart = () => {
         </div>
         <div className="xl:col-span-3">
           <div className="card p-4 bg-white shadow rounded-lg">
-            <h6 className="mb-4 text-15">Carrito de compras<span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{cart.length ? cart.length : 0}</span></h6>
+            <h6 className="mb-4 text-15">
+              {isEditingExistingCart ? `Editando Carrito #${currentCartId}` : `Carrito de ${transactionType === 'shop' ? 'compras' : 'ventas'}`}
+              <span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">
+                {cart.length ? cart.length : 0}
+              </span>
+            </h6>
             
             {/* Input para nombre del cliente */}
             <div className="mb-4 space-y-1">
@@ -690,7 +957,9 @@ const ShoppingCart = () => {
                 className={`form-input w-full ${!customerName.trim() ? 'border-red-500' : 'border-slate-200 dark:border-zink-500'} focus:border-custom-500 dark:focus:border-custom-800 focus:outline-none dark:bg-zink-700 dark:text-zink-100 placeholder:text-slate-400 dark:placeholder:text-zink-200`}
                 placeholder="Ingrese nombre del cliente"
                 value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
+                onChange={(e) => {
+                  setCustomerName(e.target.value);
+                }}
                 required
               />
               {!customerName.trim() && (
@@ -706,7 +975,9 @@ const ShoppingCart = () => {
                 className="form-input w-full border-slate-200 dark:border-zink-500 focus:border-custom-500 dark:focus:border-custom-800 focus:outline-none dark:bg-zink-700 dark:text-zink-100 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                 placeholder="Ingrese placas del vehículo"
                 value={vehiclePlate}
-                onChange={(e) => setVehiclePlate(e.target.value)}
+                onChange={(e) => {
+                  setVehiclePlate(e.target.value);
+                }}
               />
             </div>
 
@@ -718,14 +989,18 @@ const ShoppingCart = () => {
                 className="form-input w-full border-slate-200 dark:border-zink-500 focus:border-custom-500 dark:focus:border-custom-800 focus:outline-none dark:bg-zink-700 dark:text-zink-100 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                 placeholder="Ingrese modelo del vehículo"
                 value={vehicleModel}
-                onChange={(e) => setVehicleModel(e.target.value)}
+                onChange={(e) => {
+                  setVehicleModel(e.target.value);
+                }}
               />
             </div>
 
             {cart.length === 0 ? (
               <div className="flex flex-col items-center justify-center my-5">
                 <ShoppingBasket className="w-12 h-12 text-gray-500" />
-                <p className="mt-2 text-gray-600 text-sm">Carrito está vacío!</p>
+                <p className="mt-2 text-gray-600 text-sm">
+                  {isEditingExistingCart ? 'Agrega productos al carrito!' : 'Carrito está vacío!'}
+                </p>
               </div>
             ) : (
               cart.map((item: CartItem, index: number) => (
@@ -797,7 +1072,7 @@ const ShoppingCart = () => {
                     ) : (
                       <input
                         type="number"
-                        placeholder="50kg"
+                        placeholder="0kg"
                         className="border rounded-md px-2 py-1 w-1/2 h-10 border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                         value={item.waste || ''}
                         onChange={(e) => handleMermaChange(index, parseFloat(e.target.value) || 0)}
@@ -809,15 +1084,20 @@ const ShoppingCart = () => {
             )}
             <div className="mt-4">
               <h6 className="text-10 text-gray-400 font-light mb-2">
-                Total Merma: {cart.reduce((sum, item) => sum + item.waste, 0).toFixed(2)}/kg
+                Total Merma: {cart.reduce((sum, item) => sum + (Number(item.waste) || 0), 0).toFixed(2)}/kg
               </h6>
               <h6 className="text-16">
-                Total: ${cart.reduce((sum, item) => sum + item.total, 0).toFixed(2)}
+                Total: ${cart.reduce((sum, item) => sum + (Number(item.total) || 0), 0).toFixed(2)}
               </h6>
 
               <button
                 onClick={handleCheckout}
-                className="w-full mt-3 text-white bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100 dark:ring-custom-400/20"
+                disabled={cart.length === 0 || !customerName.trim()}
+                className={`w-full mt-3 text-white border-red-500 btn ${
+                  cart.length === 0 || !customerName.trim()
+                    ? 'bg-red-400 border-red-400 cursor-not-allowed'
+                    : 'bg-red-500 hover:bg-red-600 hover:border-red-600'
+                }`}
               >
                 Imprimir
               </button>

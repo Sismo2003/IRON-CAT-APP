@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import BreadCrumb from "Common/BreadCrumb";
 import Select from 'react-select';
 import scale from "assets/images/scale.png";
@@ -11,6 +12,8 @@ import {
   getActiveWasteRecords as onGetWasteRecords,
   getDiscountCodes as onGetDiscountCodes,
   incrementUsesDiscountCode as onUpdateDiscountCode,
+  getCart as onGetCartById, // Asumiendo que tienes esta acción
+  insertProductInCart as onInsertProductInCart,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
@@ -80,6 +83,18 @@ interface WasteOption {
   img?: string;
 }
 
+interface PendingCart {
+  id: number;
+  client_id?: number;
+  sale_type: 'shop' | 'sale';
+  sale_mode: 'wholesale' | 'retail';
+  customer_name: string;
+  vehicle_plate: string;
+  vehicle_model: string;
+  total: number | null;
+  cart_products: any[];
+}
+
 const CustomOption = ({ innerProps, label, data }: any) => (
   <div {...innerProps} className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-zink-600 cursor-pointer">
     {data.img && (
@@ -108,6 +123,7 @@ const CustomSingleValue = ({ data }: any) => (
 
 const ShoppingCart = () => {
   const dispatch = useDispatch<any>();
+  const { cartId } = useParams<{ cartId: string }>();
   
   const selectDataList = createSelector(
     (state: any) => state.AssignedMaterials,
@@ -140,10 +156,19 @@ const ShoppingCart = () => {
     })
   );
 
+  const selectCartData = createSelector(
+    (state: any) => state.CartManagement,
+    (state) => ({
+      currentCart: state.currentCart,
+      loading: state.loading,
+    })
+  );
+
   const { materialList } = useSelector(selectDataList);
   const { clientlList } = useSelector(clientDataList);
   const { wasteList } = useSelector(selectWasteList);
   const { dataList } = useSelector(selectDiscountCodeList);
+  const { currentCart } = useSelector(selectCartData);
 
   const [materials, setMaterials] = useState<MaterialOption[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientOption | null>(null);
@@ -164,6 +189,8 @@ const ShoppingCart = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [vehiclePlate, setVehiclePlate] = useState<string>("");
   const [vehicleModel, setVehicleModel] = useState<string>("");
+  const [isEditingExistingCart, setIsEditingExistingCart] = useState(false);
+  const [currentCartId, setCurrentCartId] = useState<number | null>(null);
 
   useEffect(() => {
     dispatch(onGetCustomer());
@@ -172,8 +199,106 @@ const ShoppingCart = () => {
     setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
 
+  // Efecto separado para cargar el carrito cuando ya tenemos la lista de clientes
   useEffect(() => {
-    if (selectedClient && transactionType) {
+    if (cartId && clientlList.length > 0) {
+      setIsEditingExistingCart(true);
+      setCurrentCartId(parseInt(cartId));
+      loadExistingCart(parseInt(cartId));
+    }
+  }, [cartId, clientlList]);
+
+  const loadExistingCart = async (id: number) => {
+    try {
+      // Obtener los datos del carrito desde el backend
+      const result = await dispatch(onGetCartById(id));
+      
+      // console.log("Cart API Response:", result.payload); // Para debugging
+      
+      if (result.payload && result.payload.data) {
+        // La estructura de respuesta tiene el carrito en result.payload.cart
+        const responseData = result.payload.data;
+        const cartData = responseData[0]; // Los datos del carrito están en la clave "0"
+        const cartProducts = responseData.cart_products || []; // Los productos están en cart_products
+        
+        // console.log("Cart Data:", cartData); // Para debugging
+        // console.log("Cart Products:", cartProducts); // Para debugging
+        
+        // Configurar el cliente seleccionado
+        if (cartData.client_id) {
+          // Esperar a que la lista de clientes esté cargada
+          const client = clientlList.find((c: any) => c.id === cartData.client_id);
+          if (client) {
+            setSelectedClient({
+              value: client.id,
+              label: client.fullname ? `${client.name} (${client.fullname})` : client.name
+            });
+          } else {
+            // Si el cliente no está en la lista cargada, usar el nombre del carrito
+            setSelectedClient({
+              value: cartData.client_id,
+              label: cartData.customer_name
+            });
+          }
+        } else {
+          // Si no hay client_id, crear un cliente temporal con el customer_name
+          setSelectedClient({
+            value: -1, // ID temporal
+            label: cartData.customer_name
+          });
+        }
+
+        // Configurar el tipo de transacción
+        setTransactionType(cartData.sale_type);
+
+        // Configurar el modo de precio para todas las básculas
+        const priceMode = cartData.sale_mode;
+        const newPriceTypes: { [key: number]: 'wholesale' | 'retail' } = {};
+        scales.forEach(scale => {
+          newPriceTypes[scale.id] = priceMode;
+        });
+        setSelectedPriceTypes(newPriceTypes);
+
+        // Configurar vehículo
+        setVehiclePlate(cartData.vehicle_plate || "");
+        setVehicleModel(cartData.vehicle_model || "");
+
+        // Si hay productos en el carrito, cargarlos
+        if (cartProducts && cartProducts.length > 0) {
+          const loadedCartItems = cartProducts.map((product: any, index: number) => ({
+            id: product.scale_id || index + 1, // Usar scale_id si está disponible
+            product_id: product.product_id,
+            material: product.material_name || product.material,
+            originalWeight: product.original_weight || product.weight,
+            weight: product.weight,
+            price: product.price,
+            total: product.total,
+            waste: product.waste || 0,
+            type: priceMode,
+            usePredefinedMerma: product.use_predefined_merma || false,
+          }));
+          setCart(loadedCartItems);
+
+          // Configurar materiales seleccionados
+          const selectedMats: { [key: number]: string } = {};
+          loadedCartItems.forEach((item: CartItem) => {
+            selectedMats[item.id] = item.material;
+          });
+          setSelectedMaterials(selectedMats);
+        }
+
+        toast.success("Carrito cargado correctamente");
+      } else {
+        toast.error("Error al cargar el carrito - Datos no encontrados");
+      }
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      toast.error("Error al cargar el carrito");
+    }
+  };
+
+  useEffect(() => {
+    if (selectedClient && transactionType && selectedClient.value !== -1) {
       dispatch(onGetMaterialsAssignedByClient({ clientId: selectedClient.value }));
     }
   }, [dispatch, selectedClient, transactionType]);
@@ -252,13 +377,15 @@ const ShoppingCart = () => {
     setSelectedClient(selectedOption);
     setSelectedMaterials({});
     setSelectedPriceTypes({});
-    setCart([]);
+    if (!isEditingExistingCart) {
+      setCart([]);
+    }
   };
 
   const handleTransactionTypeChange = (selectedOption: {value: 'shop' | 'sale'} | null) => {
     const newTransactionType = selectedOption?.value || null;
     
-    if (newTransactionType !== transactionType) {
+    if (newTransactionType !== transactionType && !isEditingExistingCart) {
       setCart([]);
       setSelectedMaterials({});
       setSelectedPriceTypes({});
@@ -268,14 +395,42 @@ const ShoppingCart = () => {
   };
 
   const handlePriceTypeChange = (priceType: 'wholesale' | 'retail') => {
-    // Solo permitir cambios si el carrito está vacío
-    if (cart.length === 0) {
+    // Solo permitir cambios si el carrito está vacío o si estamos editando un carrito existente
+    if (cart.length === 0 || isEditingExistingCart) {
       const newPriceTypes: { [key: number]: 'wholesale' | 'retail' } = {};
       scales.forEach(scale => {
         newPriceTypes[scale.id] = priceType;
       });
       setSelectedPriceTypes(newPriceTypes);
+
+      // Si estamos editando un carrito existente, actualizar los precios de los items
+      if (isEditingExistingCart && cart.length > 0) {
+        updateCartItemsPriceType(priceType);
+      }
     }
+  };
+
+  const updateCartItemsPriceType = (newPriceType: 'wholesale' | 'retail') => {
+    const updatedCart = cart.map(item => {
+      const material = materials.find(m => m.label === item.material);
+      if (!material) return item;
+
+      let newPrice = 0;
+      if (transactionType === 'shop') {
+        newPrice = newPriceType === 'wholesale' ? material.wholesale_price_buy : material.retail_price_buy;
+      } else if (transactionType === 'sale') {
+        newPrice = newPriceType === 'wholesale' ? material.wholesale_price_sell : material.retail_price_sell;
+      }
+
+      return {
+        ...item,
+        type: newPriceType,
+        price: newPrice,
+        total: item.weight * newPrice
+      };
+    });
+    
+    setCart(updatedCart);
   };
 
   const filteredClients = clientlList
@@ -316,7 +471,7 @@ const ShoppingCart = () => {
 
     const total = weight * price;
 
-    setCart([...cart, {
+    const newItem: CartItem = {
       id: scaleId,
       product_id: material.value,
       material: material.label,
@@ -327,11 +482,56 @@ const ShoppingCart = () => {
       waste: 0,
       type: priceType,
       usePredefinedMerma: false,
-    }]);
+    };
+
+    setCart([...cart, newItem]);
+
+    // Si estamos editando un carrito existente, guardar los cambios
+    if (isEditingExistingCart && currentCartId) {
+      saveCartChanges([...cart, newItem]);
+    }
   };
 
   const handleDeleteItem = (index: number) => {
-    setCart((prevCart) => prevCart.filter((_, i) => i !== index));
+    const updatedCart = cart.filter((_, i) => i !== index);
+    setCart(updatedCart);
+
+    // Si estamos editando un carrito existente, guardar los cambios
+    if (isEditingExistingCart && currentCartId) {
+      saveCartChanges(updatedCart);
+    }
+  };
+
+  const saveCartChanges = async (updatedCart: CartItem[]) => {
+    if (!currentCartId) return;
+
+    try {
+      const payload = {
+        cart_id: currentCartId,
+        client_id: selectedClient?.value !== -1 ? selectedClient?.value : null,
+        sale_type: transactionType,
+        sale_mode: selectedPriceTypes[scales[0].id] || 'wholesale',
+        customer_name: selectedClient?.label || '',
+        vehicle_plate: vehiclePlate,
+        vehicle_model: vehicleModel,
+        cart_products: updatedCart.map(item => ({
+          product_id: item.product_id,
+          material: item.material,
+          scale_id: item.id,
+          weight: item.weight,
+          original_weight: item.originalWeight,
+          price: item.price,
+          total: item.total,
+          waste: item.waste,
+          use_predefined_merma: item.usePredefinedMerma
+        }))
+      };
+
+      // await dispatch(onUpdateCart(payload));
+    } catch (error) {
+      console.error("Error saving cart changes:", error);
+      toast.error("Error al guardar cambios del carrito");
+    }
   };
 
   const handleMermaChange = (index: number, value: number) => {
@@ -357,6 +557,11 @@ const ShoppingCart = () => {
     updatedCart[index].weight = originalWeight - value;
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
     setCart(updatedCart);
+
+    // Si estamos editando un carrito existente, guardar los cambios
+    if (isEditingExistingCart && currentCartId) {
+      saveCartChanges(updatedCart);
+    }
   };
 
   const togglePredefinedMerma = (index: number, usePredefined: boolean) => {
@@ -367,6 +572,11 @@ const ShoppingCart = () => {
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
     
     setCart(updatedCart);
+
+    // Si estamos editando un carrito existente, guardar los cambios
+    if (isEditingExistingCart && currentCartId) {
+      saveCartChanges(updatedCart);
+    }
   };
 
   const calculateTotalWithDiscount = () => {
@@ -430,13 +640,14 @@ const ShoppingCart = () => {
       user_name: authUser.name + " " + authUser.last_name,
       type: transactionType,
       customer_name: selectedClient?.label,
-      client_id: selectedClient?.value,
+      client_id: selectedClient?.value !== -1 ? selectedClient?.value : null,
       discount_code: discountCode?.code_id || null,
       discount_code_id: discountCode?.id || null,
       subtotal: totals.subtotal,
       discount_amount: totals.discount,
       vehicle_plate: vehiclePlate,
       vehicle_model: vehicleModel,
+      cart_id: isEditingExistingCart ? currentCartId : null,
       cart: cart.map((item) => ({
         id: item.id,
         product_id: item.product_id,
@@ -450,7 +661,7 @@ const ShoppingCart = () => {
     };
 
     try {
-      console.log("Payload para agregar ticket:", payload);
+      // console.log("Payload para agregar ticket:", payload);
       const result = await dispatch(onAddTicket(payload));
       
       if (discountCode) {
@@ -472,6 +683,8 @@ const ShoppingCart = () => {
       setVehiclePlate('');
       setVehicleModel('');
       setLargeModal(false);
+      setIsEditingExistingCart(false);
+      setCurrentCartId(null);
 
       const response1 = await fetch('http://192.168.100.59/src/printer.php', {
         method: 'POST',
@@ -500,7 +713,10 @@ const ShoppingCart = () => {
 
   return (
     <>
-      <BreadCrumb title="Carrito de clientes especiales" pageTitle="Clientes especiales" />
+      <BreadCrumb 
+        title={isEditingExistingCart ? `Editando Carrito #${currentCartId}` : "Carrito de clientes especiales"} 
+        pageTitle={isEditingExistingCart ? "Editando Carrito" : "Clientes especiales"} 
+      />
       <ToastContainer 
         closeButton={false} 
         limit={1} 
@@ -555,6 +771,17 @@ const ShoppingCart = () => {
                 <p>{transactionType === 'shop' ? 'Compra' : transactionType === 'sale' ? 'Venta' : 'No seleccionado'}</p>
               </div>
             </div>
+
+            {/* Información del vehículo */}
+            {(vehiclePlate || vehicleModel) && (
+              <div className="space-y-1">
+                <label className="block text-sm font-medium">Información del Vehículo</label>
+                <div className="p-2 border border-slate-200 dark:border-zink-500 rounded-md">
+                  {vehiclePlate && <p className="text-sm">Placa: {vehiclePlate}</p>}
+                  {vehicleModel && <p className="text-sm">Modelo: {vehicleModel}</p>}
+                </div>
+              </div>
+            )}
 
             {/* Select para código de descuento */}
             <div className="space-y-1">
@@ -633,7 +860,7 @@ const ShoppingCart = () => {
                   <div className="flex justify-between text-green-500">
                     <span>Descuento ({discountCode.discount_type === 'percentage' 
                       ? `${discountCode.discount_value}%` 
-                      : `$${Number(discountCode.discount_value).toFixed(2)}`}):</span>
+                      : `${Number(discountCode.discount_value).toFixed(2)}`}):</span>
                     <span>-${Number(totals.discount).toFixed(2)}</span>
                   </div>
                   {totals.isFixedDiscountExceedsTotal && (
@@ -674,6 +901,23 @@ const ShoppingCart = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
         <div className="xl:col-span-9">
+          {isEditingExistingCart && (
+            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Estás editando el carrito #{currentCartId}. Los cambios se guardan automáticamente.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <h5 className="underline text-16 mb-5">Basculas</h5>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
             <Select
@@ -684,6 +928,7 @@ const ShoppingCart = () => {
               onChange={handleClientChange}
               onInputChange={setClientSearch}
               filterOption={null}
+              isDisabled={isEditingExistingCart && selectedClient?.value === -1} // No permitir cambio si es cliente temporal
               classNames={{
                 control: ({ isFocused }) =>
                   `border ${
@@ -706,6 +951,7 @@ const ShoppingCart = () => {
               placeholder="Seleccionar tipo de transacción"
               value={transactionType ? { value: transactionType, label: transactionType === 'shop' ? 'Compra' : 'Venta' } : null}
               onChange={handleTransactionTypeChange}
+              isDisabled={isEditingExistingCart} // No permitir cambio en modo edición
               classNames={{
                 control: ({ isFocused }) =>
                     `border ${
@@ -764,7 +1010,7 @@ const ShoppingCart = () => {
                       value: selectedPriceTypes[scale.id] || 'wholesale',
                       label: selectedPriceTypes[scale.id] === 'retail' ? 'Precio de Menudeo' : 'Precio de Mayoreo',
                     }}
-                    isDisabled={!selectedClient || !transactionType || cart.length > 0}
+                    isDisabled={!selectedClient || !transactionType || (cart.length > 0 && !isEditingExistingCart)}
                     onChange={(selectedOption) =>
                       handlePriceTypeChange(selectedOption?.value as 'wholesale' | 'retail')
                     }
@@ -785,7 +1031,7 @@ const ShoppingCart = () => {
                   />
                 </div>
                 <button
-                  className="bg-blue-500 text-white p-2 rounded-lg mt-4"
+                  className="bg-blue-500 text-white p-2 rounded-lg mt-4 hover:bg-blue-600 transition-colors duration-200"
                   onClick={() => handleAddToCart(scale.id)}
                   disabled={!selectedClient || !transactionType || !selectedMaterials[scale.id]}
                 >
@@ -797,7 +1043,12 @@ const ShoppingCart = () => {
         </div>
         <div className="xl:col-span-3">
           <div className="card p-4 bg-white shadow rounded-lg">
-            <h6 className="mb-4 text-15">Carrito de clientes especiales<span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{cart.length ? cart.length : 0}</span></h6>
+            <h6 className="mb-4 text-15">
+              {isEditingExistingCart ? `Editando Carrito #${currentCartId}` : 'Carrito de clientes especiales'}
+              <span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">
+                {cart.length ? cart.length : 0}
+              </span>
+            </h6>
             
             {/* Campos para placa y modelo de vehículo */}
             <div className="grid grid-cols-1 gap-3 mb-4">
@@ -808,7 +1059,14 @@ const ShoppingCart = () => {
                   placeholder="Ej: ABC123"
                   className="w-full border rounded-md px-3 py-2 h-10 border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                   value={vehiclePlate}
-                  onChange={(e) => setVehiclePlate(e.target.value)}
+                  onChange={(e) => {
+                    setVehiclePlate(e.target.value);
+                    // Si estamos editando un carrito existente y hay cambios, guardarlos
+                    if (isEditingExistingCart && currentCartId) {
+                      // Debounce para evitar muchas llamadas a la API
+                      setTimeout(() => saveCartChanges(cart), 1000);
+                    }
+                  }}
                 />
               </div>
               <div>
@@ -818,7 +1076,14 @@ const ShoppingCart = () => {
                   placeholder="Ej: Toyota Corolla"
                   className="w-full border rounded-md px-3 py-2 h-10 border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                   value={vehicleModel}
-                  onChange={(e) => setVehicleModel(e.target.value)}
+                  onChange={(e) => {
+                    setVehicleModel(e.target.value);
+                    // Si estamos editando un carrito existente y hay cambios, guardarlos
+                    if (isEditingExistingCart && currentCartId) {
+                      // Debounce para evitar muchas llamadas a la API
+                      setTimeout(() => saveCartChanges(cart), 1000);
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -826,7 +1091,9 @@ const ShoppingCart = () => {
             {cart.length === 0 ? (
               <div className="flex flex-col items-center justify-center my-5">
                 <ShoppingBasket className="w-12 h-12 text-gray-500" />
-                <p className="mt-2 text-gray-600 text-sm">Carrito está vacío!</p>
+                <p className="mt-2 text-gray-600 text-sm">
+                  {isEditingExistingCart ? 'Agrega productos al carrito!' : 'Carrito está vacío!'}
+                </p>
               </div>
             ) : (
               cart.map((item: CartItem, index: number) => (

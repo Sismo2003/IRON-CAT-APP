@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import BreadCrumb from "Common/BreadCrumb";
 import Select from 'react-select';
 import scale from "assets/images/scale.png";
@@ -10,6 +11,8 @@ import {
   getActiveWasteRecords as onGetWasteRecords,
   getDiscountCodes as onGetDiscountCodes,
   incrementUsesDiscountCode as onUpdateDiscountCode,
+  getCart as onGetCartById, // Para cargar carritos existentes
+  insertProductInCart as onInsertProductInCart,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
@@ -72,6 +75,18 @@ interface WasteOption {
   img?: string;
 }
 
+interface PendingCart {
+  id: number;
+  client_id?: number;
+  sale_type: 'shop' | 'sale';
+  sale_mode: 'wholesale' | 'retail';
+  customer_name: string;
+  vehicle_plate: string;
+  vehicle_model: string;
+  total: number | null;
+  cart_products: any[];
+}
+
 const CustomOption = ({ innerProps, label, data }: any) => (
   <div {...innerProps} className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-zink-600 cursor-pointer">
     {data.img && (
@@ -100,6 +115,7 @@ const CustomSingleValue = ({ data }: any) => (
 
 const SalesCart = () => {
   const dispatch = useDispatch<any>();
+  const { cartId } = useParams<{ cartId: string }>();
 
   const selectDataList = createSelector(
     (state: any) => state.MATERIALManagement,
@@ -152,6 +168,9 @@ const SalesCart = () => {
   const [largeModal, setLargeModal] = useState(false);
   const [discountCode, setDiscountCode] = useState<DiscountCode | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditingExistingCart, setIsEditingExistingCart] = useState(false);
+  const [currentCartId, setCurrentCartId] = useState<number | null>(null);
+  const [transactionType, setTransactionType] = useState<'shop' | 'sale'>('sale');
 
   useEffect(() => {
     dispatch(onGetProductList());
@@ -159,6 +178,78 @@ const SalesCart = () => {
     dispatch(onGetDiscountCodes());
     setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
+
+  // Efecto separado para cargar el carrito cuando hay un cartId en la URL
+  useEffect(() => {
+    if (cartId) {
+      setIsEditingExistingCart(true);
+      setCurrentCartId(parseInt(cartId));
+      loadExistingCart(parseInt(cartId));
+    }
+  }, [cartId]);
+
+  const loadExistingCart = async (id: number) => {
+    try {
+      // Obtener los datos del carrito desde el backend
+      const result = await dispatch(onGetCartById(id));
+      
+      console.log("Cart API Response:", result.payload); // Para debugging
+      
+      if (result.payload && result.payload.data) {
+        // La estructura de respuesta tiene el carrito en result.payload.data
+        const responseData = result.payload.data;
+        const cartData = responseData["0"]; // Los datos del carrito están en la clave "0"
+        const cartProducts = responseData.cart_products || []; // Los productos están en cart_products
+        
+        console.log("Cart Data:", cartData); // Para debugging
+        console.log("Cart Products:", cartProducts); // Para debugging
+        
+        // Configurar el nombre del cliente
+        setCustomerName(cartData.customer_name);
+
+        // Configurar el tipo de transacción
+        setTransactionType(cartData.sale_type);
+
+        // Configurar el modo de precio
+        setSelectedPriceType(cartData.sale_mode);
+
+        // Configurar vehículo
+        setVehiclePlate(cartData.vehicle_plate || "");
+        setVehicleModel(cartData.vehicle_model || "");
+
+        // Si hay productos en el carrito, cargarlos
+        if (cartProducts && cartProducts.length > 0) {
+          const loadedCartItems = cartProducts.map((product: any, index: number) => ({
+            id: product.scale_id || index + 1, // Usar scale_id si está disponible
+            product_id: product.product_id,
+            material: product.material_name || product.material,
+            originalWeight: product.original_weight || product.weight,
+            weight: product.weight,
+            price: product.price,
+            total: product.total,
+            waste: product.waste || 0,
+            type: cartData.sale_mode,
+            usePredefinedMerma: product.use_predefined_merma || false,
+          }));
+          setCart(loadedCartItems);
+
+          // Configurar materiales seleccionados
+          const selectedMats: { [key: number]: string } = {};
+          loadedCartItems.forEach((item: CartItem) => {
+            selectedMats[item.id] = item.material;
+          });
+          setSelectedMaterials(selectedMats);
+        }
+
+        toast.success("Carrito cargado correctamente");
+      } else {
+        toast.error("Error al cargar el carrito - Datos no encontrados");
+      }
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      toast.error("Error al cargar el carrito");
+    }
+  };
 
   useEffect(() => {
     if (materialList && materialList.length > 0) {
@@ -243,7 +334,7 @@ const SalesCart = () => {
     const price = Number(selectedPriceType === 'wholesale' ? material.wholesale_price : material.retail_price);
     const total = weight * price;
 
-    setCart([...cart, {
+    const newItem: CartItem = {
       id: scaleId,
       material: material.label,
       product_id: material.value,
@@ -254,11 +345,57 @@ const SalesCart = () => {
       waste: 0,
       type: selectedPriceType,
       usePredefinedMerma: false,
-    }]);
+    };
+
+    setCart([...cart, newItem]);
+
+    // Si estamos editando un carrito existente, guardar los cambios
+    if (isEditingExistingCart && currentCartId) {
+      saveCartChanges([...cart, newItem]);
+    }
   };
 
   const handleDeleteItem = (index: number) => {
-    setCart((prevCart) => prevCart.filter((_, i) => i !== index));
+    const updatedCart = cart.filter((_, i) => i !== index);
+    setCart(updatedCart);
+
+    // Si estamos editando un carrito existente, guardar los cambios
+    if (isEditingExistingCart && currentCartId) {
+      saveCartChanges(updatedCart);
+    }
+  };
+
+  const saveCartChanges = async (updatedCart: CartItem[]) => {
+    if (!currentCartId) return;
+
+    try {
+      const payload = {
+        cart_id: currentCartId,
+        client_id: null, // Los carritos normales no tienen client_id
+        sale_type: transactionType,
+        sale_mode: selectedPriceType,
+        customer_name: customerName,
+        vehicle_plate: vehiclePlate,
+        vehicle_model: vehicleModel,
+        cart_products: updatedCart.map(item => ({
+          product_id: item.product_id,
+          material: item.material,
+          scale_id: item.id,
+          weight: item.weight,
+          original_weight: item.originalWeight,
+          price: item.price,
+          total: item.total,
+          waste: item.waste,
+          use_predefined_merma: item.usePredefinedMerma
+        }))
+      };
+
+      // Aquí deberías implementar la llamada para actualizar el carrito
+      // await dispatch(onUpdateCart(payload));
+    } catch (error) {
+      console.error("Error saving cart changes:", error);
+      toast.error("Error al guardar cambios del carrito");
+    }
   };
 
   const handleMermaChange = (index: number, value: number) => {
@@ -284,6 +421,11 @@ const SalesCart = () => {
     updatedCart[index].weight = originalWeight - value;
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
     setCart(updatedCart);
+
+    // Si estamos editando un carrito existente, guardar los cambios
+    if (isEditingExistingCart && currentCartId) {
+      saveCartChanges(updatedCart);
+    }
   };
 
   const togglePredefinedMerma = (index: number, usePredefined: boolean) => {
@@ -297,6 +439,11 @@ const SalesCart = () => {
     
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
     setCart(updatedCart);
+
+    // Si estamos editando un carrito existente, guardar los cambios
+    if (isEditingExistingCart && currentCartId) {
+      saveCartChanges(updatedCart);
+    }
   };
 
   const handleCheckout = () => {
@@ -354,7 +501,7 @@ const SalesCart = () => {
       total: totals.total,
       user_id: authUser.id,
       user_name: authUser.name + " " + authUser.last_name,
-      type: "sale",
+      type: transactionType,
       customer_name: customerName,
       vehicle_plate: vehiclePlate,
       vehicle_model: vehicleModel,
@@ -362,6 +509,7 @@ const SalesCart = () => {
       discount_code_id: discountCode?.id || null,
       subtotal: totals.subtotal,
       discount_amount: totals.discount,
+      cart_id: isEditingExistingCart ? currentCartId : null,
       cart: cart.map((item) => ({
         id: item.id,
         product_id: item.product_id,
@@ -397,6 +545,8 @@ const SalesCart = () => {
       setWeights({});
       setDiscountCode(null);
       setLargeModal(false);
+      setIsEditingExistingCart(false);
+      setCurrentCartId(null);
   
       const response1 = await fetch('http://192.168.100.59/src/printer.php', {
         method: 'POST',
@@ -425,7 +575,10 @@ const SalesCart = () => {
 
   return (
     <>
-      <BreadCrumb title="Carrito de ventas" pageTitle="Ventas" />
+      <BreadCrumb 
+        title={isEditingExistingCart ? `Editando Carrito #${currentCartId}` : "Carrito de ventas"} 
+        pageTitle={isEditingExistingCart ? "Editando Carrito" : "Ventas"} 
+      />
       <ToastContainer 
         closeButton={false} 
         limit={1} 
@@ -440,7 +593,7 @@ const SalesCart = () => {
         
         <Modal.Header className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500"
           closeButtonClass="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
-          <Modal.Title className="text-16">Resumen de Venta</Modal.Title>
+          <Modal.Title className="text-16">Resumen de {transactionType === 'shop' ? 'Compra' : 'Venta'}</Modal.Title>
         </Modal.Header>
         
         <Modal.Body className="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
@@ -464,6 +617,33 @@ const SalesCart = () => {
                 </div>
               ))}
             </div>
+
+            {/* Información del cliente */}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Cliente</label>
+              <div className="p-2 border border-slate-200 dark:border-zink-500 rounded-md">
+                <p>{customerName || 'No especificado'}</p>
+              </div>
+            </div>
+
+            {/* Tipo de transacción */}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Tipo de Transacción</label>
+              <div className="p-2 border border-slate-200 dark:border-zink-500 rounded-md">
+                <p>{transactionType === 'shop' ? 'Compra' : 'Venta'}</p>
+              </div>
+            </div>
+
+            {/* Información del vehículo */}
+            {(vehiclePlate || vehicleModel) && (
+              <div className="space-y-1">
+                <label className="block text-sm font-medium">Información del Vehículo</label>
+                <div className="p-2 border border-slate-200 dark:border-zink-500 rounded-md">
+                  {vehiclePlate && <p className="text-sm">Placa: {vehiclePlate}</p>}
+                  {vehicleModel && <p className="text-sm">Modelo: {vehicleModel}</p>}
+                </div>
+              </div>
+            )}
 
             {/* Select para código de descuento */}
             <div className="space-y-1">
@@ -584,6 +764,23 @@ const SalesCart = () => {
       {/* Contenido principal */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-x-5">
         <div className="xl:col-span-9">
+          {isEditingExistingCart && (
+            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Estás editando el carrito #{currentCartId}. Los cambios se guardan automáticamente.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <h5 className="underline text-16 mb-5">Basculas</h5>
           {scales.map((scale) => (
             <div key={scale.id} className="card p-4 mb-4 bg-white shadow rounded-lg">
@@ -599,6 +796,9 @@ const SalesCart = () => {
                     id="materialTypeSelect"
                     onChange={(selectedOption) =>
                       setSelectedMaterials({ ...selectedMaterials, [scale.id]: selectedOption?.label || "" })
+                    }
+                    value={selectedMaterials[scale.id] ? 
+                      materials.find(m => m.label === selectedMaterials[scale.id]) : null
                     }
                     placeholder="Seleccionar"
                     className="w-full"
@@ -630,13 +830,32 @@ const SalesCart = () => {
                       label: selectedPriceType === 'retail' ? 'Precio de Menudeo' : 'Precio de Mayoreo',
                     }}
                     onChange={(selectedOption) => {
-                      if (cart.length === 0) {
+                      if (cart.length === 0 || isEditingExistingCart) {
                         setSelectedPriceType(selectedOption?.value as 'wholesale' | 'retail');
+                        
+                        // Si estamos editando y hay items en el carrito, actualizar precios
+                        if (isEditingExistingCart && cart.length > 0) {
+                          const newPriceType = selectedOption?.value as 'wholesale' | 'retail';
+                          const updatedCart = cart.map(item => {
+                            const material = materials.find(m => m.label === item.material);
+                            if (!material) return item;
+
+                            const newPrice = newPriceType === 'wholesale' ? material.wholesale_price : material.retail_price;
+                            return {
+                              ...item,
+                              type: newPriceType,
+                              price: newPrice,
+                              total: item.weight * newPrice
+                            };
+                          });
+                          setCart(updatedCart);
+                          saveCartChanges(updatedCart);
+                        }
                       }
                     }}
                     placeholder="Seleccionar tipo de precio"
                     className="w-full mt-2"
-                    isDisabled={cart.length > 0}
+                    isDisabled={cart.length > 0 && !isEditingExistingCart}
                     classNames={{
                       control: ({ isFocused }) =>
                         `${isFocused
@@ -657,8 +876,9 @@ const SalesCart = () => {
                   />
                 </div>
                 <button
-                  className="bg-blue-500 text-white p-2 rounded-lg mt-4"
+                  className="bg-blue-500 text-white p-2 rounded-lg mt-4 hover:bg-blue-600 transition-colors duration-200"
                   onClick={() => handleAddToCart(scale.id)}
+                  disabled={!selectedMaterials[scale.id]}
                 >
                   Registrar al carrito
                 </button>
@@ -668,7 +888,12 @@ const SalesCart = () => {
         </div>
         <div className="xl:col-span-3">
           <div className="card p-4 bg-white shadow rounded-lg">
-            <h6 className="mb-4 text-15">Carrito de ventas<span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">{cart.length ? cart.length : 0}</span></h6>
+            <h6 className="mb-4 text-15">
+              {isEditingExistingCart ? `Editando Carrito #${currentCartId}` : 'Carrito de ventas'}
+              <span className="inline-flex items-center justify-center size-5 ml-1 text-[11px] font-medium border rounded-full text-white bg-custom-500 border-custom-500">
+                {cart.length ? cart.length : 0}
+              </span>
+            </h6>
             
             {/* Input para nombre del cliente */}
             <div className="mb-4 space-y-1">
@@ -678,7 +903,14 @@ const SalesCart = () => {
                 className={`form-input w-full ${!customerName.trim() ? 'border-red-500' : 'border-slate-200 dark:border-zink-500'} focus:border-custom-500 dark:focus:border-custom-800 focus:outline-none dark:bg-zink-700 dark:text-zink-100 placeholder:text-slate-400 dark:placeholder:text-zink-200`}
                 placeholder="Ingrese nombre del cliente"
                 value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
+                onChange={(e) => {
+                  setCustomerName(e.target.value);
+                  // Si estamos editando un carrito existente y hay cambios, guardarlos
+                  if (isEditingExistingCart && currentCartId) {
+                    // Debounce para evitar muchas llamadas a la API
+                    setTimeout(() => saveCartChanges(cart), 1000);
+                  }
+                }}
                 required
               />
               {!customerName.trim() && (
@@ -694,7 +926,13 @@ const SalesCart = () => {
                 className="form-input w-full border-slate-200 dark:border-zink-500 focus:border-custom-500 dark:focus:border-custom-800 focus:outline-none dark:bg-zink-700 dark:text-zink-100 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                 placeholder="Ingrese placas del vehículo"
                 value={vehiclePlate}
-                onChange={(e) => setVehiclePlate(e.target.value)}
+                onChange={(e) => {
+                  setVehiclePlate(e.target.value);
+                  // Si estamos editando un carrito existente y hay cambios, guardarlos
+                  if (isEditingExistingCart && currentCartId) {
+                    setTimeout(() => saveCartChanges(cart), 1000);
+                  }
+                }}
               />
             </div>
 
@@ -706,14 +944,22 @@ const SalesCart = () => {
                 className="form-input w-full border-slate-200 dark:border-zink-500 focus:border-custom-500 dark:focus:border-custom-800 focus:outline-none dark:bg-zink-700 dark:text-zink-100 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                 placeholder="Ingrese modelo del vehículo"
                 value={vehicleModel}
-                onChange={(e) => setVehicleModel(e.target.value)}
+                onChange={(e) => {
+                  setVehicleModel(e.target.value);
+                  // Si estamos editando un carrito existente y hay cambios, guardarlos
+                  if (isEditingExistingCart && currentCartId) {
+                    setTimeout(() => saveCartChanges(cart), 1000);
+                  }
+                }}
               />
             </div>
 
             {cart.length === 0 ? (
               <div className="flex flex-col items-center justify-center my-5">
                 <ShoppingBasket className="w-12 h-12 text-gray-500" />
-                <p className="mt-2 text-gray-600 text-sm">Carrito está vacío!</p>
+                <p className="mt-2 text-gray-600 text-sm">
+                  {isEditingExistingCart ? 'Agrega productos al carrito!' : 'Carrito está vacío!'}
+                </p>
               </div>
             ) : (
               cart.map((item: CartItem, index: number) => (
@@ -785,7 +1031,7 @@ const SalesCart = () => {
                     ) : (
                       <input
                         type="number"
-                        placeholder="50kg"
+                        placeholder="0kg"
                         className="border rounded-md px-2 py-1 w-1/2 h-10 border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                         value={item.waste || ''}
                         onChange={(e) => handleMermaChange(index, parseFloat(e.target.value) || 0)}
@@ -805,7 +1051,12 @@ const SalesCart = () => {
 
               <button
                 onClick={handleCheckout}
-                className="w-full mt-3 text-white bg-red-500 border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100 dark:ring-custom-400/20"
+                disabled={cart.length === 0 || !customerName.trim()}
+                className={`w-full mt-3 text-white border-red-500 btn ${
+                  cart.length === 0 || !customerName.trim()
+                    ? 'bg-red-400 border-red-400 cursor-not-allowed'
+                    : 'bg-red-500 hover:bg-red-600 hover:border-red-600'
+                }`}
               >
                 Imprimir
               </button>
