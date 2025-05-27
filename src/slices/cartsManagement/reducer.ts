@@ -5,6 +5,7 @@ import {
   getCart,
 	deleteProductInCart,
 	insertProductInCart,
+	updateWaste
 } from './thunk';
 
 interface CartState {
@@ -167,6 +168,27 @@ const cartSlice = createSlice({
 		builder.addCase(insertProductInCart.rejected, (state, action) => {
 			state.loading = false;
 			state.error = action.payload as string || 'Error al insertar producto en el carrito';
+		});
+
+		// updateWaste
+		builder.addCase(updateWaste.pending, (state) => {
+			state.loading = true;
+			state.error = null;
+		});
+		builder.addCase(updateWaste.fulfilled, (state, action) => {
+			state.loading = false;
+			const { product_id, waste } = action.payload;
+			const itemIndex = state.currentCart.items.findIndex(item => item.product_id === product_id);
+			if (itemIndex !== -1) {
+				state.currentCart.items[itemIndex].waste = waste;
+				// Recalcular totales
+				state.currentCart.subtotal = state.currentCart.items.reduce((sum, item) => sum + item.total, 0);
+				state.currentCart.total = state.currentCart.subtotal - (state.currentCart.discount_amount || 0);
+			}
+		});
+		builder.addCase(updateWaste.rejected, (state, action) => {
+			state.loading = false;
+			state.error = action.payload as string || 'Error al actualizar desperdicio del producto';
 		});
   }
 });

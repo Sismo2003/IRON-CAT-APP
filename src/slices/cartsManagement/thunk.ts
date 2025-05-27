@@ -5,6 +5,7 @@ import {
 	getCart as getCartApi,
 	deleteProductInCart as deleteProductInCartApi,
 	insertProductInCart as insertProductInCartApi,
+	updateWasteInCart as updateWasteApi
 } from "../../helpers/fakebackend_helper";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -105,6 +106,20 @@ export const insertProductInCart = createAsyncThunk(
 			return response.data;
 		} catch (error: any) {
 			toast.error("Error al agregar producto al carrito", { autoClose: 2000 });
+			return rejectWithValue(error.response?.data || error.message);
+		}
+	}
+);
+
+export const updateWaste = createAsyncThunk(
+	"cartManagement/updateWaste",
+	async (data: { cartProductId: number; waste: number }, { rejectWithValue }) => {
+		try {
+			const response = await updateWasteApi(data);
+			// toast.success("Merma actualizada", { autoClose: 2000 });
+			return response.data;
+		} catch (error: any) {
+			toast.error("Error al actualizar merma", { autoClose: 2000 });
 			return rejectWithValue(error.response?.data || error.message);
 		}
 	}

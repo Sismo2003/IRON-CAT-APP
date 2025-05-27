@@ -8,6 +8,7 @@ export const INSERT_PRODUCT = "/cart/insert-product";
 export const DELETE_PRODUCT = "/cart/delete-product";
 export const CREATE_CART = "/cart/new-cart";
 export const DELETE_CART = "/cart/delete-cart";
+export const UPDATE_WASTE_IN_CART = "cart/update-waste";
 
 // Discount Codes
 export const GET_DISCOUNT_CODES = "/discount-codes/get-discount-codes";

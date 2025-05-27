@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import BreadCrumb from "Common/BreadCrumb";
 import Select from 'react-select';
@@ -13,6 +13,8 @@ import {
   incrementUsesDiscountCode as onUpdateDiscountCode,
   getCart as onGetCartById, // Para cargar carritos existentes
   insertProductInCart as onInsertProductInCart,
+  deleteProductInCart as onDeleteProductFromCart, // Asumiendo que existe este endpoint
+  updateWaste as onUpdateWaste,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
@@ -66,6 +68,7 @@ interface CartItem {
   waste: number;
   type: 'wholesale' | 'retail';
   usePredefinedMerma: boolean;
+  cart_product_id?: number; // ID del producto en el carrito (para eliminación)
 }
 
 interface WasteOption {
@@ -179,21 +182,12 @@ const SalesCart = () => {
     setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
 
-  // Efecto separado para cargar el carrito cuando hay un cartId en la URL
-  useEffect(() => {
-    if (cartId) {
-      setIsEditingExistingCart(true);
-      setCurrentCartId(parseInt(cartId));
-      loadExistingCart(parseInt(cartId));
-    }
-  }, [cartId]);
-
-  const loadExistingCart = async (id: number) => {
+  const loadExistingCart = useCallback(async (id: number) => {
     try {
       // Obtener los datos del carrito desde el backend
       const result = await dispatch(onGetCartById(id));
       
-      console.log("Cart API Response:", result.payload); // Para debugging
+      // console.log("Cart API Response:", result.payload); // Para debugging
       
       if (result.payload && result.payload.data) {
         // La estructura de respuesta tiene el carrito en result.payload.data
@@ -201,38 +195,60 @@ const SalesCart = () => {
         const cartData = responseData["0"]; // Los datos del carrito están en la clave "0"
         const cartProducts = responseData.cart_products || []; // Los productos están en cart_products
         
-        console.log("Cart Data:", cartData); // Para debugging
-        console.log("Cart Products:", cartProducts); // Para debugging
+        // console.log("Cart Data:", cartData); // Para debugging
+        // console.log("Cart Products:", cartProducts); // Para debugging
         
         // Configurar el nombre del cliente
         setCustomerName(cartData.customer_name);
-
+  
         // Configurar el tipo de transacción
         setTransactionType(cartData.sale_type);
-
+  
         // Configurar el modo de precio
         setSelectedPriceType(cartData.sale_mode);
-
+  
         // Configurar vehículo
         setVehiclePlate(cartData.vehicle_plate || "");
         setVehicleModel(cartData.vehicle_model || "");
-
+  
         // Si hay productos en el carrito, cargarlos
         if (cartProducts && cartProducts.length > 0) {
-          const loadedCartItems = cartProducts.map((product: any, index: number) => ({
-            id: product.scale_id || index + 1, // Usar scale_id si está disponible
-            product_id: product.product_id,
-            material: product.material_name || product.material,
-            originalWeight: product.original_weight || product.weight,
-            weight: product.weight,
-            price: product.price,
-            total: product.total,
-            waste: product.waste || 0,
-            type: cartData.sale_mode,
-            usePredefinedMerma: product.use_predefined_merma || false,
-          }));
+          const loadedCartItems = cartProducts.map((product: any, index: number) => {
+            // Buscar el material actual para obtener precios actualizados
+            const currentMaterial = materialList.find((material: any) => material.id === product.product_id);
+            
+            // Obtener precio actual del material
+            let currentPrice = product.price; // Precio por defecto del carrito
+            if (currentMaterial) {
+              currentPrice = cartData.sale_mode === 'wholesale' 
+                ? Number(currentMaterial.wholesale_price_buy)
+                : Number(currentMaterial.retail_price_buy);
+            }
+  
+            // Calcular peso original y peso con merma
+            const originalWeight = product.original_weight || product.weight;
+            const waste = product.waste || 0;
+            const finalWeight = originalWeight - waste; // Peso después de restar la merma
+            
+            // Calcular total basado en el peso final (sin merma)
+            const currentTotal = finalWeight * currentPrice;
+  
+            return {
+              id: product.scale_id || index + 1, // Usar scale_id si está disponible
+              product_id: product.product_id,
+              material: product.material_name || product.material,
+              originalWeight: originalWeight,
+              weight: finalWeight, // Peso ya con la merma descontada
+              price: currentPrice,
+              total: currentTotal, // Total calculado con peso final
+              waste: waste,
+              type: cartData.sale_mode,
+              usePredefinedMerma: product.use_predefined_merma || false,
+              cart_product_id: product.id || product.cart_product_id, // ID del producto en el carrito
+            };
+          });
           setCart(loadedCartItems);
-
+  
           // Configurar materiales seleccionados
           const selectedMats: { [key: number]: string } = {};
           loadedCartItems.forEach((item: CartItem) => {
@@ -240,8 +256,8 @@ const SalesCart = () => {
           });
           setSelectedMaterials(selectedMats);
         }
-
-        toast.success("Carrito cargado correctamente");
+  
+        // toast.success("Carrito cargado correctamente");
       } else {
         toast.error("Error al cargar el carrito - Datos no encontrados");
       }
@@ -249,7 +265,20 @@ const SalesCart = () => {
       console.error("Error loading cart:", error);
       toast.error("Error al cargar el carrito");
     }
-  };
+  }, [dispatch, materialList, setCart, setCustomerName, setTransactionType, setSelectedPriceType, setVehiclePlate, setVehicleModel, setSelectedMaterials]);
+
+  // Efecto separado para cargar el carrito cuando hay un cartId en la URL
+  useEffect(() => {
+    if (cartId) {
+      setIsEditingExistingCart(true);
+      setCurrentCartId(parseInt(cartId));
+      // Esperar a que materialList esté cargado antes de cargar el carrito
+      if (materialList && materialList.length > 0) {
+        loadExistingCart(parseInt(cartId));
+      }
+    }
+  }, [cartId, materialList, loadExistingCart]); // Agregar materialList como dependencia
+
 
   useEffect(() => {
     if (materialList && materialList.length > 0) {
@@ -326,79 +355,106 @@ const SalesCart = () => {
     }
   };
 
-  const handleAddToCart = (scaleId: number) => {
+  const handleAddToCart = async (scaleId: number) => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
-    if (!material) return;
+    if (!material) {
+      showToast("Por favor seleccione un material");
+      return;
+    }
 
     const weight = weights[scaleId] || 0;
+    // if (weight <= 0) {
+    //   showToast("El peso debe ser mayor a 0");
+    //   return;
+    // }
+
     const price = Number(selectedPriceType === 'wholesale' ? material.wholesale_price : material.retail_price);
     const total = weight * price;
 
-    const newItem: CartItem = {
-      id: scaleId,
-      material: material.label,
-      product_id: material.value,
-      originalWeight: weight,
-      weight: weight,
-      price,
-      total,
-      waste: 0,
-      type: selectedPriceType,
-      usePredefinedMerma: false,
-    };
-
-    setCart([...cart, newItem]);
-
-    // Si estamos editando un carrito existente, guardar los cambios
-    if (isEditingExistingCart && currentCartId) {
-      saveCartChanges([...cart, newItem]);
+    // Si estamos editando un carrito existente, usar ese cart_id
+    // Si no, necesitamos crear un carrito temporal o usar un ID por defecto
+    let cartIdToUse = currentCartId;
+    
+    if (!isEditingExistingCart) {
+      // Para carritos nuevos, puedes crear un carrito temporal o usar un ID especial
+      // Esto depende de cómo manejes los carritos nuevos en tu backend
+      cartIdToUse = 0; // O el ID que uses para carritos temporales
     }
-  };
-
-  const handleDeleteItem = (index: number) => {
-    const updatedCart = cart.filter((_, i) => i !== index);
-    setCart(updatedCart);
-
-    // Si estamos editando un carrito existente, guardar los cambios
-    if (isEditingExistingCart && currentCartId) {
-      saveCartChanges(updatedCart);
-    }
-  };
-
-  const saveCartChanges = async (updatedCart: CartItem[]) => {
-    if (!currentCartId) return;
 
     try {
-      const payload = {
-        cart_id: currentCartId,
-        client_id: null, // Los carritos normales no tienen client_id
-        sale_type: transactionType,
-        sale_mode: selectedPriceType,
-        customer_name: customerName,
-        vehicle_plate: vehiclePlate,
-        vehicle_model: vehicleModel,
-        cart_products: updatedCart.map(item => ({
-          product_id: item.product_id,
-          material: item.material,
-          scale_id: item.id,
-          weight: item.weight,
-          original_weight: item.originalWeight,
-          price: item.price,
-          total: item.total,
-          waste: item.waste,
-          use_predefined_merma: item.usePredefinedMerma
-        }))
+      // Llamar al endpoint insertProductInCart
+      const insertPayload = {
+        cart_id: cartIdToUse,
+        product_id: material.value,
+        weight: weight,
+        waste: 0, // Inicialmente sin merma
       };
 
-      // Aquí deberías implementar la llamada para actualizar el carrito
-      // await dispatch(onUpdateCart(payload));
+      const result = await dispatch(onInsertProductInCart(insertPayload));
+      
+      if (result.error) {
+        toast.error("Error al agregar producto al carrito");
+        return;
+      }
+
+      // Crear el item para el estado local
+      const newItem: CartItem = {
+        id: scaleId,
+        material: material.label,
+        product_id: material.value,
+        originalWeight: weight,
+        weight: weight,
+        price,
+        total,
+        waste: 0,
+        type: selectedPriceType,
+        usePredefinedMerma: false,
+        cart_product_id: result.payload || result.payload?.id, // ID retornado por el backend
+      };
+
+      setCart([...cart, newItem]);
+
+      // Si es un carrito nuevo y obtuvimos un cart_id del backend, actualizarlo
+      if (!isEditingExistingCart && result.payload?.cart_id) {
+        setCurrentCartId(result.payload.cart_id);
+        setIsEditingExistingCart(true);
+      }
+
+      showToast("Producto agregado al carrito correctamente");
+      
     } catch (error) {
-      console.error("Error saving cart changes:", error);
-      toast.error("Error al guardar cambios del carrito");
+      console.error("Error adding product to cart:", error);
+      toast.error("Error al agregar producto al carrito");
     }
   };
 
-  const handleMermaChange = (index: number, value: number) => {
+  const handleDeleteItem = async (index: number) => {
+    const itemToDelete = cart[index];
+    
+    try {
+      // Si tenemos el ID del producto en el carrito, llamar al endpoint de eliminación
+      if (itemToDelete.cart_product_id && currentCartId) {
+        const deletePayload = {
+          cart_id: currentCartId,
+          cart_product_id: itemToDelete.cart_product_id
+        };
+
+        await dispatch(onDeleteProductFromCart(deletePayload));
+      }
+
+      // Actualizar el estado local
+      const updatedCart = cart.filter((_, i) => i !== index);
+      setCart(updatedCart);
+
+      // showToast("Producto eliminado del carrito");
+      
+    } catch (error) {
+      console.error("Error deleting product from cart:", error);
+      toast.error("Error al eliminar producto del carrito");
+    }
+  };
+
+  const handleMermaChange = async (index: number, value: number) => {
     const updatedCart = [...cart];
     const originalWeight = updatedCart[index].originalWeight;
 
@@ -417,14 +473,33 @@ const SalesCart = () => {
       return;
     }
 
+    const previousWaste = updatedCart[index].waste;
     updatedCart[index].waste = value;
     updatedCart[index].weight = originalWeight - value;
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
+    
+    // Actualizar estado local inmediatamente para mejor UX
     setCart(updatedCart);
 
-    // Si estamos editando un carrito existente, guardar los cambios
-    if (isEditingExistingCart && currentCartId) {
-      saveCartChanges(updatedCart);
+    // Si tenemos cart_product_id, actualizar en el backend usando updateWaste
+    if (updatedCart[index].cart_product_id) {
+      try {
+        const updatePayload = {
+          cartProductId: updatedCart[index].cart_product_id!,
+          waste: value,
+        };
+
+        await dispatch(onUpdateWaste(updatePayload));
+        
+      } catch (error) {
+        console.error("Error updating product waste:", error);
+        // Revertir el cambio en caso de error
+        updatedCart[index].waste = previousWaste;
+        updatedCart[index].weight = originalWeight - previousWaste;
+        updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
+        setCart([...updatedCart]);
+        toast.error("Error al actualizar la merma");
+      }
     }
   };
 
@@ -439,11 +514,6 @@ const SalesCart = () => {
     
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
     setCart(updatedCart);
-
-    // Si estamos editando un carrito existente, guardar los cambios
-    if (isEditingExistingCart && currentCartId) {
-      saveCartChanges(updatedCart);
-    }
   };
 
   const handleCheckout = () => {
@@ -464,6 +534,7 @@ const SalesCart = () => {
     let finalTotal = subtotal;
   
     if (discountCode) {
+      // Verificar si el código es válido
       const now = new Date();
       const endDate = new Date(discountCode.end_date);
       const isExpired = endDate < now;
@@ -476,12 +547,14 @@ const SalesCart = () => {
         return { subtotal, discount: 0, total: subtotal };
       }
   
+      // Aplicar descuento según el tipo
       if (discountCode.discount_type === 'percentage') {
         discount = subtotal * (discountCode.discount_value / 100);
         finalTotal = subtotal - discount;
       } else {
+        // Descuento fijo
         discount = discountCode.discount_value;
-        finalTotal = Math.max(0, subtotal - discount);
+        finalTotal = Math.max(0, subtotal - discount); // No puede ser negativo
       }
     }
   
@@ -523,10 +596,11 @@ const SalesCart = () => {
     };
   
     try {
-      console.log("Payload para imprimir:", payload);
+      // console.log("Payload para imprimir:", payload);
 
       const result = await dispatch(onAddTicket(payload));
       
+      // Si hay un código de descuento, actualizar sus usos
       if (discountCode) {
         dispatch(onUpdateDiscountCode({ id: discountCode.id }));
       }
@@ -565,7 +639,7 @@ const SalesCart = () => {
   
     } catch (error) {
       console.error('Error:', error);
-      showToast("Ocurrió un error al procesar la venta");
+      toast.error("Ocurrió un error al procesar la venta");
     } finally {
       setIsSubmitting(false);
     }
@@ -722,7 +796,7 @@ const SalesCart = () => {
                   <div className="flex justify-between text-green-500">
                     <span>Descuento ({discountCode.discount_type === 'percentage' 
                       ? `${discountCode.discount_value}%` 
-                      : `$${Number(discountCode.discount_value).toFixed(2)}`}):</span>
+                      : `${Number(discountCode.discount_value).toFixed(2)}`}):</span>
                     <span>-${Number(totals.discount).toFixed(2)}</span>
                   </div>
                   {totals.isFixedDiscountExceedsTotal && (
@@ -830,40 +904,25 @@ const SalesCart = () => {
                       label: selectedPriceType === 'retail' ? 'Precio de Menudeo' : 'Precio de Mayoreo',
                     }}
                     onChange={(selectedOption) => {
-                      if (cart.length === 0 || isEditingExistingCart) {
+                      // Solo permitir cambio si no hay productos en el carrito O si no estamos editando un carrito existente
+                      if (cart.length === 0 && !isEditingExistingCart) {
                         setSelectedPriceType(selectedOption?.value as 'wholesale' | 'retail');
-                        
-                        // Si estamos editando y hay items en el carrito, actualizar precios
-                        if (isEditingExistingCart && cart.length > 0) {
-                          const newPriceType = selectedOption?.value as 'wholesale' | 'retail';
-                          const updatedCart = cart.map(item => {
-                            const material = materials.find(m => m.label === item.material);
-                            if (!material) return item;
-
-                            const newPrice = newPriceType === 'wholesale' ? material.wholesale_price : material.retail_price;
-                            return {
-                              ...item,
-                              type: newPriceType,
-                              price: newPrice,
-                              total: item.weight * newPrice
-                            };
-                          });
-                          setCart(updatedCart);
-                          saveCartChanges(updatedCart);
-                        }
                       }
                     }}
                     placeholder="Seleccionar tipo de precio"
                     className="w-full mt-2"
-                    isDisabled={cart.length > 0 && !isEditingExistingCart}
+                    isDisabled={cart.length > 0 || isEditingExistingCart} // Deshabilitar si hay productos O si estamos editando un carrito existente
                     classNames={{
-                      control: ({ isFocused }) =>
-                        `${isFocused
+                      control: ({ isFocused, isDisabled }) =>
+                        `${isFocused && !isDisabled
                           ? 'focus:outline-none border-custom-500 dark:border-custom-800'
                           : 'border-slate-200 dark:border-zink-500'
-                        } bg-white dark:bg-zink-700 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 disabled:text-slate-500 dark:disabled:text-zink-200 rounded-md h-10`,
+                        } bg-white dark:bg-zink-700 ${isDisabled 
+                          ? 'disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 disabled:text-slate-500 dark:disabled:text-zink-200' 
+                          : ''
+                        } rounded-md h-10`,
                       placeholder: () => 'placeholder:text-slate-400 dark:placeholder:text-zink-200',
-                      singleValue: () => 'dark:text-zink-100',
+                      singleValue: ({ isDisabled }) => `${isDisabled ? 'text-slate-500 dark:text-zink-400' : 'dark:text-zink-100'}`,
                       menu: () => 'bg-white dark:bg-zink-700 z-50',
                       option: ({ isFocused, isSelected }) =>
                         `${isSelected
@@ -905,11 +964,6 @@ const SalesCart = () => {
                 value={customerName}
                 onChange={(e) => {
                   setCustomerName(e.target.value);
-                  // Si estamos editando un carrito existente y hay cambios, guardarlos
-                  if (isEditingExistingCart && currentCartId) {
-                    // Debounce para evitar muchas llamadas a la API
-                    setTimeout(() => saveCartChanges(cart), 1000);
-                  }
                 }}
                 required
               />
@@ -928,10 +982,6 @@ const SalesCart = () => {
                 value={vehiclePlate}
                 onChange={(e) => {
                   setVehiclePlate(e.target.value);
-                  // Si estamos editando un carrito existente y hay cambios, guardarlos
-                  if (isEditingExistingCart && currentCartId) {
-                    setTimeout(() => saveCartChanges(cart), 1000);
-                  }
                 }}
               />
             </div>
@@ -946,10 +996,6 @@ const SalesCart = () => {
                 value={vehicleModel}
                 onChange={(e) => {
                   setVehicleModel(e.target.value);
-                  // Si estamos editando un carrito existente y hay cambios, guardarlos
-                  if (isEditingExistingCart && currentCartId) {
-                    setTimeout(() => saveCartChanges(cart), 1000);
-                  }
                 }}
               />
             </div>
@@ -1043,10 +1089,10 @@ const SalesCart = () => {
             )}
             <div className="mt-4">
               <h6 className="text-10 text-gray-400 font-light mb-2">
-                Total Merma: {cart.reduce((sum, item) => sum + item.waste, 0).toFixed(2)}/kg
+                Total Merma: {cart.reduce((sum, item) => sum + (Number(item.waste) || 0), 0).toFixed(2)}/kg
               </h6>
               <h6 className="text-16">
-                Total: ${cart.reduce((sum, item) => sum + item.total, 0).toFixed(2)}
+                Total: ${cart.reduce((sum, item) => sum + (Number(item.total) || 0), 0).toFixed(2)}
               </h6>
 
               <button
