@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import BreadCrumb from "Common/BreadCrumb";
 import Select from 'react-select';
@@ -6,14 +6,16 @@ import scale from "assets/images/scale.png";
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { 
-  getMaterialsAssignedByClient as onGetMaterialsAssignedByClient,
   getCustomer as onGetCustomer,
   addTicket as onAddTicket,
   getActiveWasteRecords as onGetWasteRecords,
   getDiscountCodes as onGetDiscountCodes,
   incrementUsesDiscountCode as onUpdateDiscountCode,
-  getCart as onGetCartById, // Asumiendo que tienes esta acción
+  getClientCart as onGetCartById,
   insertProductInCart as onInsertProductInCart,
+  updateWaste as onUpdateWaste,
+  deleteProductInCart as onDeleteProductFromCart,
+  updateCartVehicle as onUpdateCartVehicle,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
@@ -74,6 +76,7 @@ interface CartItem {
   waste: number;
   type: 'wholesale' | 'retail';
   usePredefinedMerma: boolean;
+  cart_product_id?: number;
 }
 
 interface WasteOption {
@@ -81,18 +84,6 @@ interface WasteOption {
   label: string;
   wasteId: string;
   img?: string;
-}
-
-interface PendingCart {
-  id: number;
-  client_id?: number;
-  sale_type: 'shop' | 'sale';
-  sale_mode: 'wholesale' | 'retail';
-  customer_name: string;
-  vehicle_plate: string;
-  vehicle_model: string;
-  total: number | null;
-  cart_products: any[];
 }
 
 const CustomOption = ({ innerProps, label, data }: any) => (
@@ -125,14 +116,6 @@ const ShoppingCart = () => {
   const dispatch = useDispatch<any>();
   const { cartId } = useParams<{ cartId: string }>();
   
-  const selectDataList = createSelector(
-    (state: any) => state.AssignedMaterials,
-    (state) => ({
-      materialList: state.assignedMaterials,
-      loading: state.loading,
-    })
-  );
-
   const clientDataList = createSelector(
     (state: any) => state.CUSTOMERManagement,
     (state) => ({
@@ -156,20 +139,11 @@ const ShoppingCart = () => {
     })
   );
 
-  const selectCartData = createSelector(
-    (state: any) => state.CartManagement,
-    (state) => ({
-      currentCart: state.currentCart,
-      loading: state.loading,
-    })
-  );
-
-  const { materialList } = useSelector(selectDataList);
   const { clientlList } = useSelector(clientDataList);
   const { wasteList } = useSelector(selectWasteList);
   const { dataList } = useSelector(selectDiscountCodeList);
-  const { currentCart } = useSelector(selectCartData);
 
+  const vehicleUpdateTimeout = useRef<NodeJS.Timeout | null>(null);
   const [materials, setMaterials] = useState<MaterialOption[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientOption | null>(null);
   const [transactionType, setTransactionType] = useState<'shop' | 'sale' | null>(null);
@@ -191,6 +165,7 @@ const ShoppingCart = () => {
   const [vehicleModel, setVehicleModel] = useState<string>("");
   const [isEditingExistingCart, setIsEditingExistingCart] = useState(false);
   const [currentCartId, setCurrentCartId] = useState<number | null>(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     dispatch(onGetCustomer());
@@ -199,34 +174,32 @@ const ShoppingCart = () => {
     setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
   }, [dispatch]);
 
-  // Efecto separado para cargar el carrito cuando ya tenemos la lista de clientes
-  useEffect(() => {
-    if (cartId && clientlList.length > 0) {
-      setIsEditingExistingCart(true);
-      setCurrentCartId(parseInt(cartId));
-      loadExistingCart(parseInt(cartId));
-    }
-  }, [cartId, clientlList]);
-
-  const loadExistingCart = async (id: number) => {
+  const loadCart = useCallback(async (id: number) => {
+    console.log("Loading existing cart with ID:", id);
     try {
-      // Obtener los datos del carrito desde el backend
       const result = await dispatch(onGetCartById(id));
       
-      // console.log("Cart API Response:", result.payload); // Para debugging
+      console.log("Cart API Response:", result.payload);
       
       if (result.payload && result.payload.data) {
-        // La estructura de respuesta tiene el carrito en result.payload.cart
         const responseData = result.payload.data;
-        const cartData = responseData[0]; // Los datos del carrito están en la clave "0"
-        const cartProducts = responseData.cart_products || []; // Los productos están en cart_products
+        const cartData = responseData[0];
+        const cartProducts = responseData.cart_products || [];
+        const assignedMaterials = responseData.assigned_materials || [];
         
-        // console.log("Cart Data:", cartData); // Para debugging
-        // console.log("Cart Products:", cartProducts); // Para debugging
+        // Formatear materiales asignados usando la misma estructura que antes
+        const formattedMaterials = assignedMaterials.map((material: any) => ({
+          value: material.product_id,
+          label: material.material,
+          wholesale_price_buy: Number(material.wholesale_price_buy),
+          retail_price_buy: Number(material.retail_price_buy),
+          wholesale_price_sell: Number(material.wholesale_price_sell),
+          retail_price_sell: Number(material.retail_price_sell),
+        }));
+        setMaterials(formattedMaterials);
         
         // Configurar el cliente seleccionado
         if (cartData.client_id) {
-          // Esperar a que la lista de clientes esté cargada
           const client = clientlList.find((c: any) => c.id === cartData.client_id);
           if (client) {
             setSelectedClient({
@@ -234,23 +207,21 @@ const ShoppingCart = () => {
               label: client.fullname ? `${client.name} (${client.fullname})` : client.name
             });
           } else {
-            // Si el cliente no está en la lista cargada, usar el nombre del carrito
             setSelectedClient({
               value: cartData.client_id,
               label: cartData.customer_name
             });
           }
         } else {
-          // Si no hay client_id, crear un cliente temporal con el customer_name
           setSelectedClient({
-            value: -1, // ID temporal
+            value: -1,
             label: cartData.customer_name
           });
         }
-
+  
         // Configurar el tipo de transacción
         setTransactionType(cartData.sale_type);
-
+  
         // Configurar el modo de precio para todas las básculas
         const priceMode = cartData.sale_mode;
         const newPriceTypes: { [key: number]: 'wholesale' | 'retail' } = {};
@@ -258,27 +229,54 @@ const ShoppingCart = () => {
           newPriceTypes[scale.id] = priceMode;
         });
         setSelectedPriceTypes(newPriceTypes);
-
+  
         // Configurar vehículo
         setVehiclePlate(cartData.vehicle_plate || "");
         setVehicleModel(cartData.vehicle_model || "");
-
+  
         // Si hay productos en el carrito, cargarlos
         if (cartProducts && cartProducts.length > 0) {
-          const loadedCartItems = cartProducts.map((product: any, index: number) => ({
-            id: product.scale_id || index + 1, // Usar scale_id si está disponible
-            product_id: product.product_id,
-            material: product.material_name || product.material,
-            originalWeight: product.original_weight || product.weight,
-            weight: product.weight,
-            price: product.price,
-            total: product.total,
-            waste: product.waste || 0,
-            type: priceMode,
-            usePredefinedMerma: product.use_predefined_merma || false,
-          }));
-          setCart(loadedCartItems);
+          const loadedCartItems = cartProducts.map((product: any, index: number) => {
+            // Buscar el material actual para obtener precios actualizados
+            const currentMaterial = formattedMaterials.find((material: any) => material.value === product.product_id);
 
+            // Obtener precio actual del material
+            let currentPrice = product.price;
+            if (currentMaterial) {
+              if (cartData.sale_type === 'shop') {
+                currentPrice = priceMode === 'wholesale' 
+                  ? Number(currentMaterial.wholesale_price_buy)
+                  : Number(currentMaterial.retail_price_buy);
+              } else if (cartData.sale_type === 'sale') {
+                currentPrice = priceMode === 'wholesale'
+                  ? Number(currentMaterial.wholesale_price_sell)
+                  : Number(currentMaterial.retail_price_sell);
+              }
+            }
+
+            // Calcular peso original y peso con merma
+            const originalWeight = Number(product.weight);
+            const waste = Number(product.waste) || 0;
+            const finalWeight = originalWeight - waste;
+            
+            const currentTotal = finalWeight * currentPrice;
+  
+            return {
+              id: product.scale_id || index + 1,
+              product_id: product.product_id,
+              material: product.material,
+              originalWeight: originalWeight,
+              weight: finalWeight,
+              price: currentPrice,
+              total: currentTotal,
+              waste: waste,
+              type: priceMode,
+              usePredefinedMerma: product.use_predefined_merma || false,
+              cart_product_id: product.id || product.cart_product_id,
+            };
+          });
+          setCart(loadedCartItems);
+  
           // Configurar materiales seleccionados
           const selectedMats: { [key: number]: string } = {};
           loadedCartItems.forEach((item: CartItem) => {
@@ -286,8 +284,8 @@ const ShoppingCart = () => {
           });
           setSelectedMaterials(selectedMats);
         }
-
-        toast.success("Carrito cargado correctamente");
+  
+        setDataLoaded(true);
       } else {
         toast.error("Error al cargar el carrito - Datos no encontrados");
       }
@@ -295,13 +293,19 @@ const ShoppingCart = () => {
       console.error("Error loading cart:", error);
       toast.error("Error al cargar el carrito");
     }
-  };
+  }, [dispatch, clientlList]);
 
   useEffect(() => {
-    if (selectedClient && transactionType && selectedClient.value !== -1) {
-      dispatch(onGetMaterialsAssignedByClient({ clientId: selectedClient.value }));
+    if (cartId && clientlList.length > 0 && !dataLoaded) {
+      setIsEditingExistingCart(true);
+      setCurrentCartId(parseInt(cartId));
+      loadCart(parseInt(cartId));
     }
-  }, [dispatch, selectedClient, transactionType]);
+  }, [cartId, clientlList.length, dataLoaded, loadCart]);
+
+  useEffect(() => {
+    setDataLoaded(false); // Reset cuando cambie el cartId
+  }, [cartId]);
 
   useEffect(() => {
     if (wasteList && wasteList.length > 0) {
@@ -314,22 +318,6 @@ const ShoppingCart = () => {
       setWasteOptions(formattedWasteOptions);
     }
   }, [wasteList]);
-
-  useEffect(() => {
-    if (materialList && materialList.length > 0) {
-      const formattedMaterials = materialList.map((material: any) => ({
-        value: material.value,
-        label: material.label,
-        wholesale_price_buy: material.wholesale_price_buy,
-        retail_price_buy: material.retail_price_buy,
-        wholesale_price_sell: material.wholesale_price_sell,
-        retail_price_sell: material.retail_price_sell,
-      }));
-      setMaterials(formattedMaterials);
-    } else {
-      setMaterials([]);
-    }
-  }, [materialList]);
 
   useEffect(() => {
     const ws = new WebSocket(ws_ip);
@@ -373,12 +361,47 @@ const ShoppingCart = () => {
     return () => ws.close();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (vehicleUpdateTimeout.current) {
+        clearTimeout(vehicleUpdateTimeout.current);
+      }
+    };
+  }, []);
+
+  const updateVehicleWithDebounce = useCallback((plate: string, model: string) => {
+    if (!isEditingExistingCart || !currentCartId) return;
+
+    // Limpiar timeout anterior si existe
+    if (vehicleUpdateTimeout.current) {
+      clearTimeout(vehicleUpdateTimeout.current);
+    }
+
+    // Crear nuevo timeout para hacer la llamada después de 1 segundo de inactividad
+    vehicleUpdateTimeout.current = setTimeout(async () => {
+      try {
+        const payload = {
+          cartId: currentCartId,
+          vehicle_plate: plate.trim() || undefined,
+          vehicle_model: model.trim() || undefined,
+        };
+
+        await dispatch(onUpdateCartVehicle(payload));
+        console.log('Vehicle information updated successfully');
+      } catch (error) {
+        console.error("Error updating vehicle information:", error);
+        toast.error("Error al actualizar información del vehículo");
+      }
+    }, 1000); // 1 segundo de debounce
+  }, [dispatch, isEditingExistingCart, currentCartId]);
+
   const handleClientChange = (selectedOption: ClientOption | null) => {
     setSelectedClient(selectedOption);
     setSelectedMaterials({});
     setSelectedPriceTypes({});
     if (!isEditingExistingCart) {
       setCart([]);
+      setMaterials([]); // Limpiar materiales cuando cambie el cliente
     }
   };
 
@@ -395,18 +418,13 @@ const ShoppingCart = () => {
   };
 
   const handlePriceTypeChange = (priceType: 'wholesale' | 'retail') => {
-    // Solo permitir cambios si el carrito está vacío o si estamos editando un carrito existente
-    if (cart.length === 0 || isEditingExistingCart) {
+    // Solo permitir cambios si el carrito está vacío y NO estamos editando un carrito existente
+    if (cart.length === 0 && !isEditingExistingCart) {
       const newPriceTypes: { [key: number]: 'wholesale' | 'retail' } = {};
       scales.forEach(scale => {
         newPriceTypes[scale.id] = priceType;
       });
       setSelectedPriceTypes(newPriceTypes);
-
-      // Si estamos editando un carrito existente, actualizar los precios de los items
-      if (isEditingExistingCart && cart.length > 0) {
-        updateCartItemsPriceType(priceType);
-      }
     }
   };
 
@@ -455,9 +473,12 @@ const ShoppingCart = () => {
     }
   };
 
-  const handleAddToCart = (scaleId: number) => {
+  const handleAddToCart = async (scaleId: number) => {
     const material = materials.find((m) => m.label === selectedMaterials[scaleId]);
-    if (!material) return;
+    if (!material) {
+      showToast("Por favor seleccione un material");
+      return;
+    }
 
     const weight = weights[scaleId] || 0;
     const priceType = selectedPriceTypes[scaleId] || 'wholesale';
@@ -471,34 +492,89 @@ const ShoppingCart = () => {
 
     const total = weight * price;
 
-    const newItem: CartItem = {
-      id: scaleId,
-      product_id: material.value,
-      material: material.label,
-      originalWeight: weight,
-      weight: weight,
-      price,
-      total,
-      waste: 0,
-      type: priceType,
-      usePredefinedMerma: false,
-    };
+    // Si estamos editando un carrito existente, usar ese cart_id
+    // Si no, necesitamos crear un carrito temporal o usar un ID por defecto
+    let cartIdToUse = currentCartId;
+    
+    if (!isEditingExistingCart) {
+      // Para carritos nuevos, puedes crear un carrito temporal o usar un ID especial
+      // Esto depende de cómo manejes los carritos nuevos en tu backend
+      cartIdToUse = 0; // O el ID que uses para carritos temporales
+    }
 
-    setCart([...cart, newItem]);
+    try {
+      // Llamar al endpoint insertProductInCart
+      const insertPayload = {
+        cart_id: cartIdToUse,
+        product_id: material.value,
+        weight: weight,
+        waste: 0, // Inicialmente sin merma
+      };
 
-    // Si estamos editando un carrito existente, guardar los cambios
-    if (isEditingExistingCart && currentCartId) {
-      saveCartChanges([...cart, newItem]);
+      const result = await dispatch(onInsertProductInCart(insertPayload));
+      
+      if (result.error) {
+        toast.error("Error al agregar producto al carrito");
+        return;
+      }
+
+      // Crear el item para el estado local
+      const newItem: CartItem = {
+        id: scaleId,
+        product_id: material.value,
+        material: material.label,
+        originalWeight: weight,
+        weight: weight,
+        price,
+        total,
+        waste: 0,
+        type: priceType,
+        usePredefinedMerma: false,
+        cart_product_id: result.payload || result.payload?.id, // ID retornado por el backend
+      };
+
+      setCart([...cart, newItem]);
+
+      // Si es un carrito nuevo y obtuvimos un cart_id del backend, actualizarlo
+      if (!isEditingExistingCart && result.payload?.cart_id) {
+        setCurrentCartId(result.payload.cart_id);
+        setIsEditingExistingCart(true);
+      }
+
+      showToast("Producto agregado al carrito correctamente");
+      
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+      toast.error("Error al agregar producto al carrito");
     }
   };
 
-  const handleDeleteItem = (index: number) => {
-    const updatedCart = cart.filter((_, i) => i !== index);
-    setCart(updatedCart);
-
-    // Si estamos editando un carrito existente, guardar los cambios
-    if (isEditingExistingCart && currentCartId) {
-      saveCartChanges(updatedCart);
+  const handleDeleteItem = async (index: number) => {
+    const itemToDelete = cart[index];
+    
+    try {
+      // Si tenemos el ID del producto en el carrito, llamar al endpoint de eliminación
+      if (itemToDelete.cart_product_id && currentCartId) {
+        const deletePayload = {
+          cart_id: currentCartId,
+          cart_product_id: itemToDelete.cart_product_id
+        };
+  
+        await dispatch(onDeleteProductFromCart(deletePayload));
+      }
+  
+      // Actualizar el estado local
+      const updatedCart = cart.filter((_, i) => i !== index);
+      setCart(updatedCart);
+  
+      // Si estamos editando un carrito existente, guardar los cambios
+      if (isEditingExistingCart && currentCartId) {
+        saveCartChanges(updatedCart);
+      }
+      
+    } catch (error) {
+      console.error("Error deleting product from cart:", error);
+      toast.error("Error al eliminar producto del carrito");
     }
   };
 
@@ -534,7 +610,7 @@ const ShoppingCart = () => {
     }
   };
 
-  const handleMermaChange = (index: number, value: number) => {
+  const handleMermaChange = async (index: number, value: number) => {
     const updatedCart = [...cart];
     const originalWeight = updatedCart[index].originalWeight;
 
@@ -553,10 +629,34 @@ const ShoppingCart = () => {
       return;
     }
 
+    const previousWaste = updatedCart[index].waste;
     updatedCart[index].waste = value;
     updatedCart[index].weight = originalWeight - value;
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
+    
+    // Actualizar estado local inmediatamente para mejor UX
     setCart(updatedCart);
+
+    // Si tenemos cart_product_id, actualizar en el backend usando updateWaste
+    if (updatedCart[index].cart_product_id) {
+      try {
+        const updatePayload = {
+          cartProductId: updatedCart[index].cart_product_id!,
+          waste: value,
+        };
+
+        await dispatch(onUpdateWaste(updatePayload));
+        
+      } catch (error) {
+        console.error("Error updating product waste:", error);
+        // Revertir el cambio en caso de error
+        updatedCart[index].waste = previousWaste;
+        updatedCart[index].weight = originalWeight - previousWaste;
+        updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
+        setCart([...updatedCart]);
+        toast.error("Error al actualizar la merma");
+      }
+    }
 
     // Si estamos editando un carrito existente, guardar los cambios
     if (isEditingExistingCart && currentCartId) {
@@ -564,20 +664,50 @@ const ShoppingCart = () => {
     }
   };
 
-  const togglePredefinedMerma = (index: number, usePredefined: boolean) => {
+  const togglePredefinedMerma = async (index: number, usePredefined: boolean) => {
     const updatedCart = [...cart];
+    const previousMermaState = updatedCart[index].usePredefinedMerma;
+    const previousWaste = updatedCart[index].waste;
+    
     updatedCart[index].usePredefinedMerma = usePredefined;
     
-    updatedCart[index].weight = updatedCart[index].originalWeight - updatedCart[index].waste;
+    // Siempre resetear la merma a 0 cuando se hace toggle
+    updatedCart[index].waste = 0;
+    updatedCart[index].weight = updatedCart[index].originalWeight;
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
-    
+
+    // Actualizar estado local inmediatamente
     setCart(updatedCart);
+
+    // Si tenemos cart_product_id, actualizar la merma a 0 en el backend
+    if (updatedCart[index].cart_product_id) {
+      try {
+        const updatePayload = {
+          cartProductId: updatedCart[index].cart_product_id!,
+          waste: 0, // Siempre resetear a 0
+        };
+
+        await dispatch(onUpdateWaste(updatePayload));
+        
+      } catch (error) {
+        console.error("Error updating product waste:", error);
+        // Revertir cambios en caso de error
+        updatedCart[index].usePredefinedMerma = previousMermaState;
+        updatedCart[index].waste = previousWaste;
+        updatedCart[index].weight = updatedCart[index].originalWeight - previousWaste;
+        updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
+        setCart([...updatedCart]);
+        toast.error("Error al actualizar la merma");
+        return;
+      }
+    }
 
     // Si estamos editando un carrito existente, guardar los cambios
     if (isEditingExistingCart && currentCartId) {
       saveCartChanges(updatedCart);
     }
   };
+
 
   const calculateTotalWithDiscount = () => {
     const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
@@ -661,7 +791,6 @@ const ShoppingCart = () => {
     };
 
     try {
-      // console.log("Payload para agregar ticket:", payload);
       const result = await dispatch(onAddTicket(payload));
       
       if (discountCode) {
@@ -685,6 +814,8 @@ const ShoppingCart = () => {
       setLargeModal(false);
       setIsEditingExistingCart(false);
       setCurrentCartId(null);
+      setMaterials([]);
+      setDataLoaded(false);
 
       const response1 = await fetch('http://192.168.100.59/src/printer.php', {
         method: 'POST',
@@ -853,7 +984,7 @@ const ShoppingCart = () => {
             <div className="space-y-2 pt-2 border-t dark:border-zink-500">
               <div className="flex justify-between">
                 <span>Subtotal:</span>
-                <span>${totals.subtotal.toFixed(2)}</span>
+                <span>${Number(totals.subtotal).toFixed(2)}</span>
               </div>
               {discountCode && (
                 <>
@@ -928,7 +1059,7 @@ const ShoppingCart = () => {
               onChange={handleClientChange}
               onInputChange={setClientSearch}
               filterOption={null}
-              isDisabled={isEditingExistingCart && selectedClient?.value === -1} // No permitir cambio si es cliente temporal
+              isDisabled={isEditingExistingCart && selectedClient?.value === -1}
               classNames={{
                 control: ({ isFocused }) =>
                   `border ${
@@ -951,7 +1082,7 @@ const ShoppingCart = () => {
               placeholder="Seleccionar tipo de transacción"
               value={transactionType ? { value: transactionType, label: transactionType === 'shop' ? 'Compra' : 'Venta' } : null}
               onChange={handleTransactionTypeChange}
-              isDisabled={isEditingExistingCart} // No permitir cambio en modo edición
+              isDisabled={isEditingExistingCart}
               classNames={{
                 control: ({ isFocused }) =>
                     `border ${
@@ -979,14 +1110,14 @@ const ShoppingCart = () => {
                     isSearchable={true}
                     name="materialTypeSelect"
                     id="materialTypeSelect"
-                    isDisabled={!selectedClient || !transactionType}
+                    isDisabled={!selectedClient || !transactionType || materials.length === 0}
                     onChange={(selectedOption) =>
                       setSelectedMaterials({ ...selectedMaterials, [scale.id]: selectedOption?.label || "" })
                     }
                     value={selectedMaterials[scale.id] ? 
                       materials.find(m => m.label === selectedMaterials[scale.id]) : null
                     }
-                    placeholder="Seleccionar"
+                    placeholder={materials.length === 0 ? "Seleccione un cliente primero" : "Seleccionar"}
                     classNames={{
                       control: ({ isFocused }) =>
                           `border ${
@@ -1010,7 +1141,7 @@ const ShoppingCart = () => {
                       value: selectedPriceTypes[scale.id] || 'wholesale',
                       label: selectedPriceTypes[scale.id] === 'retail' ? 'Precio de Menudeo' : 'Precio de Mayoreo',
                     }}
-                    isDisabled={!selectedClient || !transactionType || (cart.length > 0 && !isEditingExistingCart)}
+                    isDisabled={!selectedClient || !transactionType || (cart.length > 0 && !isEditingExistingCart) || isEditingExistingCart}
                     onChange={(selectedOption) =>
                       handlePriceTypeChange(selectedOption?.value as 'wholesale' | 'retail')
                     }
@@ -1033,7 +1164,7 @@ const ShoppingCart = () => {
                 <button
                   className="bg-blue-500 text-white p-2 rounded-lg mt-4 hover:bg-blue-600 transition-colors duration-200"
                   onClick={() => handleAddToCart(scale.id)}
-                  disabled={!selectedClient || !transactionType || !selectedMaterials[scale.id]}
+                  disabled={!selectedClient || !transactionType || !selectedMaterials[scale.id] || materials.length === 0}
                 >
                   Registrar al carrito
                 </button>
@@ -1060,11 +1191,12 @@ const ShoppingCart = () => {
                   className="w-full border rounded-md px-3 py-2 h-10 border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                   value={vehiclePlate}
                   onChange={(e) => {
-                    setVehiclePlate(e.target.value);
-                    // Si estamos editando un carrito existente y hay cambios, guardarlos
+                    const newPlate = e.target.value;
+                    setVehiclePlate(newPlate);
+                    
+                    // Llamar a la función con debounce solo si estamos editando un carrito existente
                     if (isEditingExistingCart && currentCartId) {
-                      // Debounce para evitar muchas llamadas a la API
-                      setTimeout(() => saveCartChanges(cart), 1000);
+                      updateVehicleWithDebounce(newPlate, vehicleModel);
                     }
                   }}
                 />
@@ -1077,11 +1209,12 @@ const ShoppingCart = () => {
                   className="w-full border rounded-md px-3 py-2 h-10 border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                   value={vehicleModel}
                   onChange={(e) => {
-                    setVehicleModel(e.target.value);
-                    // Si estamos editando un carrito existente y hay cambios, guardarlos
+                    const newModel = e.target.value;
+                    setVehicleModel(newModel);
+                    
+                    // Llamar a la función con debounce solo si estamos editando un carrito existente
                     if (isEditingExistingCart && currentCartId) {
-                      // Debounce para evitar muchas llamadas a la API
-                      setTimeout(() => saveCartChanges(cart), 1000);
+                      updateVehicleWithDebounce(vehiclePlate, newModel);
                     }
                   }}
                 />
@@ -1101,7 +1234,7 @@ const ShoppingCart = () => {
                   <div className="flex items-center justify-between">
                     <span>{item.material} ({item.weight}kg)</span>
                     <div className="flex items-center gap-2">
-                      <span>${item.total.toFixed(2)}</span>
+                      <span>${Number(item.total).toFixed(2)}</span>
                       <button
                         className="cursor-pointer p-2 inline-flex items-center justify-center hover:bg-slate-100 dark:hover:bg-zink-600 hover:rounded-md transition-colors duration-200"
                         onClick={() => handleDeleteItem(index)}
@@ -1177,10 +1310,10 @@ const ShoppingCart = () => {
             )}
             <div className="mt-4">
               <h6 className="text-10 text-gray-400 font-light mb-2">
-                Total Merma: {cart.reduce((sum, item) => sum + item.waste, 0).toFixed(2)}/kg
+                Total Merma: {cart.reduce((sum, item) => sum + (Number(item.waste) || 0), 0).toFixed(2)}/kg
               </h6>
               <h6 className="text-16">
-                Total: ${cart.reduce((sum, item) => sum + item.total, 0).toFixed(2)}
+                Total: ${cart.reduce((sum, item) => sum + (Number(item.total) || 0), 0).toFixed(2)}
               </h6>
 
               <button

@@ -5,7 +5,9 @@ import {
 	getCart as getCartApi,
 	deleteProductInCart as deleteProductInCartApi,
 	insertProductInCart as insertProductInCartApi,
-	updateWasteInCart as updateWasteApi
+	updateWasteInCart as updateWasteApi,
+	getClientCart as getClientCartApi,
+	updateCartVehicle as updateCartVehicleApi
 } from "../../helpers/fakebackend_helper";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -83,6 +85,19 @@ export const getCart = createAsyncThunk(
   }
 );
 
+export const getClientCart = createAsyncThunk(
+  "cartManagement/getClientCart",
+  async (id: number, { rejectWithValue }) => {
+    try {
+      const response = await getClientCartApi(id);
+      return response;
+    } catch (error: any) {
+      toast.error("Error al obtener carrito", { autoClose: 2000 });
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 export const deleteProductInCart = createAsyncThunk(
 	"cartManagement/deleteProductInCart",
 	async (data: any, { rejectWithValue }) => {
@@ -120,6 +135,22 @@ export const updateWaste = createAsyncThunk(
 			return response.data;
 		} catch (error: any) {
 			toast.error("Error al actualizar merma", { autoClose: 2000 });
+			return rejectWithValue(error.response?.data || error.message);
+		}
+	}
+);
+
+export const updateCartVehicle = createAsyncThunk(
+	"cartManagement/updateCartVehicle",
+	async (data: { cartId: number; vehicle_plate?: string; vehicle_model?: string }, { rejectWithValue }) => {
+		try {
+			const response = await updateCartVehicleApi(data);
+			const cart = response.data;
+			cart.vehicle_plate = data.vehicle_plate;
+			cart.vehicle_model = data.vehicle_model;
+			return cart;
+		} catch (error: any) {
+			toast.error("Error al actualizar vehículo del carrito", { autoClose: 2000 });
 			return rejectWithValue(error.response?.data || error.message);
 		}
 	}

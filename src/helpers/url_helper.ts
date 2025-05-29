@@ -3,12 +3,14 @@ export const POST_FAKE_REGISTER = "/auth/signup";
 
 // Carts
 export const GET_PENDING_CARTS = "/cart/all-carts";
+export const GET_CLIENT_CART = "/cart/get-cart-by-client";
 export const GET_CART = "/cart/get-cart";
 export const INSERT_PRODUCT = "/cart/insert-product";
 export const DELETE_PRODUCT = "/cart/delete-product";
 export const CREATE_CART = "/cart/new-cart";
 export const DELETE_CART = "/cart/delete-cart";
-export const UPDATE_WASTE_IN_CART = "cart/update-waste";
+export const UPDATE_WASTE_IN_CART = "/cart/update-waste";
+export const UPDATE_VEHICLE = "/cart/update-vehicle"
 
 // Discount Codes
 export const GET_DISCOUNT_CODES = "/discount-codes/get-discount-codes";

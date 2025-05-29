@@ -5,7 +5,9 @@ import {
   getCart,
 	deleteProductInCart,
 	insertProductInCart,
-	updateWaste
+	updateWaste,
+	getClientCart,
+	updateCartVehicle,
 } from './thunk';
 
 interface CartState {
@@ -189,6 +191,35 @@ const cartSlice = createSlice({
 		builder.addCase(updateWaste.rejected, (state, action) => {
 			state.loading = false;
 			state.error = action.payload as string || 'Error al actualizar desperdicio del producto';
+		});
+
+		// getClientCart
+		builder.addCase(getClientCart.pending, (state) => {
+			state.loading = true;
+			state.error = null;
+		});
+		builder.addCase(getClientCart.fulfilled, (state, action) => {
+			state.loading = false;
+			state.currentCart = {
+				...action.payload.data,
+				items: action.payload.data.items || []
+			};
+		});
+		builder.addCase(getClientCart.rejected, (state, action) => {
+			state.loading = false;
+			state.error = action.payload as string || 'Error al obtener carrito del cliente';
+		});
+
+		// updateCartVehicle
+		builder.addCase(updateCartVehicle.pending, (state) => {
+			state.loading = true;
+			state.error = null;
+		});
+		builder.addCase(updateCartVehicle.fulfilled, (state, action) => {
+			state.loading = false;
+			const { vehicle_plate, vehicle_model } = action.payload;
+			state.currentCart.vehicle_plate = vehicle_plate;
+			state.currentCart.vehicle_model = vehicle_model;
 		});
   }
 });
