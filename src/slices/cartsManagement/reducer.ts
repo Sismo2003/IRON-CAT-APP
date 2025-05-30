@@ -8,6 +8,7 @@ import {
 	updateWaste,
 	getClientCart,
 	updateCartVehicle,
+  deleteCart,
 } from './thunk';
 
 interface CartState {
@@ -221,6 +222,21 @@ const cartSlice = createSlice({
 			state.currentCart.vehicle_plate = vehicle_plate;
 			state.currentCart.vehicle_model = vehicle_model;
 		});
+
+    // deleteCart
+    builder.addCase(deleteCart.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(deleteCart.fulfilled, (state, action) => {
+      state.loading = false;
+      state.currentCart = initialState.currentCart; // Reset current cart
+      state.pendingCarts = state.pendingCarts.filter(cart => cart.id !== action.payload);
+    });
+    builder.addCase(deleteCart.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string || 'Error al eliminar carrito';
+    });
   }
 });
 

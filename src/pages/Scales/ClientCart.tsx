@@ -540,8 +540,6 @@ const ShoppingCart = () => {
         setCurrentCartId(result.payload.cart_id);
         setIsEditingExistingCart(true);
       }
-
-      showToast("Producto agregado al carrito correctamente");
       
     } catch (error) {
       console.error("Error adding product to cart:", error);
@@ -1059,7 +1057,7 @@ const ShoppingCart = () => {
               onChange={handleClientChange}
               onInputChange={setClientSearch}
               filterOption={null}
-              isDisabled={isEditingExistingCart && selectedClient?.value === -1}
+              isDisabled={isEditingExistingCart}
               classNames={{
                 control: ({ isFocused }) =>
                   `border ${

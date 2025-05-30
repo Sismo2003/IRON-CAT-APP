@@ -68,34 +68,9 @@ import {
     {
       id: "Scales",
       label: 'Basculas',
-      link: "/#",
+      link: "/apps-scales-menu",
       icon: <Weight />,
-      subItems: [
-        {
-          id: 'sales-scale',
-          label: 'Venta',
-          link: '/apps-scales-salecart',
-          parentId: 'Scales'
-        },
-        {
-          id: 'shopping-scale',
-          label: 'Compra',
-          link: '/apps-scales-shopcart',
-          parentId: 'Scales'
-        },
-        {
-          id: 'client-scale',
-          label: 'Clientes especiales',
-          link: '/apps-scales-clientcart',
-          parentId: 'Scales'
-        },
-        {
-          id: 'scale-menu',
-          label: 'Menú basculas',
-          link: '/apps-scales-menu',
-          parentId: 'Scales'
-        }
-      ]
+      parentId: 2
     },
     {
       id: "employees",
@@ -167,28 +142,9 @@ import {
     {
       id: "Scales",
       label: 'Basculas',
-      link: "/#",
+      link: "/apps-scales-menu",
       icon: <Weight />,
-      subItems: [
-        {
-          id: 'sales-scale',
-          label: 'Venta',
-          link: '/apps-scales-salecart',
-          parentId: 'Scales'
-        },
-        {
-          id: 'shopping-scale',
-          label: 'Compra',
-          link: '/apps-scales-shopcart',
-          parentId: 'Scales'
-        },
-        {
-          id: 'client-scale',
-          label: 'Clientes especiales',
-          link: '/apps-scales-clientcart',
-          parentId: 'Scales'
-        }
-      ]
+      parentId: 2
     },
     // {
     //   id: "ticket history",

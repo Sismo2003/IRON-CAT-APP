@@ -92,7 +92,7 @@ export const productImage = (data: any) => api.get(`${url.GET_IMG_BY_ID}/${data}
 // Carts
 export const getPendingCarts = () => api.get(url.GET_PENDING_CARTS, null);
 export const createCart = (data: any) => api.create(url.CREATE_CART, data);
-export const deleteCart = (data: any) => api.delete(url.DELETE_CART + '/' + data, { headers: { data } });
+export const deleteCart = (data: any) => api.delete(url.DELETE_CART + '/' + data.cartId, { headers: { data } });
 export const getCart = (id: any) => api.get(`${url.GET_CART}/${id}`, { params: { id } });
 export const getClientCart = (id: any) => api.get(`${url.GET_CLIENT_CART}/${id}`, { params: { id } });
 export const deleteProductInCart = (data: any) => api.delete(url.DELETE_PRODUCT + '/' + data.cart_product_id, { headers: { data } });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import BreadCrumb from "Common/BreadCrumb";
 import Select from 'react-select';
@@ -15,6 +15,7 @@ import {
   insertProductInCart as onInsertProductInCart,
   deleteProductInCart as onDeleteProductFromCart, // Asumiendo que existe este endpoint
   updateWaste as onUpdateWaste,
+  updateCartVehicle as onUpdateCartVehicle,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
@@ -119,6 +120,7 @@ const CustomSingleValue = ({ data }: any) => (
 const SalesCart = () => {
   const dispatch = useDispatch<any>();
   const { cartId } = useParams<{ cartId: string }>();
+  const vehicleUpdateTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const selectDataList = createSelector(
     (state: any) => state.MATERIALManagement,
@@ -267,6 +269,32 @@ const SalesCart = () => {
     }
   }, [dispatch, materialList, setCart, setCustomerName, setTransactionType, setSelectedPriceType, setVehiclePlate, setVehicleModel, setSelectedMaterials]);
 
+  const updateVehicleWithDebounce = useCallback((plate: string, model: string) => {
+    if (!isEditingExistingCart || !currentCartId) return;
+  
+    // Limpiar timeout anterior si existe
+    if (vehicleUpdateTimeout.current) {
+      clearTimeout(vehicleUpdateTimeout.current);
+    }
+  
+    // Crear nuevo timeout para hacer la llamada después de 1 segundo de inactividad
+    vehicleUpdateTimeout.current = setTimeout(async () => {
+      try {
+        const payload = {
+          cartId: currentCartId,
+          vehicle_plate: plate.trim() || undefined,
+          vehicle_model: model.trim() || undefined,
+        };
+  
+        await dispatch(onUpdateCartVehicle(payload));
+        console.log('Vehicle information updated successfully');
+      } catch (error) {
+        console.error("Error updating vehicle information:", error);
+        toast.error("Error al actualizar información del vehículo");
+      }
+    }, 1000); // 1 segundo de debounce
+  }, [dispatch, isEditingExistingCart, currentCartId]);
+
   // Efecto separado para cargar el carrito cuando hay un cartId en la URL
   useEffect(() => {
     if (cartId) {
@@ -303,6 +331,14 @@ const SalesCart = () => {
       setWasteOptions(formattedWasteOptions);
     }
   }, [wasteList]);
+
+  useEffect(() => {
+    return () => {
+      if (vehicleUpdateTimeout.current) {
+        clearTimeout(vehicleUpdateTimeout.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const ws = new WebSocket(ws_ip);
@@ -363,10 +399,10 @@ const SalesCart = () => {
     }
 
     const weight = weights[scaleId] || 0;
-    // if (weight <= 0) {
-    //   showToast("El peso debe ser mayor a 0");
-    //   return;
-    // }
+    if (weight <= 0) {
+      showToast("El peso debe ser mayor a 0");
+      return;
+    }
 
     const price = Number(selectedPriceType === 'wholesale' ? material.wholesale_price : material.retail_price);
     const total = weight * price;
@@ -419,8 +455,6 @@ const SalesCart = () => {
         setCurrentCartId(result.payload.cart_id);
         setIsEditingExistingCart(true);
       }
-
-      showToast("Producto agregado al carrito correctamente");
       
     } catch (error) {
       console.error("Error adding product to cart:", error);
@@ -503,17 +537,42 @@ const SalesCart = () => {
     }
   };
 
-  const togglePredefinedMerma = (index: number, usePredefined: boolean) => {
+  const togglePredefinedMerma = async (index: number, usePredefined: boolean) => {
     const updatedCart = [...cart];
-    updatedCart[index].usePredefinedMerma = usePredefined;
-
-    if (usePredefined) {
-      updatedCart[index].waste = 0;
-      updatedCart[index].weight = updatedCart[index].originalWeight;
-    }
+    const previousMermaState = updatedCart[index].usePredefinedMerma;
+    const previousWaste = updatedCart[index].waste;
     
+    updatedCart[index].usePredefinedMerma = usePredefined;
+    
+    // Siempre resetear la merma a 0 cuando se hace toggle
+    updatedCart[index].waste = 0;
+    updatedCart[index].weight = updatedCart[index].originalWeight;
     updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
+  
+    // Actualizar estado local inmediatamente
     setCart(updatedCart);
+  
+    // Si tenemos cart_product_id, actualizar la merma a 0 en el backend
+    if (updatedCart[index].cart_product_id) {
+      try {
+        const updatePayload = {
+          cartProductId: updatedCart[index].cart_product_id!,
+          waste: 0, // Siempre resetear a 0
+        };
+  
+        await dispatch(onUpdateWaste(updatePayload));
+        
+      } catch (error) {
+        console.error("Error updating product waste:", error);
+        // Revertir cambios en caso de error
+        updatedCart[index].usePredefinedMerma = previousMermaState;
+        updatedCart[index].waste = previousWaste;
+        updatedCart[index].weight = updatedCart[index].originalWeight - previousWaste;
+        updatedCart[index].total = updatedCart[index].weight * updatedCart[index].price;
+        setCart([...updatedCart]);
+        toast.error("Error al actualizar la merma");
+      }
+    }
   };
 
   const handleCheckout = () => {
@@ -981,7 +1040,13 @@ const SalesCart = () => {
                 placeholder="Ingrese placas del vehículo"
                 value={vehiclePlate}
                 onChange={(e) => {
-                  setVehiclePlate(e.target.value);
+                  const newPlate = e.target.value;
+                  setVehiclePlate(newPlate);
+                  
+                  // Llamar a la función con debounce solo si estamos editando un carrito existente
+                  if (isEditingExistingCart && currentCartId) {
+                    updateVehicleWithDebounce(newPlate, vehicleModel);
+                  }
                 }}
               />
             </div>
@@ -995,7 +1060,13 @@ const SalesCart = () => {
                 placeholder="Ingrese modelo del vehículo"
                 value={vehicleModel}
                 onChange={(e) => {
-                  setVehicleModel(e.target.value);
+                  const newModel = e.target.value;
+                  setVehicleModel(newModel);
+                  
+                  // Llamar a la función con debounce solo si estamos editando un carrito existente
+                  if (isEditingExistingCart && currentCartId) {
+                    updateVehicleWithDebounce(vehiclePlate, newModel);
+                  }
                 }}
               />
             </div>

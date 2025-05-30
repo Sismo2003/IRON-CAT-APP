@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BreadCrumb from "Common/BreadCrumb";
-import { ShoppingBasket, Clock, CheckCircle, XCircle, Search, User, Package, CreditCard, Truck } from "lucide-react";
+import { ShoppingBasket, Clock, CheckCircle, XCircle, Search, User, Package, CreditCard, Truck, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { 
   getPendingCarts as onGetPendingCarts,
   createCart as onCreateCart,
   getCustomer as onGetCustomer,
+  deleteCart as onDeleteCart,
 } from 'slices/thunk';
+
+// Modals
+import Modal from "Common/Components/Modal";
+import DeleteModal from 'Common/DeleteModal';
+
+import Select from 'react-select';
+
+// Import styles for toastify
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Modal from "Common/Components/Modal";
-import Select from 'react-select';
 import { toast } from "react-toastify";
 
 interface Cart {
@@ -57,6 +64,8 @@ const CartMenu = () => {
   const [selectedCartType, setSelectedCartType] = useState<CartTypeOption | null>(null);
   const [selectedSaleMode, setSelectedSaleMode] = useState<SaleModeOption | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [deleteModal, setDeleteModal] = useState<boolean>(false);
+  const [cartToDelete, setCartToDelete] = useState<Cart | null>(null);
 
   const cartTypeOptions: CartTypeOption[] = [
     { value: 'shop', label: 'Compra' },
@@ -90,6 +99,24 @@ const CartMenu = () => {
     dispatch(onGetPendingCarts());
     dispatch(onGetCustomer());
   }, [dispatch]);
+
+  // Funciones para el modal de eliminación
+  const deleteToggle = () => setDeleteModal(!deleteModal);
+
+  const onClickDelete = (cart: Cart) => {
+    setDeleteModal(true);
+    setCartToDelete(cart);
+  };
+
+  const handleDelete = () => {
+    if (cartToDelete) {
+      console.log("Deleting cart with ID:", cartToDelete.id);
+      dispatch(onDeleteCart({ cartId: cartToDelete.id }));
+      setDeleteModal(false);
+      setCartToDelete(null);
+      toast.success("Carrito eliminado correctamente");
+    }
+  };
 
   const filteredClients = clientList
     .filter((client: any) => 
@@ -209,15 +236,27 @@ const CartMenu = () => {
       };
 
       const result = await dispatch(onCreateCart(payload));
+
+			console.log("Result: ", result);
       
-      if (result.payload.success) {
-        toast.success("Carrito creado correctamente");
-        setShowCreateModal(false);
-        const finalCartType = cartType === 'special' ? selectedCartType?.value : cartType;
-        navigate(`/shopping-cart/${finalCartType}/${result.payload.data}`);
-      } else {
-        toast.error("Error al crear el carrito");
-      }
+      if (result.payload) {
+				toast.success("Carrito creado correctamente");
+				setShowCreateModal(false);
+				
+				// Determinar la ruta basada en el cartType
+				let routePath = '';
+				if (cartType === 'special') {
+					routePath = `/apps-scales-clientcart/${result.payload}`;
+				} else if (cartType === 'shop') {
+					routePath = `/apps-scales-shopcart/${result.payload}`;
+				} else if (cartType === 'sale') {
+					routePath = `/apps-scales-salecart/${result.payload}`;
+				}
+				
+				navigate(routePath);
+			} else {
+				toast.error("Error al crear el carrito");
+			}
     } catch (error) {
       toast.error("Error al crear el carrito");
     } finally {
@@ -233,6 +272,13 @@ const CartMenu = () => {
         limit={1}
         autoClose={2000}
         newestOnTop
+      />
+
+      {/* Modal de confirmación de eliminación */}
+      <DeleteModal 
+        show={deleteModal} 
+        onHide={deleteToggle} 
+        onDelete={handleDelete} 
       />
 
       <Modal 
@@ -628,13 +674,22 @@ const CartMenu = () => {
                           </div>
                         </td>
                         <td className="px-3.5 py-2.5 border-b border-slate-200 dark:border-zink-500 text-right">
-                          <Link 
-                            to={cart.client_id ? `/apps-scales-clientcart/${cart.id}` : cart.sale_type == 'shop' ? `/apps-scales-shopcart/${cart.id}` : `/apps-scales-salecart/${cart.id}`} 
-                            className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-custom-500 hover:text-custom-600 dark:text-custom-400 dark:hover:text-custom-300 bg-custom-50 hover:bg-custom-100 dark:bg-custom-500/10 dark:hover:bg-custom-500/20 rounded-md border border-custom-200 dark:border-custom-500/30 transition-all duration-200 ease-linear"
-                          >
-                            <ShoppingBasket className="size-3 mr-1" />
-                            Continuar
-                          </Link>
+                          <div className="flex gap-2 justify-end">
+                            <Link 
+                              to={cart.client_id ? `/apps-scales-clientcart/${cart.id}` : cart.sale_type == 'shop' ? `/apps-scales-shopcart/${cart.id}` : `/apps-scales-salecart/${cart.id}`} 
+                              className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-custom-500 hover:text-custom-600 dark:text-custom-400 dark:hover:text-custom-300 bg-custom-50 hover:bg-custom-100 dark:bg-custom-500/10 dark:hover:bg-custom-500/20 rounded-md border border-custom-200 dark:border-custom-500/30 transition-all duration-200 ease-linear"
+                            >
+                              <ShoppingBasket className="size-3 mr-1" />
+                              Continuar
+                            </Link>
+                            <button
+                              onClick={() => onClickDelete(cart)}
+                              className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 rounded-md border border-red-200 dark:border-red-500/30 transition-all duration-200 ease-linear"
+                            >
+                              <Trash2 className="size-3 mr-1" />
+                              Eliminar
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

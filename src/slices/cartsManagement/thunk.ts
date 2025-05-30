@@ -4,6 +4,7 @@ import {
 	createCart as createCartApi,
 	getCart as getCartApi,
 	deleteProductInCart as deleteProductInCartApi,
+	deleteCart as deleteCartApi,
 	insertProductInCart as insertProductInCartApi,
 	updateWasteInCart as updateWasteApi,
 	getClientCart as getClientCartApi,
@@ -155,3 +156,16 @@ export const updateCartVehicle = createAsyncThunk(
 		}
 	}
 );
+
+export const deleteCart = createAsyncThunk(
+	"cartManagement/deleteCart",
+	async (data: { cartId: number }, { rejectWithValue }) => {
+		try {
+			const response = await deleteCartApi(data);
+			return data.cartId;
+		} catch (error: any) {
+      toast.error("Error al eliminar carrito", { autoClose: 2000 });
+      return rejectWithValue(error.response?.data || error.message);
+		}
+	}
+)
