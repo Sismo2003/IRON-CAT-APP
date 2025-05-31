@@ -25,6 +25,7 @@ import { toast } from "react-toastify";
 interface Cart {
   id: number;
   client_id?: number;
+  customer_id?: string;
   sale_type: 'shop' | 'sale';
   sale_mode: 'wholesale' | 'retail';
   customer_name: string;
@@ -144,6 +145,8 @@ const CartMenu = () => {
     );
   }) || [];
 
+  console.log("Filtered Carts: ", filteredCarts);
+
   const getCartTypeLabel = (type: string) => {
     switch(type) {
       case 'shop': return 'Compra';
@@ -237,26 +240,26 @@ const CartMenu = () => {
 
       const result = await dispatch(onCreateCart(payload));
 
-			console.log("Result: ", result);
+      console.log("Result: ", result);
       
       if (result.payload) {
-				toast.success("Carrito creado correctamente");
-				setShowCreateModal(false);
-				
-				// Determinar la ruta basada en el cartType
-				let routePath = '';
-				if (cartType === 'special') {
-					routePath = `/apps-scales-clientcart/${result.payload}`;
-				} else if (cartType === 'shop') {
-					routePath = `/apps-scales-shopcart/${result.payload}`;
-				} else if (cartType === 'sale') {
-					routePath = `/apps-scales-salecart/${result.payload}`;
-				}
-				
-				navigate(routePath);
-			} else {
-				toast.error("Error al crear el carrito");
-			}
+        toast.success("Carrito creado correctamente");
+        setShowCreateModal(false);
+        
+        // Determinar la ruta basada en el cartType
+        let routePath = '';
+        if (cartType === 'special') {
+          routePath = `/apps-scales-clientcart/${result.payload}`;
+        } else if (cartType === 'shop') {
+          routePath = `/apps-scales-shopcart/${result.payload}`;
+        } else if (cartType === 'sale') {
+          routePath = `/apps-scales-salecart/${result.payload}`;
+        }
+        
+        navigate(routePath);
+      } else {
+        toast.error("Error al crear el carrito");
+      }
     } catch (error) {
       toast.error("Error al crear el carrito");
     } finally {
@@ -287,7 +290,7 @@ const CartMenu = () => {
         id="createCartModal"
         modal-center="true"
         className="fixed flex flex-col transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4"
-        dialogClassName="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full max-h-[90vh]"
+        dialogClassName="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-700 flex flex-col h-full max-h-[90vh]"
       >
         <Modal.Header 
           className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500 flex-shrink-0"
@@ -303,7 +306,7 @@ const CartMenu = () => {
             {cartType === 'special' ? (
               <>
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium">Cliente Especial <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-zink-100">Cliente Especial <span className="text-red-500">*</span></label>
                   <Select
                     options={filteredClients}
                     isSearchable={true}
@@ -346,7 +349,7 @@ const CartMenu = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="block text-sm font-medium">Tipo de Carrito <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-zink-100">Tipo de Carrito <span className="text-red-500">*</span></label>
                     <Select
                       options={cartTypeOptions}
                       placeholder="Seleccionar tipo"
@@ -385,7 +388,7 @@ const CartMenu = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-sm font-medium">Modo de Venta <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-zink-100">Modo de Venta <span className="text-red-500">*</span></label>
                     <Select
                       options={saleModeOptions}
                       placeholder="Seleccionar modo"
@@ -427,7 +430,7 @@ const CartMenu = () => {
             ) : (
               <>
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium">Nombre del Cliente <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-zink-100">Nombre del Cliente <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     className="form-input w-full border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
@@ -438,7 +441,7 @@ const CartMenu = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium">Modo de Venta <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-zink-100">Modo de Venta <span className="text-red-500">*</span></label>
                   <Select
                     options={saleModeOptions}
                     placeholder="Seleccionar modo"
@@ -480,7 +483,7 @@ const CartMenu = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="block text-sm font-medium">Placa del Vehículo (Opcional)</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-zink-100">Placa del Vehículo (Opcional)</label>
                 <input
                   type="text"
                   className="form-input w-full border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
@@ -490,7 +493,7 @@ const CartMenu = () => {
                 />
               </div>
               <div className="space-y-1">
-                <label className="block text-sm font-medium">Modelo del Vehículo (Opcional)</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-zink-100">Modelo del Vehículo (Opcional)</label>
                 <input
                   type="text"
                   className="form-input w-full border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
@@ -527,40 +530,40 @@ const CartMenu = () => {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="card xl:col-span-1">
           <div className="card-body">
-            <h6 className="mb-4 text-16">Crear Nuevo Carrito</h6>
+            <h6 className="mb-4 text-16 text-slate-700 dark:text-zink-100">Crear Nuevo Carrito</h6>
             
             <div className="grid grid-cols-1 gap-4">
               <button
                 onClick={() => handleCreateCartClick('shop')}
-                className="group flex flex-col items-center justify-center p-6 text-center bg-white dark:bg-zink-700 rounded-lg border border-slate-200 dark:border-zink-500 hover:border-custom-500 dark:hover:border-custom-500 transition-all duration-300 ease-in-out hover:shadow-lg"
+                className="group flex flex-col items-center justify-center p-6 text-center bg-white dark:bg-zink-700 rounded-lg border border-slate-200 dark:border-zink-500 hover:border-custom-500 dark:hover:border-custom-400 transition-all duration-300 ease-in-out hover:shadow-lg hover:shadow-custom-500/10 dark:hover:shadow-custom-500/20 hover:-translate-y-1"
               >
-                <div className="size-16 flex items-center justify-center bg-custom-50 dark:bg-custom-500/20 text-custom-500 dark:text-custom-200 rounded-full mb-4 group-hover:bg-custom-100 dark:group-hover:bg-custom-500/30">
+                <div className="size-16 flex items-center justify-center bg-custom-50 dark:bg-custom-500/10 text-custom-500 dark:text-custom-400 rounded-full mb-4 group-hover:bg-custom-100 dark:group-hover:bg-custom-500/20 group-hover:scale-110 transition-all duration-300">
                   <ShoppingBasket className="size-7" />
                 </div>
-                <h5 className="mb-1 text-15 text-slate-700 dark:text-zink-100 group-hover:text-custom-500 dark:group-hover:text-custom-500">Carrito de Compra</h5>
-                <p className="text-slate-500 dark:text-zink-200">Para registrar compras de materiales</p>
+                <h5 className="mb-1 text-15 text-slate-700 dark:text-zink-100 group-hover:text-custom-600 dark:group-hover:text-custom-400 transition-colors duration-300">Carrito de Compra</h5>
+                <p className="text-slate-500 dark:text-zink-300 group-hover:text-slate-600 dark:group-hover:text-zink-200 transition-colors duration-300">Para registrar compras de materiales</p>
               </button>
 
               <button
                 onClick={() => handleCreateCartClick('sale')}
-                className="group flex flex-col items-center justify-center p-6 text-center bg-white dark:bg-zink-700 rounded-lg border border-slate-200 dark:border-zink-500 hover:border-green-500 dark:hover:border-green-500 transition-all duration-300 ease-in-out hover:shadow-lg"
+                className="group flex flex-col items-center justify-center p-6 text-center bg-white dark:bg-zink-700 rounded-lg border border-slate-200 dark:border-zink-500 hover:border-green-500 dark:hover:border-green-400 transition-all duration-300 ease-in-out hover:shadow-lg hover:shadow-green-500/10 dark:hover:shadow-green-500/20 hover:-translate-y-1"
               >
-                <div className="size-16 flex items-center justify-center bg-green-50 dark:bg-green-500/20 text-green-500 dark:text-green-200 rounded-full mb-4 group-hover:bg-green-100 dark:group-hover:bg-green-500/30">
+                <div className="size-16 flex items-center justify-center bg-green-50 dark:bg-green-500/10 text-green-500 dark:text-green-400 rounded-full mb-4 group-hover:bg-green-100 dark:group-hover:bg-green-500/20 group-hover:scale-110 transition-all duration-300">
                   <ShoppingBasket className="size-7" />
                 </div>
-                <h5 className="mb-1 text-15 text-slate-700 dark:text-zink-100 group-hover:text-green-500 dark:group-hover:text-green-500">Carrito de Venta</h5>
-                <p className="text-slate-500 dark:text-zink-200">Para registrar ventas de productos</p>
+                <h5 className="mb-1 text-15 text-slate-700 dark:text-zink-100 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">Carrito de Venta</h5>
+                <p className="text-slate-500 dark:text-zink-300 group-hover:text-slate-600 dark:group-hover:text-zink-200 transition-colors duration-300">Para registrar ventas de productos</p>
               </button>
 
               <button
                 onClick={() => handleCreateCartClick('special')}
-                className="group flex flex-col items-center justify-center p-6 text-center bg-white dark:bg-zink-700 rounded-lg border border-slate-200 dark:border-zink-500 hover:border-purple-500 dark:hover:border-purple-500 transition-all duration-300 ease-in-out hover:shadow-lg"
+                className="group flex flex-col items-center justify-center p-6 text-center bg-white dark:bg-zink-700 rounded-lg border border-slate-200 dark:border-zink-500 hover:border-purple-500 dark:hover:border-purple-400 transition-all duration-300 ease-in-out hover:shadow-lg hover:shadow-purple-500/10 dark:hover:shadow-purple-500/20 hover:-translate-y-1"
               >
-                <div className="size-16 flex items-center justify-center bg-purple-50 dark:bg-purple-500/20 text-purple-500 dark:text-purple-200 rounded-full mb-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-500/30">
+                <div className="size-16 flex items-center justify-center bg-purple-50 dark:bg-purple-500/10 text-purple-500 dark:text-purple-400 rounded-full mb-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-500/20 group-hover:scale-110 transition-all duration-300">
                   <ShoppingBasket className="size-7" />
                 </div>
-                <h5 className="mb-1 text-15 text-slate-700 dark:text-zink-100 group-hover:text-purple-500 dark:group-hover:text-purple-500">Carrito Especial</h5>
-                <p className="text-slate-500 dark:text-zink-200">Para clientes con condiciones especiales</p>
+                <h5 className="mb-1 text-15 text-slate-700 dark:text-zink-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">Carrito Especial</h5>
+                <p className="text-slate-500 dark:text-zink-300 group-hover:text-slate-600 dark:group-hover:text-zink-200 transition-colors duration-300">Para clientes con condiciones especiales</p>
               </button>
             </div>
           </div>
@@ -570,7 +573,7 @@ const CartMenu = () => {
           <div className="card-body">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
               <div>
-                <h6 className="text-16 mb-1">Carritos Pendientes</h6>
+                <h6 className="text-16 mb-1 text-slate-700 dark:text-zink-100">Carritos Pendientes</h6>
                 <p className="text-slate-500 dark:text-zink-200 text-sm">
                   {filteredCarts.length} carrito{filteredCarts.length !== 1 ? 's' : ''} encontrado{filteredCarts.length !== 1 ? 's' : ''}
                 </p>
@@ -631,7 +634,7 @@ const CartMenu = () => {
                               </p>
                               {cart.client_id && (
                                 <p className="text-xs text-slate-500 dark:text-zink-400">
-                                  Cliente ID: {cart.client_id}
+                                  Cliente ID: {cart.customer_id}
                                 </p>
                               )}
                             </div>
