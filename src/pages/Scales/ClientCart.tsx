@@ -1115,7 +1115,7 @@ const ShoppingCart = () => {
                     value={selectedMaterials[scale.id] ? 
                       materials.find(m => m.label === selectedMaterials[scale.id]) : null
                     }
-                    placeholder={materials.length === 0 ? "Seleccione un cliente primero" : "Seleccionar"}
+                    placeholder={materials.length === 0 ? "No hay materiales asignados" : "Seleccionar"}
                     classNames={{
                       control: ({ isFocused }) =>
                           `border ${
