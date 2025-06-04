@@ -25,11 +25,14 @@ import Modal from "Common/Components/Modal";
 
 const appMode: any = process.env.REACT_APP_MODE;
 let ws_ip: any;
+let PRINTER_IP: any;
 
 if(appMode === 'production'){
   ws_ip = process.env.REACT_APP_WS_URL_PROD;
+  PRINTER_IP = process.env.REACT_APP_PRINTER_PROD;
 }else{
   ws_ip = process.env.REACT_APP_WS_URL_DEV;
+  PRINTER_IP = process.env.REACT_APP_PRINTER_DEV;
 }
 
 const scales = [
@@ -757,14 +760,14 @@ const SalesCart = () => {
       setIsEditingExistingCart(false);
       setCurrentCartId(null);
   
-      const response1 = await fetch('http://192.168.100.59/src/printer.php', {
+      const response1 = await fetch(PRINTER_IP + '/src/printer.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payloadToPrintTicket),
       });
-      const response2 = await fetch('http://192.168.100.59/src/printer.php', {
+      const response2 = await fetch(PRINTER_IP + '/src/printer.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -58,6 +58,7 @@ export const addEmployee = createAsyncThunk("hrManagement/addEmployee", async (e
             return response;
         }
     } catch (error) {
+        console.log("EMpleado error: ", error);
         toast.error("Empleado no creado", { autoClose: 2000 });
         return error;
     }

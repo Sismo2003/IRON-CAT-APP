@@ -7,7 +7,7 @@ date_default_timezone_set('America/Mexico_City');
 require '../vendor/autoload.php';
 
 use Mike42\Escpos\Printer;
-use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
+//use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\CapabilityProfile;
@@ -23,19 +23,9 @@ $data = file_get_contents('php://input');
 $decoded = json_decode($data, true);
 $items = is_array($decoded) ? (isset($decoded['cart']) ? $decoded['cart'] : $decoded) : [];
 
-$PRINTER_MODE = $_ENV['MODE'];
-
-if($PRINTER_MODE == 'dev'){
-	$printer_name = $_ENV['PRINTER_NAME_DEV'];
-	$api = $_ENV['API_URL_DEV'];
-}else{
-	$printer_name = $_ENV['PRINTER_NAME_PROD'];
-	$api = $_ENV['API_URL_PROD'];
-}
-
 $error_log = './logs/error.log';
 $log = './logs/printer.log';
-$logopath = __DIR__ . '/assets/images/logo-dark-mini2.png';
+
 
 function fetchApiData(string $url): array {
 	$ch = curl_init($url);
@@ -106,8 +96,7 @@ try {
 			"Fetching data using ID for the ticket: " . $decoded['ticket_id']
 		);
 
-
-		$apiUrl = $api . '/tickets/get-ticket?id=' . $decoded['ticket_id'];
+		$apiUrl = $_ENV['API_URL'] . '/tickets/get-ticket?id=' . $decoded['ticket_id'];
 
 		$ticketFetched   = fetchApiData($apiUrl)['data'];
 
@@ -126,15 +115,17 @@ try {
 			$ticketFetched['ticket'][0]['status'] = 'Autorizado';
 		}
 
-		// Type of sale
-		$ticketFetched['ticket'][0]['type'] = ($ticketFetched['ticket'][0]['type'] == 'sale') ?
-			'Venta' :
-			'Compra';
+		if($ticketFetched['ticket'][0]['type'] == 'sale') {
+			$ticketFetched['ticket'][0]['type'] = 'Venta';
+		} else {
+			$ticketFetched['ticket'][0]['type'] = 'Compra';
+		}
 
-		// Check Mode of sale
-		$tipo_venta =  ($ticketFetched['products_ticket'][0]['type'] == 'wholesale') ?
-			'Mayoreo' :
-			'Menudeo';
+        if($ticketFetched['products_ticket'][0]['type'] == 'wholesale') {
+            $tipo_venta = 'Mayoreo';
+        }else{
+            $tipo_venta = 'Menudeo';
+        }
 
 		printLog(
 			$log,
@@ -142,36 +133,26 @@ try {
 			"Ticket data fetched"
 		);
 
+//		printLog(
+//			$log,
+//			"[TICEKT DATA] - [".date('Y-m-d H:i:s')."] - cart ",// .  json_encode($ticketFetched['products_ticket'][0]),
+//			json_encode($ticketFetched['products_ticket'][0])
+//			$ticketFetched['products_ticket'][0]
+//		);
+
+//		return 0;
 	}
 
 
+  $printer_name = 'POS-80C';
 
-	// Check if the logo file exists
-	if(!file_exists($logopath)) {
-		printLog(
-			$log,
-			"[LOGO MISSING] - [".date('Y-m-d H:i:s')."]",
-			"No se encontró la imagen del logo."
-		);
-		return json_encode([
-			"status" => "error",
-			"message" => "No se encontró la imagen del logo."
-		]);
-		exit;
-	}
-
-
-	// Load the logo image
-	$logo = EscposImage::load($logopath, false);
 	// Load a valid ESC/POS capability profile
 	$profile = CapabilityProfile::load('default');
-
-	// Check the printer mode and create the appropriate connector
-	$connector = ($PRINTER_MODE == 'dev') ?
-		new CupsPrintConnector($printer_name) :
-		new WindowsPrintConnector($printer_name);
-
+	
+	$connector = new WindowsPrintConnector($printer_name);
 	$printer = new Printer($connector, $profile);
+
+
 
   printLog(
     $log,
@@ -179,25 +160,51 @@ try {
     "Conected to " . $printer_name
   );
 
-	// Inicialize the printer
-	$printer->initialize();
 
 
 
   // -- Encabezado del ticket --
+//	 Imprimir logo en encabezado
+//	$logoPath = __DIR__ . '/logo.pbm';
 
-	// Logo
-	$printer->setJustification(Printer::JUSTIFY_CENTER);
-	$printer->bitImage($logo);
+//	$logo = EscposImage::load(__DIR__.'/logo_mono.jpg', true);
+//	$printer->setJustification(Printer::JUSTIFY_CENTER);
+//	$printer->bitImageColumnFormat($logo);
+//
+////		$printer->setJustification(Printer::JUSTIFY_CENTER);
+////	if (file_exists($logoPath)) {
+////
+////		$printer -> graphics($logo);
+////
+////
+////		$printer->feed(1);
+////	}
 
-	// Dirrecion y telefono
-	$printer->selectPrintMode(Printer::MODE_FONT_B);
-	$printer->setTextSize(1, 1);        // Vuelve a tamaño normal
-	$printer->text("C. Ignacio Bernal 3030,\nRancho Nuevo, 44240 Guadalajara, Jal.\n");
-	$printer->text("+52 33 3813 5688\n");
 
-	// Y por si quieres volver a la fuente A habitual:
-	$printer->selectPrintMode(Printer::MODE_FONT_A);
+
+// Centrar y escalar al 2×
+$printer->setJustification(Printer::JUSTIFY_CENTER);
+$printer->setTextSize(3,3);        // Ancho ×2, Alto ×2
+$printer->setEmphasis(true);
+$printer->text("IRON CAT\n");
+
+// $logopath = __DIR__ . '/logo-dark.png';
+// $logo = EscposImage::load($logopath, false);
+// $printer->setJustification(Printer::JUSTIFY_CENTER);
+// $printer->bitImage($logo);
+
+
+$printer->setTextSize(2, 2);
+$printer->text("RECYCLING CENTER\n");
+$printer->setEmphasis(false);
+// Reducir a Fuente B también centrada, pero normal tamaño
+$printer->selectPrintMode(Printer::MODE_FONT_B);
+$printer->setTextSize(1, 1);        // Vuelve a tamaño normal
+$printer->text("C. Ignacio Bernal 3030,\nRancho Nuevo, 44240 Guadalajara, Jal.\n");
+$printer->text("+52 33 3813 5688\n");
+
+// Y por si quieres volver a la fuente A habitual:
+$printer->selectPrintMode(Printer::MODE_FONT_A);
 
 	$printer->feed(2);
 
@@ -258,6 +265,14 @@ try {
 
 
 	if(isset($ticketFetched['client'][0]) && !empty($ticketFetched['client'][0])) {
+		// NOMBRE DE CLIENTE REGISTRADO
+		//if(!empty($ticketFetched['client'][0]['name'])) {
+		//	$name = $ticketFetched['client'][0]['name'];
+		//	if(!empty($ticketFetched['client'][0]['last_name'])) {
+		//		$name .= ' ' . $ticketFetched['client'][0]['last_name'];
+		//	}
+		//	$printer->text("CLIENTE: " . $name . "\n");
+		//}
 		//NUMERO DE CLIENTE
 		if(!empty($ticketFetched['client'][0]['customer_id'])) {
 			$printer->text("NUM. DE CLIENTE: " . $ticketFetched['client'][0]['customer_id'] . "\n");
@@ -335,6 +350,7 @@ try {
     $printer->text($line);
 }
 
+
   $printer->selectPrintMode(Printer::MODE_FONT_A);
   $printer->setLineSpacing(); // reset to default
 	$printer->text("------------------------------------------------\n");
@@ -345,7 +361,7 @@ try {
   // -- Totales --
   $printer->text(number_format($totalKg,2) . " KG\n");
 
-  $entero    = floor($precioFinal);
+  	$entero    = floor($precioFinal);
 	$decimal   = $precioFinal - $entero;
 
 	// 2) Aplica el umbral de 0.50

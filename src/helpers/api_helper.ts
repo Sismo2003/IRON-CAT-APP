@@ -51,6 +51,7 @@ axios.interceptors.response.use(
     return response.data ? response.data : response;
   },
   function (error) {
+    
     let message;
     switch (error.response?.status) {
       case 500:
@@ -65,7 +66,11 @@ axios.interceptors.response.use(
       default:
         message = error.message || error;
     }
-    return Promise.reject(message);
+    return Promise.reject({
+      status: error.response?.status || 500,
+      message: message,
+      data: error.response?.data || null
+    });
   }
 );
 

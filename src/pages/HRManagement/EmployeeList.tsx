@@ -162,6 +162,7 @@ const EmployeeList = () => {
                     fullname: values.name + " " + values.last_name,
                 };
                 // save new user
+                // console.log("newData: ", newData);
                 dispatch(onAddEmployee(newData));
             }
             toggle();
