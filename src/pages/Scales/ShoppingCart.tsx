@@ -176,6 +176,7 @@ const ShoppingCart = () => {
   const [isEditingExistingCart, setIsEditingExistingCart] = useState(false);
   const [currentCartId, setCurrentCartId] = useState<number | null>(null);
   const [transactionType, setTransactionType] = useState<'shop' | 'sale'>('shop');
+  const [isUpdatingPrices, setIsUpdatingPrices] = useState(false);
 
   useEffect(() => {
     dispatch(onGetProductList());
@@ -271,6 +272,75 @@ const ShoppingCart = () => {
       toast.error("Error al cargar el carrito");
     }
   }, [dispatch, materialList, setCart, setCustomerName, setTransactionType, setSelectedPriceType, setVehiclePlate, setVehicleModel, setSelectedMaterials]);
+
+  const updateCartPrices = useCallback(async () => {
+    if (!isEditingExistingCart || !currentCartId) return;
+  
+    setIsUpdatingPrices(true);
+    
+    try {
+      // Llamar a onGetProductList para obtener precios actualizados
+      const result = await dispatch(onGetProductList());
+      
+      if (result.payload && result.payload.length > 0) {
+        const updatedMaterialList = result.payload;
+        
+        // Formatear materiales con precios actualizados
+        const updatedMaterials = updatedMaterialList.map((product: any) => ({
+          value: product.id,
+          label: product.material,
+          wholesale_price: Number(product.wholesale_price_buy),
+          retail_price: Number(product.retail_price_buy),
+        }));
+  
+        // Actualizar el estado de materiales
+        setMaterials(updatedMaterials);
+  
+        // Actualizar precios en el carrito actual
+        const updatedCart = cart.map(item => {
+          const updatedMaterial = updatedMaterials.find(
+            (material: any) => material.value === item.product_id
+          );
+  
+          if (updatedMaterial) {
+            let newPrice = item.price; // precio por defecto
+  
+            // Obtener el nuevo precio según el tipo seleccionado
+            newPrice = selectedPriceType === 'wholesale' 
+              ? updatedMaterial.wholesale_price 
+              : updatedMaterial.retail_price;
+  
+            // Solo actualizar si el precio cambió
+            if (newPrice !== item.price) {
+              return {
+                ...item,
+                price: newPrice,
+                total: item.weight * newPrice
+              };
+            }
+          }
+          
+          return item;
+        });
+  
+        // Solo actualizar el estado si hubo cambios en los precios
+        const hasChanges = updatedCart.some((item, index) => 
+          item.price !== cart[index].price || item.total !== cart[index].total
+        );
+  
+        if (hasChanges) {
+          setCart(updatedCart);
+          console.log('Precios actualizados en el carrito');
+        }
+        
+      }
+    } catch (error) {
+      console.error("Error updating cart prices:", error);
+      // No mostrar toast para no interrumpir la experiencia del usuario
+    } finally {
+      setIsUpdatingPrices(false);
+    }
+  }, [dispatch, isEditingExistingCart, currentCartId, cart, selectedPriceType]);
 
   const updateVehicleWithDebounce = useCallback((plate: string, model: string) => {
     if (!isEditingExistingCart || !currentCartId) return;
@@ -579,7 +649,7 @@ const ShoppingCart = () => {
     }
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cart.length === 0) {
       showToast("No hay productos en el carrito");
       return;
@@ -588,6 +658,12 @@ const ShoppingCart = () => {
       showToast("Por favor ingrese el nombre del cliente");
       return;
     }
+  
+    // Actualizar precios antes de abrir el modal si estamos editando un carrito existente
+    if (isEditingExistingCart && currentCartId) {
+      await updateCartPrices();
+    }
+  
     setLargeModal(true);
   };
 
@@ -1172,14 +1248,14 @@ const ShoppingCart = () => {
 
               <button
                 onClick={handleCheckout}
-                disabled={cart.length === 0 || !customerName.trim()}
+                disabled={cart.length === 0 || !customerName.trim() || isUpdatingPrices}
                 className={`w-full mt-3 text-white border-red-500 btn ${
-                  cart.length === 0 || !customerName.trim()
+                  cart.length === 0 || !customerName.trim() || isUpdatingPrices
                     ? 'bg-red-400 border-red-400 cursor-not-allowed'
                     : 'bg-red-500 hover:bg-red-600 hover:border-red-600'
                 }`}
               >
-                Imprimir
+                {isUpdatingPrices ? 'Actualizando precios...' : 'Imprimir'}
               </button>
             </div>
           </div>

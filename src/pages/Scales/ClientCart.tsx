@@ -166,6 +166,7 @@ const ShoppingCart = () => {
   const [isEditingExistingCart, setIsEditingExistingCart] = useState(false);
   const [currentCartId, setCurrentCartId] = useState<number | null>(null);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [isUpdatingPrices, setIsUpdatingPrices] = useState(false); 
 
   useEffect(() => {
     dispatch(onGetCustomer());
@@ -294,6 +295,82 @@ const ShoppingCart = () => {
       toast.error("Error al cargar el carrito");
     }
   }, [dispatch, clientlList]);
+
+  const updateCartPrices = useCallback(async () => {
+    if (!currentCartId || !isEditingExistingCart) return;
+
+    setIsUpdatingPrices(true);
+  
+    try {
+      const result = await dispatch(onGetCartById(currentCartId));
+      
+      if (result.payload && result.payload.data) {
+        const responseData = result.payload.data;
+        const assignedMaterials = responseData.assigned_materials || [];
+        
+        // Formatear materiales con precios actualizados
+        const updatedMaterials = assignedMaterials.map((material: any) => ({
+          value: material.product_id,
+          label: material.material,
+          wholesale_price_buy: Number(material.wholesale_price_buy),
+          retail_price_buy: Number(material.retail_price_buy),
+          wholesale_price_sell: Number(material.wholesale_price_sell),
+          retail_price_sell: Number(material.retail_price_sell),
+        }));
+  
+        // Actualizar el estado de materiales
+        setMaterials(updatedMaterials);
+  
+        // Actualizar precios en el carrito actual
+        const updatedCart = cart.map(item => {
+          const updatedMaterial = updatedMaterials.find(
+            (material: any) => material.value === item.product_id
+          );
+  
+          if (updatedMaterial) {
+            let newPrice = item.price; // precio por defecto
+  
+            if (transactionType === 'shop') {
+              newPrice = item.type === 'wholesale' 
+                ? updatedMaterial.wholesale_price_buy
+                : updatedMaterial.retail_price_buy;
+            } else if (transactionType === 'sale') {
+              newPrice = item.type === 'wholesale'
+                ? updatedMaterial.wholesale_price_sell
+                : updatedMaterial.retail_price_sell;
+            }
+  
+            // Solo actualizar si el precio cambió
+            if (newPrice !== item.price) {
+              return {
+                ...item,
+                price: newPrice,
+                total: item.weight * newPrice
+              };
+            }
+          }
+          
+          return item;
+        });
+  
+        // Solo actualizar el estado si hubo cambios en los precios
+        const hasChanges = updatedCart.some((item, index) => 
+          item.price !== cart[index].price || item.total !== cart[index].total
+        );
+  
+        if (hasChanges) {
+          setCart(updatedCart);
+          console.log('Precios actualizados en el carrito');
+        }
+        
+      }
+    } catch (error) {
+      console.error("Error updating cart prices:", error);
+      // No mostrar toast para no interrumpir la experiencia del usuario
+    } finally {
+      setIsUpdatingPrices(false); // Agregar esta línea al final
+    }  
+  }, [dispatch, currentCartId, isEditingExistingCart, cart, transactionType]);
 
   useEffect(() => {
     if (cartId && clientlList.length > 0 && !dataLoaded) {
@@ -485,7 +562,7 @@ const ShoppingCart = () => {
       showToast("El peso debe ser mayor a 0");
       return;
     }
-    
+
     const priceType = selectedPriceTypes[scaleId] || 'wholesale';
     
     let price = 0;
@@ -747,7 +824,7 @@ const ShoppingCart = () => {
     };
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cart.length === 0) {
       showToast("El carrito está vacío.");
       return;
@@ -760,6 +837,12 @@ const ShoppingCart = () => {
       showToast("Por favor seleccione un tipo de transacción");
       return;
     }
+  
+    // Actualizar precios antes de abrir el modal si estamos editando un carrito existente
+    if (isEditingExistingCart && currentCartId) {
+      await updateCartPrices();
+    }
+  
     setLargeModal(true);
   };
 
@@ -1321,14 +1404,14 @@ const ShoppingCart = () => {
 
               <button
                 onClick={handleCheckout}
-                disabled={!selectedClient || !transactionType || cart.length === 0}
+                disabled={!selectedClient || !transactionType || cart.length === 0 || isUpdatingPrices}
                 className={`w-full mt-3 text-white border-red-500 btn ${
-                  !selectedClient || !transactionType || cart.length === 0
+                  !selectedClient || !transactionType || cart.length === 0 || isUpdatingPrices
                     ? 'bg-red-400 border-red-400 cursor-not-allowed'
                     : 'bg-red-500 hover:bg-red-600 hover:border-red-600'
                 }`}
               >
-                Imprimir
+                {isUpdatingPrices ? 'Actualizando precios...' : 'Imprimir'}
               </button>
             </div>
           </div>
