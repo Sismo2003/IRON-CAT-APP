@@ -481,6 +481,11 @@ const ShoppingCart = () => {
     }
 
     const weight = weights[scaleId] || 0;
+    if (weight <= 0) {
+      showToast("El peso debe ser mayor a 0");
+      return;
+    }
+    
     const priceType = selectedPriceTypes[scaleId] || 'wholesale';
     
     let price = 0;
