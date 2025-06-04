@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import BreadCrumb from "Common/BreadCrumb";
 import Select from 'react-select';
 import scale from "assets/images/scale.png";
@@ -16,6 +16,7 @@ import {
   deleteProductInCart as onDeleteProductFromCart, // Asumiendo que existe este endpoint
   updateWaste as onUpdateWaste,
   updateCartVehicle as onUpdateCartVehicle,
+  deleteCart as onDeleteCart,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
@@ -122,6 +123,7 @@ const CustomSingleValue = ({ data }: any) => (
 
 const ShoppingCart = () => {
   const dispatch = useDispatch<any>();
+  const navigate = useNavigate();
   const { cartId } = useParams<{ cartId: string }>();
   const vehicleUpdateTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -739,7 +741,7 @@ const ShoppingCart = () => {
   
     try {
       // console.log("Payload para imprimir:", payload);
-
+  
       const result = await dispatch(onAddTicket(payload));
       
       // Si hay un código de descuento, actualizar sus usos
@@ -752,6 +754,7 @@ const ShoppingCart = () => {
         ticket_id: result.payload.ticketId
       };
   
+      // Limpiar estados locales
       setCart([]);
       setCustomerName("");
       setVehiclePlate("");
@@ -761,10 +764,24 @@ const ShoppingCart = () => {
       setWeights({});
       setDiscountCode(null);
       setLargeModal(false);
+  
+      // Si estamos editando un carrito existente, eliminarlo del backend
+      if (isEditingExistingCart && currentCartId) {
+        try {
+          await dispatch(onDeleteCart({ cartId: currentCartId }));
+          console.log('Carrito eliminado del backend exitosamente');
+        } catch (deleteError) {
+          console.error("Error al eliminar el carrito del backend:", deleteError);
+          // No mostrar error al usuario ya que la venta se completó exitosamente
+        }
+      }
+  
+      // Limpiar estados de edición
       setIsEditingExistingCart(false);
       setCurrentCartId(null);
   
-      const response1 = await fetch( PRINTER_IP + '/src/printer.php', {
+      // Imprimir tickets
+      const response1 = await fetch(PRINTER_IP + '/src/printer.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -778,6 +795,9 @@ const ShoppingCart = () => {
         },
         body: JSON.stringify(payloadToPrintTicket),
       });
+  
+      // Navegar a la página de menú de básculas después de completar la venta
+      navigate('/apps-scales-menu');
   
     } catch (error) {
       console.error('Error:', error);
