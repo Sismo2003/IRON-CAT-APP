@@ -229,8 +229,8 @@ const SalesCart = () => {
             let currentPrice = product.price; // Precio por defecto del carrito
             if (currentMaterial) {
               currentPrice = cartData.sale_mode === 'wholesale' 
-                ? Number(currentMaterial.wholesale_price_buy)
-                : Number(currentMaterial.retail_price_buy);
+                ? Number(currentMaterial.wholesale_price_sell)
+                : Number(currentMaterial.retail_price_sell);
             }
   
             // Calcular peso original y peso con merma
