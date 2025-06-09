@@ -7,6 +7,7 @@ import {
     Weight,
     CookingPot,
     Percent,
+    Package2,
     History,
   } from "lucide-react";
   
@@ -139,6 +140,13 @@ import {
   ];
   
   const scaleOnlyMenu = [
+    {
+      id: "ProductViewOnly",
+      label: 'Materiales',
+      link: "/apps-materials-product-view-only",
+      icon: <Package2 />,
+      parentId: 2
+    },
     {
       id: "Scales",
       label: 'Basculas',

@@ -33,6 +33,7 @@ import AddNew from "pages/MaterialsManagement/Materials/AddNew";
 import Checkout from "pages/MaterialsManagement/Checkout";
 import Orders from "pages/MaterialsManagement/Orders";
 import OrderOverview from "pages/MaterialsManagement/OrderOverview";
+import ProductViewOnly from "pages/MaterialsManagement/Materials/MaterialView";
 
 // Scales
 import ScalesMenu from "pages/Scales/CartsMenu";
@@ -359,6 +360,7 @@ const authProtectedRoutes: Array<RouteObject> = [
 
   // MaterialsManagement
   { path: "/apps-materials-product-list", component: ListView },
+  { path: "/apps-materials-product-view-only", component: ProductViewOnly },
   { path: "/apps-materials-product-grid", component: GridView },
   { path: "/apps-materials-product-overview", component: Overview },
   { path: "/apps-materials-product-create", component: AddNew },
