@@ -70,6 +70,7 @@ const EmployeeList = () => {
     const roleOptions = [
         { label: "Administrador", value: "admin" },
         { label: "Usuario", value: "user" },
+        { label: "Cajera", value: "cashier" },
     ];
 
     const getRoleOption = (type: string) => {
@@ -126,7 +127,7 @@ const EmployeeList = () => {
             email: (eventData && eventData.email) || '',
             phone: (eventData && eventData.phone) || '',
             rfc: (eventData && eventData.rfc) || '',
-            username: (eventData && eventData.username) || '', 
+            username: (eventData && eventData.username) || '',
             password: (eventData && eventData.password) || '',
             type: (eventData && eventData.type) || ''
         },
@@ -136,8 +137,8 @@ const EmployeeList = () => {
             img: Yup.string().required("Es necesario agregar una imagen"),
             address: Yup.string().required("Porfavor ingrese la dirección"),
             email: Yup.string()
-            .email("El formato de correo electrónico no es válido")
-            .required("Porfavor ingrese el email"),
+                .email("El formato de correo electrónico no es válido")
+                .required("Porfavor ingrese el email"),
             phone: Yup.string().required("Porfavor ingrese el número de telefono"),
             rfc: Yup.string(),
             username: Yup.string().required("Porfavor ingrese el nombre de usuario"),
@@ -229,14 +230,14 @@ const EmployeeList = () => {
             cell: (cell: any) => {
                 const lastLogin = cell.getValue();
                 if (!lastLogin) return <span className="text-gray-500">Nunca</span>;
-                
+
                 const loginDate = DateTime.fromISO(lastLogin);
                 const now = DateTime.now();
                 const daysDiff = now.diff(loginDate, 'days').days;
-                
+
                 // Formatear fecha
                 const formattedDate = loginDate.toFormat('dd-MM-yyyy HH:mm:ss');
-                
+
                 // Determinar color según días transcurridos
                 let colorClass = '';
                 if (daysDiff < 1) {
@@ -246,7 +247,7 @@ const EmployeeList = () => {
                 } else {
                     colorClass = 'bg-red-100 text-red-800 border-red-200 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30'; // Más de 7 días
                 }
-                
+
                 return (
                     <span className={`px-2.5 py-0.5 text-xs inline-block font-medium rounded-full border ${colorClass}`}>
                         {formattedDate}
@@ -286,7 +287,7 @@ const EmployeeList = () => {
                     >
                         <Eye className="inline-block size-3" />
                     </Link>
-        
+
                     {/* Botón Editar (lápiz) - azul */}
                     <Link
                         to="#!"
@@ -302,7 +303,7 @@ const EmployeeList = () => {
                     >
                         <Pencil className="size-4" />
                     </Link>
-        
+
                     {/* Botón Eliminar (basura) - rojo */}
                     <Link
                         to="#!"
@@ -319,7 +320,7 @@ const EmployeeList = () => {
                     </Link>
                 </div>
             ),
-        }        
+        }
     ], []);
 
     return (
@@ -345,29 +346,29 @@ const EmployeeList = () => {
                             </div>
                         ) : (
                             data && data.length > 0 ?
-                            <TableContainer
-                                isPagination={true}
-                                columns={(columns || [])}
-                                data={(data || [])}
-                                customPageSize={data.length > 10 ? 10 : data.length}
-                                divclassName="-mx-5 overflow-x-auto"
-                                tableclassName="w-full whitespace-nowrap"
-                                theadclassName="ltr:text-left rtl:text-right bg-slate-100 dark:bg-zink-600"
-                                thclassName="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold border-b border-slate-200 dark:border-zink-500"
-                                tdclassName="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500"
-                                PaginationClassName="flex flex-col items-center gap-4 px-4 mt-4 md:flex-row"
-                            />
-                            :
-                            (<div className="noresult">
-                                <div className="py-6 text-center">
-                                    <Search className="size-6 mx-auto text-sky-500 fill-sky-100 dark:sky-500/20" />
-                                    <h5 className="mt-2 mb-1">Sorry! No Result Found</h5>
-                                    <p className="mb-0 text-slate-500 dark:text-zink-200">We've searched more than 299+ Employee We did not find any Employee for you search.</p>
-                                </div>
-                            </div>)
+                                <TableContainer
+                                    isPagination={true}
+                                    columns={(columns || [])}
+                                    data={(data || [])}
+                                    customPageSize={data.length > 10 ? 10 : data.length}
+                                    divclassName="-mx-5 overflow-x-auto"
+                                    tableclassName="w-full whitespace-nowrap"
+                                    theadclassName="ltr:text-left rtl:text-right bg-slate-100 dark:bg-zink-600"
+                                    thclassName="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold border-b border-slate-200 dark:border-zink-500"
+                                    tdclassName="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500"
+                                    PaginationClassName="flex flex-col items-center gap-4 px-4 mt-4 md:flex-row"
+                                />
+                                :
+                                (<div className="noresult">
+                                    <div className="py-6 text-center">
+                                        <Search className="size-6 mx-auto text-sky-500 fill-sky-100 dark:sky-500/20" />
+                                        <h5 className="mt-2 mb-1">Sorry! No Result Found</h5>
+                                        <p className="mb-0 text-slate-500 dark:text-zink-200">We've searched more than 299+ Employee We did not find any Employee for you search.</p>
+                                    </div>
+                                </div>)
                         )
                     }
-                        
+
                 </div>
             </div>
 
@@ -484,7 +485,7 @@ const EmployeeList = () => {
                                 ) : null}
                             </div>
 
-                            
+
                             <div className="xl:col-span-6">
                                 <label htmlFor="usernameInput" className="inline-block mb-2 text-base font-medium">Usuario</label>
                                 <input type="text" id="usernameInput" className="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Ingrese su usuario"
@@ -526,8 +527,8 @@ const EmployeeList = () => {
                                 ) : null}
                             </div>
 
-                            
-                            
+
+
                         </div>
                         <div className="flex justify-end gap-2 mt-4">
                             <button type="reset" id="close-modal" data-modal-close="addEmployeeModal" className="text-red-500 bg-white btn hover:text-red-500 hover:bg-red-100 focus:text-red-500 focus:bg-red-100 active:text-red-500 active:bg-red-100 dark:bg-zink-600 dark:hover:bg-red-500/10 dark:focus:bg-red-500/10 dark:active:bg-red-500/10" onClick={toggle}>Cancel</button>

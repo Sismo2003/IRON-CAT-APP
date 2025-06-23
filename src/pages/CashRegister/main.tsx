@@ -26,6 +26,13 @@ import {toast, ToastContainer} from "react-toastify";
 
 
 const Checkout = () => {
+	const [authUser, setAuthUser] = React.useState(() =>
+		JSON.parse(localStorage.getItem('authUser') || '{}')
+	);
+
+	React.useEffect(() => {
+		setAuthUser(JSON.parse(localStorage.getItem('authUser') || '{}'));
+	}, []);
 	
 	const dispatch  = useDispatch<any>();
 	const selectTicket = createSelector(
@@ -37,7 +44,6 @@ const Checkout = () => {
 	);
 	const { ticketList, loading } = useSelector(selectTicket);
 	
-	console.log(ticketList);
 	function handle_ticket(event: React.FormEvent) {
 		event.preventDefault(); // Evita que se recargue la página
 		const input = document.getElementById('idToFind') as HTMLInputElement;
@@ -73,9 +79,7 @@ const Checkout = () => {
 	const [pendingUpdate, setPendingUpdate] = useState<pendingStateUpdateFormat>();
 	
 	const handlePayment = () => {
-	  if (paymentInputRef.current) {
-			
-			
+	  if (paymentInputRef.current) {			
 	    const valueStr = paymentInputRef.current.value;
 	    const value = parseFloat(valueStr.replace(/[^0-9.]/g, ''));
 			if(Number(ticketList?.data?.ticket?.[0]?.total) <= value) setPaymentReceived(value);
@@ -114,6 +118,32 @@ const Checkout = () => {
 			default2Toggle(); // Cierra el modal
 		}
 	};
+
+	const buttonsForStatus = (status: string) => {
+		// Esta función devuelve los botones según el estado del ticket
+		if (status === "pending" || status === "Por autorizar") {
+			return ( // Botones para estado "pending" o "Por autorizar"
+				<> 
+					<button
+						type="button"
+						onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'authorized', ticketList?.data?.ticket[0].type)}
+						className="text-green-500 bg-green-100 btn hover:text-white hover:bg-green-600 focus:text-white focus:bg-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:ring active:ring-green-100 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500 dark:hover:text-white dark:focus:bg-green-500 dark:focus:text-white dark:active:bg-green-500 dark:active:text-white dark:ring-green-400/20"
+					>
+						<span className="align-middle">Marcar como pagado</span>
+						<TicketCheck className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
+					</button>
+					<button
+						type="button"
+						onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'deleted', ticketList?.data?.ticket[0].type)}
+						className="text-red-500 bg-red-100 btn hover:text-white hover:bg-red-600 focus:text-white focus:bg-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:ring active:ring-red-100 dark:bg-red-500/20 dark:text-red-500 dark:hover:bg-red-500 dark:hover:text-white dark:focus:bg-red-500 dark:focus:text-white dark:active:bg-red-500 dark:active:text-white dark:ring-red-400/20"
+					>
+						<span className="align-middle">Cancelar Ticket</span>
+						<TicketX className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
+					</button>
+				</>
+			);
+		}
+	}
 	
 	return (
 		<React.Fragment>
@@ -166,9 +196,12 @@ const Checkout = () => {
 									<div className="card-body">
 										<div className="flex items-center gap-3 mb-4">
 											<h6 className="text-15 grow">Resumen Ticket</h6>
-											<button onClick={() => delelteTicket(ticketList.data.ticket[0].id)} className="text-red-500 underline shrink-0">
-												Eliminar Ticket
-											</button>
+											{authUser?.role === "admin" ? (
+												<button onClick={() => delelteTicket(ticketList.data.ticket[0].id)} className="text-red-500 underline shrink-0">
+													Eliminar Ticket
+												</button>
+											) : null}
+											
 										</div>
 										<div className="overflow-x-auto">
 											<table className="w-full">
@@ -226,48 +259,7 @@ const Checkout = () => {
 								{/*  Buttoms */}
 								<div className="flex  items-center justify-end gap-3 mb-5">
 									<div className="shrink-0">
-										{ticketList.data.ticket[0].status !== 'deleted' ? (
-											<button
-												type="button"
-												onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'deleted', ticketList?.data?.ticket[0].type)}
-												className="text-red-500 bg-red-100 btn hover:text-white hover:bg-red-600 focus:text-white focus:bg-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:ring active:ring-red-100 dark:bg-red-500/20 dark:text-red-500 dark:hover:bg-red-500 dark:hover:text-white dark:focus:bg-red-500 dark:focus:text-white dark:active:bg-red-500 dark:active:text-white dark:ring-red-400/20"
-											>
-												<span className="align-middle">Cancelar Ticket</span>
-												<TicketX className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
-											</button>
-										) : (
-											<button
-												type="button"
-												onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'pending', ticketList?.data?.ticket[0].type)}
-												className="text-yellow-500 bg-yellow-100 btn hover:text-white hover:bg-yellow-600 focus:text-white focus:bg-yellow-600 focus:ring focus:ring-yellow-100 active:text-white active:bg-yellow-600 active:ring active:ring-yellow-100 dark:bg-yellow-500/20 dark:text-yellow-500 dark:hover:bg-yellow-500 dark:hover:text-white dark:focus:bg-yellow-500 dark:focus:text-white dark:active:bg-yellow-500 dark:active:text-white dark:ring-yellow-400/20"
-											>
-												<span className="align-middle">Ticket Pendiente</span>
-												<TicketPercent  className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
-											</button>
-										)}
-									
-									</div>
-									<div className="shrink-0">
-										{ticketList.data.ticket[0].status !== 'authorized' ? (
-											<button
-												
-												type="button"
-												onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'authorized', ticketList?.data?.ticket[0].type)}
-												className="text-green-500 bg-green-100 btn hover:text-white hover:bg-green-600 focus:text-white focus:bg-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:ring active:ring-green-100 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500 dark:hover:text-white dark:focus:bg-green-500 dark:focus:text-white dark:active:bg-green-500 dark:active:text-white dark:ring-green-400/20"
-											>
-												<span className="align-middle">Marcar como pagado</span>
-												<TicketCheck className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
-											</button>
-										) : (
-											<button
-												type="button"
-												onClick={() => TicketUpdateStatus(ticketList?.data?.ticket[0]?.id, 'pending', ticketList?.data?.ticket[0].type)}
-												className="text-yellow-500 bg-yellow-100 btn hover:text-white hover:bg-yellow-600 focus:text-white focus:bg-yellow-600 focus:ring focus:ring-yellow-100 active:text-white active:bg-yellow-600 active:ring active:ring-yellow-100 dark:bg-yellow-500/20 dark:text-yellow-500 dark:hover:bg-yellow-500 dark:hover:text-white dark:focus:bg-yellow-500 dark:focus:text-white dark:active:bg-yellow-500 dark:active:text-white dark:ring-yellow-400/20"
-											>
-												<span className="align-middle">Ticket Pendiente</span>
-												<TicketPercent  className="inline-block size-4 align-middle ltr:ml-1 rtl:mr-1 rtl:rotate-180" />
-											</button>
-										)}
+										{buttonsForStatus(ticketList.data.ticket[0].status)}
 									</div>
 								</div>
 							</div>
