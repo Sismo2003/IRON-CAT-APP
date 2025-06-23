@@ -16,7 +16,7 @@ import {
   deleteProductInCart as onDeleteProductFromCart, // Asumiendo que existe este endpoint
   updateWaste as onUpdateWaste,
   updateCartVehicle as onUpdateCartVehicle,
-  deleteCart as onDeleteCart,
+  //deleteCart as onDeleteCart,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
@@ -765,9 +765,10 @@ const ShoppingCart = () => {
       setDiscountCode(null);
       setLargeModal(false);
   
+      /*
       // Si estamos editando un carrito existente, eliminarlo del backend
       if (isEditingExistingCart && currentCartId) {
-        try {
+      try {
           await dispatch(onDeleteCart({ cartId: currentCartId }));
           console.log('Carrito eliminado del backend exitosamente');
         } catch (deleteError) {
@@ -775,6 +776,7 @@ const ShoppingCart = () => {
           // No mostrar error al usuario ya que la venta se completó exitosamente
         }
       }
+        */
   
       // Limpiar estados de edición
       setIsEditingExistingCart(false);

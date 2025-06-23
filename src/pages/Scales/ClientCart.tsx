@@ -16,7 +16,7 @@ import {
   updateWaste as onUpdateWaste,
   deleteProductInCart as onDeleteProductFromCart,
   updateCartVehicle as onUpdateCartVehicle,
-  deleteCart as onDeleteCart,
+  //deleteCart as onDeleteCart,
 } from 'slices/thunk';
 import { Trash2, ShoppingBasket } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
@@ -908,6 +908,7 @@ const ShoppingCart = () => {
       setMaterials([]);
       setDataLoaded(false);
 
+      /*
       // Si estamos editando un carrito existente, eliminarlo del backend
       if (isEditingExistingCart && currentCartId) {
         try {
@@ -917,7 +918,7 @@ const ShoppingCart = () => {
           console.error("Error al eliminar el carrito del backend:", deleteError);
           // No mostrar error al usuario ya que la venta se completó exitosamente
         }
-      }
+      }*/
 
       // Limpiar estados de edición
       setIsEditingExistingCart(false);
